@@ -41,7 +41,7 @@ object Component {
       val annots = annotations( extractAnnotationParameters(c.prefix.tree,annotationParamNames) )
 
       val tree =
-        q"""{@scalajs.js.annotation.JSExport($fullName)
+        q"""{@scalajs.js.annotation.JSExport($fullName) @scalajs.js.annotation.JSExportAll
          class $name ( ..$params ) extends ..$parents with biz.enef.angulate2.Angular.Annotated { ..$body }
          object ${name.toTermName} extends biz.enef.angulate2.Angular.Annotated {
            import biz.enef.angulate2.annotations._
