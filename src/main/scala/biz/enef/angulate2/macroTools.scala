@@ -14,6 +14,7 @@ trait JsCommonMacroTools {
 
   def selectGlobalDynamic[T: c.WeakTypeTag] = weakTypeOf[T].typeSymbol.fullName.split("\\.").
     foldLeft(q"scalajs.js.Dynamic.global":Tree)((b,name) => q"""$b.selectDynamic($name)""")
+
 }
 
 abstract class JsBlackboxMacroTools extends BlackboxMacroTools with JsCommonMacroTools

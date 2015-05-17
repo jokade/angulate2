@@ -7,7 +7,9 @@ lazy val commonSettings = Seq(
   scalacOptions ++= Seq("-deprecation","-unchecked","-feature","-language:implicitConversions","-Xlint"),
   autoCompilerPlugins := true,
   //addCompilerPlugin("com.lihaoyi" %% "acyclic" % "0.1.2"),
-  libraryDependencies += "com.lihaoyi" %% "acyclic" % "0.1.2" % "provided",
+  libraryDependencies += "biz.enef" %% "smacrotools" % "0.1-SNAPSHOT",
+  resolvers += Resolver.sonatypeRepo("releases"),
+  resolvers += Resolver.sonatypeRepo("snapshots"),
   scalacOptions ++= (if (isSnapshot.value) Seq.empty else Seq({
         val a = baseDirectory.value.toURI.toString.replaceFirst("[^/]+/?$", "")
         val g = "https://raw.githubusercontent.com/jokade/angulate2"
@@ -15,11 +17,11 @@ lazy val commonSettings = Seq(
       }))
 )
 
-lazy val macros = RootProject(file("../smacrotools"))
+//lazy val macros = RootProject(file("../smacrotools"))
 
 lazy val angulate2 = project.in(file(".")).
   enablePlugins(ScalaJSPlugin).
-  dependsOn(macros).
+  //dependsOn(macros).
   settings(commonSettings: _*).
   settings(publishingSettings: _*).
   //settings(sonatypeSettings: _*).
@@ -30,8 +32,7 @@ lazy val angulate2 = project.in(file(".")).
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "org.scala-js"   %%% "scalajs-dom" % "0.8.0",
       "be.doeraene" %%% "scalajs-jquery" % "0.8.0" % "provided"
-    ),
-    resolvers += Resolver.sonatypeRepo("releases")
+    )
   )
 
 

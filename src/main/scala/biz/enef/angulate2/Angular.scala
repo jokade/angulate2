@@ -39,7 +39,7 @@ object Angular {
 
     def register[T: c.WeakTypeTag] = {
       val t = weakTypeOf[T].companion
-      val x = t.decls.filter(_.name.toString == "_annotations").head
+      val x = t.decls.filter(_.name.toString == "_annotations").head.asMethod
       val d = selectGlobalDynamic[T]
       val tree = q"""$d.updateDynamic("annotations")($x)"""
       tree
