@@ -4,6 +4,8 @@
 **NOTE: This is work in progress (not even alpha, more like a playground)!**  
 Most of the features of Angular2 are still missing and the API may change at any time without notice!
 
+For Scala.js bindings to [Angular 1.x](https://angularjs.org) see [scalajs-angulate](https://github.com/jokade/scalajs-angulate).
+
 Getting Started
 ---------------
 ### SBT Settings
