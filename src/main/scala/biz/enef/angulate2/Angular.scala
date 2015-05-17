@@ -9,9 +9,14 @@ import biz.enef.smacrotools.BlackboxMacroTools
 import scala.scalajs.js
 
 trait Angular extends js.Object {
+
   def bootstrap(appComponentType: js.Object) : Unit = js.native
 
   def bootstrap(appComponentType: js.Dynamic) : Unit = js.native
+
+  //--------------- DIRECTIVES -----------------
+  def For: js.Object = js.native
+  def If: js.Object = js.native
 }
 
 object Angular {
@@ -47,7 +52,7 @@ object Angular {
   }
 
   /**
-   * Internally used trait to mark classes with companion objects that carry Angular annotations
+   * Internally used to mark classes with companion objects that carry Angular annotations
    */
   trait Annotated
 }

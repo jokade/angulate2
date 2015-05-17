@@ -8,11 +8,17 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
 
 @JSName("angular.ViewAnnotation")
-class ViewAnnotation(annotations: js.Object) extends js.Object
+class ViewAnnotation(annotations: js.Any) extends js.Object
 
+// TODO: is there a more efficient way to create the annotation object? In particular w.r.t. the usage in macros ...
 object ViewAnnotation {
-  import js.Dynamic.literal
-  def apply(template: String) : ViewAnnotation = new ViewAnnotation(literal(
-    template = template
-  ))
+  def apply(template: String = null,
+            directives: js.Array[Any] = null) : ViewAnnotation = {
+    val dict = js.Dictionary[Any]()
+    if (template != null)
+      dict("template") = template
+    if (directives != null)
+      dict("directives") = directives
+    new ViewAnnotation(dict)
+  }
 }

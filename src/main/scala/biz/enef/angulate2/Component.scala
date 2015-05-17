@@ -9,11 +9,13 @@ import biz.enef.smacrotools.WhiteboxMacroTools
 import scala.annotation.{compileTimeOnly, StaticAnnotation}
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
+import scala.scalajs.js
 
 // NOTE: keep the constructor parameter list and Component.Macro.annotationParamNames in sync!
 @compileTimeOnly("enable macro paradise to expand macro annotations")
 class Component(selector: String,
-                template: String = null) extends StaticAnnotation {
+                template: String = null,
+                directives: js.Array[Any] = null) extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro Component.Macro.impl
 }
 
@@ -25,7 +27,8 @@ object Component {
 
     val annotationParamNames =
       Seq("selector",
-          "template")
+          "template",
+          "directives")
 
     def impl(annottees: c.Expr[Any]*) : c.Expr[Any] = annottees.map(_.tree).toList match {
       case (classDecl: ClassDef) :: Nil => modifiedDeclaration(classDecl)
@@ -56,7 +59,7 @@ object Component {
         case (name, Some(rhs)) => (name, rhs)
       }.groupBy {
         case ("selector", _) => "ComponentAnnotation"
-        case ("template", _) => "ViewAnnotation"
+        case ("template"|"directives", _) => "ViewAnnotation"
         case _ => ???
       }.map{
         case (atype,m) =>
