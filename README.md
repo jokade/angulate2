@@ -17,5 +17,36 @@ libraryDependencies += "biz.enef" %% "angulate2" % "0.1-SNAPSHOT"
 ```
 angulate2 is build for Scala.js 0.6.2+.
 
-### First Example
-Here is the [startup example from the Angular 2 guide](https://angular.io/docs/js/latest/guide/setup.html) using angulate2:
+### Defining a Component and Bootstrapping
+```scala
+import biz.enef.angulate2._
+import scalajs.js.annotation.JSExport
+
+// Components are defined by annotating a class with @Component
+// NOTE: angulate2 currently has no separate @View annotation
+@Component(
+  selector = "my-app",
+  template = "<h1>My first Angular 2 app</h1>"
+)
+class AppComponent
+
+// call Main() from index.html to start the application
+@JSExport
+object Main {
+  
+  // register the component
+  // (this step is currently required by angulate2 due to some
+  //  limitations of JS code that can be generated from within Scala)
+  angular.register[AppComponent]
+  
+  // Start the app with AppComponent
+  angular.bootstrapWith[AppComponent]
+  
+}
+```
+The complete code is available in the [Examples](https://github.com/jokade/angulate2-examples) repository.
+
+
+License
+-------
+This code is open source software licensed under the [MIT License](http://opensource.org/licenses/MIT).
