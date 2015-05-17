@@ -17,7 +17,7 @@ addCompilerPlugin("org.scalamacros" % "paradise" % "2.0.1" cross CrossVersion.fu
 
 libraryDependencies += "biz.enef" %% "angulate2" % "0.1-SNAPSHOT"
 ```
-angulate2 is build for Scala.js 0.6.2+.
+angulate2 is built for Scala.js 0.6.2+.
 
 ### Defining a Component and Bootstrapping
 ```scala
