@@ -6,7 +6,7 @@ lazy val commonSettings = Seq(
   scalaVersion := "2.11.6",
   scalacOptions ++= Seq("-deprecation","-unchecked","-feature","-language:implicitConversions","-Xlint"),
   autoCompilerPlugins := true,
-  addCompilerPlugin("com.lihaoyi" %% "acyclic" % "0.1.2"),
+  //addCompilerPlugin("com.lihaoyi" %% "acyclic" % "0.1.2"),
   libraryDependencies += "com.lihaoyi" %% "acyclic" % "0.1.2" % "provided",
   scalacOptions ++= (if (isSnapshot.value) Seq.empty else Seq({
         val a = baseDirectory.value.toURI.toString.replaceFirst("[^/]+/?$", "")
@@ -15,14 +15,17 @@ lazy val commonSettings = Seq(
       }))
 )
 
+lazy val macros = RootProject(file("../smacrotools"))
 
 lazy val angulate2 = project.in(file(".")).
   enablePlugins(ScalaJSPlugin).
+  dependsOn(macros).
   settings(commonSettings: _*).
   settings(publishingSettings: _*).
   //settings(sonatypeSettings: _*).
   settings( 
     name := "angulate2",
+    addCompilerPlugin("org.scalamacros" % "paradise" % "2.0.1" cross CrossVersion.full),
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "org.scala-js"   %%% "scalajs-dom" % "0.8.0",
@@ -37,6 +40,7 @@ lazy val tests = project.
   enablePlugins(ScalaJSPlugin).
   settings(commonSettings: _*).
   settings(
+    addCompilerPlugin("org.scalamacros" % "paradise" % "2.0.1" cross CrossVersion.full),
     publish := {},
     scalacOptions ++= angulateDebugFlags,
     scalaJSStage in Test := FastOptStage,
