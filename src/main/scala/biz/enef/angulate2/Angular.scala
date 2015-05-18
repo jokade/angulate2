@@ -37,7 +37,9 @@ object Angular {
       val t = selectGlobalDynamic[T]
       val angular = Select(c.prefix.tree, TermName("self"))
       val r =
-        q"""..$annots
+        q"""{import biz.enef.angulate2.annotations._
+             ..$annots
+             }
             $angular.bootstrap($t)"""
       println(r)
       r
