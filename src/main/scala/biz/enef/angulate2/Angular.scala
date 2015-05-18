@@ -27,28 +27,26 @@ object Angular {
 
     @inline def bootstrapWith[T] : Unit = macro Macros.bootstrapWith[T]
 
-    @inline def register[T<:Annotated] : Unit = macro Macros.register[T]
   }
 
   private[angulate2] class Macros(val c: blackbox.Context) extends JsBlackboxMacroTools {
     import c.universe._
 
     def bootstrapWith[T: c.WeakTypeTag] = {
+      val annots = registerAll(CompileTimeRegistry.components)
       val t = selectGlobalDynamic[T]
       val angular = Select(c.prefix.tree, TermName("self"))
-      //val r = c.typecheck(q"""$angular.bootstrap($t)""")
-      val r = q"""$angular.bootstrap($t)"""
-      //println(r)
+      val r =
+        q"""..$annots
+            $angular.bootstrap($t)"""
+      println(r)
       r
     }
 
-    def register[T: c.WeakTypeTag] = {
-      val t = weakTypeOf[T].companion
-      val x = t.decls.filter(_.name.toString == "_annotations").head.asMethod
-      val d = selectGlobalDynamic[T]
-      val tree = q"""$d.updateDynamic("annotations")($x)"""
-      tree
-    }
+    private def registerAll(annottees: Map[String,Any]) =
+      annottees.toSeq.map{
+        case (_,tree:Tree) => tree
+      }
   }
 
   /**

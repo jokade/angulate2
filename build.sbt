@@ -7,7 +7,7 @@ lazy val commonSettings = Seq(
   scalacOptions ++= Seq("-deprecation","-unchecked","-feature","-language:implicitConversions","-Xlint"),
   autoCompilerPlugins := true,
   //addCompilerPlugin("com.lihaoyi" %% "acyclic" % "0.1.2"),
-  libraryDependencies += "biz.enef" %% "smacrotools" % "0.1-SNAPSHOT",
+  //libraryDependencies += "biz.enef" %% "smacrotools" % "0.1-SNAPSHOT",
   resolvers += Resolver.sonatypeRepo("releases"),
   resolvers += Resolver.sonatypeRepo("snapshots"),
   scalacOptions ++= (if (isSnapshot.value) Seq.empty else Seq({
@@ -17,11 +17,11 @@ lazy val commonSettings = Seq(
       }))
 )
 
-//lazy val macros = RootProject(file("../smacrotools"))
+lazy val macros = RootProject(file("../smacrotools"))
 
 lazy val angulate2 = project.in(file(".")).
   enablePlugins(ScalaJSPlugin).
-  //dependsOn(macros).
+  dependsOn(macros).
   settings(commonSettings: _*).
   settings(publishingSettings: _*).
   //settings(sonatypeSettings: _*).
@@ -49,9 +49,9 @@ lazy val tests = project.
     requiresDOM := true,
     libraryDependencies ++= Seq("com.lihaoyi" %%% "utest" % "0.3.0" % "test",
       "be.doeraene" %%% "scalajs-jquery" % "0.8.0"),
-    jsDependencies += RuntimeDOM
-    //jsDependencies += "org.webjars" % "angularjs" % "1.3.8" / "angular.min.js" % "test",
-    //jsDependencies += ("org.webjars" % "angularjs" % "1.3.8" / "angular-mocks.js" dependsOn "angular.min.js") % "test"
+    jsDependencies += RuntimeDOM,
+    scalacOptions ++= angulateDebugFlags
+    //scalacOptions += "-Xmacro-settings:biz.enef.angulate2.debug.Component"
   )
 
 
@@ -87,13 +87,5 @@ lazy val publishingSettings = Seq(
 )
  
 lazy val angulateDebugFlags = Seq(
-  // include some code for runtime debugging
-  //"runtimeLogging",
-  //"ModuleMacros.debug",
-  //"ControllerMacros.debug"
-  //"DirectiveMacros.debug"
-  //"ServiceMacros.debug"
-  //"ComponentMacros.debug"
-  //"HttpPromiseMacros.debug"
-).map( f => s"-Xmacro-settings:biz.enef.angulate.$f" )
+).map( f => s"-Xmacro-settings:biz.enef.angulate2.debug.$f" )
 

@@ -12,9 +12,10 @@ trait JsCommonMacroTools {
 
   import c.universe._
 
-  def selectGlobalDynamic[T: c.WeakTypeTag] = weakTypeOf[T].typeSymbol.fullName.split("\\.").
-    foldLeft(q"scalajs.js.Dynamic.global":Tree)((b,name) => q"""$b.selectDynamic($name)""")
+  def selectGlobalDynamic[T: c.WeakTypeTag] : Tree = selectGlobalDynamic(weakTypeOf[T].typeSymbol.fullName)
 
+  def selectGlobalDynamic(fullName: String) : Tree = fullName.split("\\.").
+    foldLeft(q"scalajs.js.Dynamic.global":Tree)((b,name) => q"""$b.selectDynamic($name)""")
 }
 
 abstract class JsBlackboxMacroTools extends BlackboxMacroTools with JsCommonMacroTools

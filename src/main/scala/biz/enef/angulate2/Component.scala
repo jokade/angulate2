@@ -1,10 +1,8 @@
 // -   Project: angulate2 (https://github.com/jokade/angulate2)
-// Description:
+// Description: angulate2 implementation of Angular's @Component annotation
 //
 // Distributed under the MIT License (see included file LICENSE)
 package biz.enef.angulate2
-
-import biz.enef.smacrotools.WhiteboxMacroTools
 
 import scala.annotation.{compileTimeOnly, StaticAnnotation}
 import scala.language.experimental.macros
@@ -24,6 +22,7 @@ object Component {
 
   private[angulate2] class Macro(val c: whitebox.Context) extends JsWhiteboxMacroTools {
     import c.universe._
+    lazy val debug = isSet("biz.enef.angulate2.debug.Component")
 
     val annotationParamNames =
       Seq("selector",
@@ -36,20 +35,19 @@ object Component {
     }
 
     def modifiedDeclaration(classDecl: ClassDef) = {
-      val (name,params,parents,body) = extractClassParts(classDecl)
-      val fullName = getEnclosingNamespace().map( ns => s"$ns.$name" ).getOrElse(name.toString)
+      val parts = extractClassParts(classDecl)
+      import parts._
+
       val annots = annotations( extractAnnotationParameters(c.prefix.tree,annotationParamNames) )
+      val d = selectGlobalDynamic(fullName)
+      CompileTimeRegistry.registerComponent(fullName, q"""$d.updateDynamic("annotations")($annots)""")
 
       val tree =
         q"""{@scalajs.js.annotation.JSExport($fullName) @scalajs.js.annotation.JSExportAll
          class $name ( ..$params ) extends ..$parents with biz.enef.angulate2.Angular.Annotated { ..$body }
-         object ${name.toTermName} extends biz.enef.angulate2.Angular.Annotated {
-           import biz.enef.angulate2.annotations._
-           @inline final def _annotations = $annots
-         }
-        }"""
+         }"""
 
-      println(tree)
+      if(debug) printTree(tree)
 
       c.Expr[Any](tree)
     }
