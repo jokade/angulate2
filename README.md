@@ -6,6 +6,8 @@ Most of the features of Angular2 are still missing and the API may change at any
 
 For Scala.js bindings to [Angular 1.x](https://angularjs.org) see [scalajs-angulate](https://github.com/jokade/scalajs-angulate).
 
+There is a separate repository with [Examples](https://github.com/jokade/angulate2-examples).
+
 Getting Started
 ---------------
 ### SBT Settings
@@ -28,9 +30,12 @@ import scalajs.js.annotation.JSExport
 // NOTE: angulate2 currently has no separate @View annotation
 @Component(
   selector = "my-app",
-  template = "<h1>My first Angular 2 app</h1>"
+  template = "<h1>Hello, {{name}}!</h1>"
 )
-class AppComponent
+class AppComponent {
+  // all public members are available in the template
+  val name = "Alice"
+}
 
 // call Main() from index.html to start the application
 @JSExport
@@ -46,7 +51,6 @@ object Main {
   
 }
 ```
-The complete code is available in the [Examples](https://github.com/jokade/angulate2-examples) repository.
 
 
 License
