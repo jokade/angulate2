@@ -39,18 +39,47 @@ object Component {
       import parts._
 
       val annots = annotations( extractAnnotationParameters(c.prefix.tree,annotationParamNames) )
-      val d = selectGlobalDynamic(fullName)
-      CompileTimeRegistry.registerComponent(fullName, q"""$d.updateDynamic("annotations")($annots)""")
+
+      val objName = fullName+"_"
+
+      val jsAnnot = s"$fullName.annotations = $objName().annotations();"
+
 
       val tree =
-        q"""{@scalajs.js.annotation.JSExport($fullName) @scalajs.js.annotation.JSExportAll
-         class $name ( ..$params ) extends ..$parents with biz.enef.angulate2.Angular.Annotated { ..$body }
-         }"""
+        q"""{@scalajs.js.annotation.JSExport($fullName)
+             @scalajs.js.annotation.JSExportAll
+             @biz.enef.angulate2.Angular.AngulateAnnotated($jsAnnot)
+             class $name ( ..$params ) extends ..$parents { ..$body }
+             @scalajs.js.annotation.JSExport($objName)
+             object ${name.toTermName} {
+               import biz.enef.angulate2.annotations._
+               @scalajs.js.annotation.JSExport
+               def annotations() = $annots
+             }
+            }"""
 
       if(debug) printTree(tree)
 
       c.Expr[Any](tree)
     }
+
+    /*
+    def annotations(fullName: String, params: Map[String,Option[Tree]]) = {
+      val definedParams = params.collect{ case (name,Some(tree)) => (name,tree) }.groupBy{
+        case ("selector",_) => "ComponentAnnotation"
+        case ("template"|"directives", _) => "ViewAnnotation"
+      }
+
+      definedParams.map{
+        case (atype,m) =>
+          m.map{
+            case (param,tree) =>
+              val v = c.eval( c.Expr[String](tree) )
+              s"""$param: "$v""""
+          }.mkString(s"new angular.$atype(",",",")")
+      }.mkString(s"$fullName.annotations = [",",","];")
+    }
+    */
 
     def annotations(params: Map[String,Option[Tree]]) = {
       val groups = params.collect {
@@ -68,6 +97,8 @@ object Component {
 
       q"scalajs.js.Array( ..$groups )"
     }
+
+
   }
 
 

@@ -6,6 +6,7 @@ package biz.enef.angulate2
 
 import biz.enef.smacrotools.BlackboxMacroTools
 
+import scala.annotation.StaticAnnotation
 import scala.scalajs.js
 
 trait Angular extends js.Object {
@@ -29,19 +30,15 @@ object Angular {
 
   }
 
+
   private[angulate2] class Macros(val c: blackbox.Context) extends JsBlackboxMacroTools {
     import c.universe._
 
     def bootstrapWith[T: c.WeakTypeTag] = {
-      val annots = registerAll(CompileTimeRegistry.components)
       val t = selectGlobalDynamic[T]
       val angular = Select(c.prefix.tree, TermName("self"))
       val r =
-        q"""{import biz.enef.angulate2.annotations._
-             ..$annots
-             }
-            $angular.bootstrap($t)"""
-      println(r)
+        q"""$angular.bootstrap($t)"""
       r
     }
 
@@ -54,6 +51,6 @@ object Angular {
   /**
    * Internally used to mark classes with companion objects that carry Angular annotations
    */
-  trait Annotated
+  class AngulateAnnotated(annotation: String) extends StaticAnnotation
 }
 

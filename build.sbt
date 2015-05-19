@@ -7,7 +7,6 @@ lazy val commonSettings = Seq(
   scalacOptions ++= Seq("-deprecation","-unchecked","-feature","-language:implicitConversions","-Xlint"),
   autoCompilerPlugins := true,
   //addCompilerPlugin("com.lihaoyi" %% "acyclic" % "0.1.2"),
-  //libraryDependencies += "biz.enef" %% "smacrotools" % "0.1-SNAPSHOT",
   resolvers += Resolver.sonatypeRepo("releases"),
   resolvers += Resolver.sonatypeRepo("snapshots"),
   scalacOptions ++= (if (isSnapshot.value) Seq.empty else Seq({
@@ -22,6 +21,7 @@ lazy val macros = RootProject(file("../smacrotools"))
 lazy val angulate2 = project.in(file(".")).
   enablePlugins(ScalaJSPlugin).
   dependsOn(macros).
+  aggregate(plugin).
   settings(commonSettings: _*).
   settings(publishingSettings: _*).
   //settings(sonatypeSettings: _*).
@@ -35,6 +35,14 @@ lazy val angulate2 = project.in(file(".")).
     )
   )
 
+lazy val plugin = project.
+  settings(commonSettings:_*).
+  settings(
+    name := "sbt-angulate2",
+    sbtPlugin := true,
+    scalaVersion := "2.10.5",
+    addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.2")
+  )
 
 lazy val tests = project.
   dependsOn(angulate2).
