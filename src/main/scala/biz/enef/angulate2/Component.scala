@@ -13,7 +13,8 @@ import scala.scalajs.js
 @compileTimeOnly("enable macro paradise to expand macro annotations")
 class Component(selector: String,
                 template: String = null,
-                directives: js.Array[Any] = null) extends StaticAnnotation {
+                directives: js.Array[js.Any] = null,
+                injectables: js.Array[js.Any] = null) extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro Component.Macro.impl
 }
 
@@ -27,12 +28,14 @@ object Component {
     val annotationParamNames =
       Seq("selector",
           "template",
-          "directives")
+          "directives",
+          "injectables")
 
     def impl(annottees: c.Expr[Any]*) : c.Expr[Any] = annottees.map(_.tree).toList match {
       case (classDecl: ClassDef) :: Nil => modifiedDeclaration(classDecl)
       case _ => c.abort(c.enclosingPosition, "Invalid annottee for @Component")
     }
+
 
     def modifiedDeclaration(classDecl: ClassDef) = {
       val parts = extractClassParts(classDecl)
@@ -43,7 +46,6 @@ object Component {
       val objName = fullName+"_"
 
       val jsAnnot = s"$fullName.annotations = $objName().annotations();"
-
 
       val tree =
         q"""{@scalajs.js.annotation.JSExport($fullName)
@@ -83,9 +85,10 @@ object Component {
 
     def annotations(params: Map[String,Option[Tree]]) = {
       val groups = params.collect {
+        case ("injectables",Some(rhs)) => ("injectables",c.typecheck(rhs))
         case (name, Some(rhs)) => (name, rhs)
       }.groupBy {
-        case ("selector", _) => "ComponentAnnotation"
+        case ("selector"|"injectables", _) => "ComponentAnnotation"
         case ("template"|"directives", _) => "ViewAnnotation"
         case _ => ???
       }.map{

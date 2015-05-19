@@ -46,6 +46,8 @@ object Angular {
       annottees.toSeq.map{
         case (_,tree:Tree) => tree
       }
+
+    def jsClassOf[T: c.WeakTypeTag] = selectGlobalDynamic[T]
   }
 
   /**

@@ -22,21 +22,20 @@ object Injectable {
 
     def impl(annottees: c.Expr[Any]*) : c.Expr[Any] = annottees.map(_.tree).toList match {
       case (classDecl: ClassDef) :: Nil => modifiedClassDecl(classDecl)
-      case _ => c.abort(c.enclosingPosition, "Invalid annottee for @Component")
+      case _ => c.abort(c.enclosingPosition, "Invalid annottee for @Injectable")
     }
 
     def modifiedClassDecl(classDecl: ClassDef) = {
       val parts = extractClassParts(classDecl)
       import parts._
 
-      val annots =
-      CompileTimeRegistry.registerInjectable(fullName,q"()")
       val tree =
-        q"""{class $name ( ..$params ) extends ..$parents with biz.enef.angulate2.Angular.Annotated { ..$body }}"""
+        q"""{@scalajs.js.annotation.JSExport($fullName)
+             @scalajs.js.annotation.JSExportAll
+             class $name ( ..$params ) extends ..$parents { ..$body }
+            }"""
 
-      println(tree)
       c.Expr(tree)
-      c.Expr(classDecl)
     }
   }
 }
