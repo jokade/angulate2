@@ -41,11 +41,6 @@ class AppComponent {
 @JSExport
 object Main {
   
-  // register the component
-  // (this step is currently required by angulate2 due to some
-  //  limitations of JS code that can be generated from within Scala)
-  angular.register[AppComponent]
-  
   // Start the app with AppComponent
   angular.bootstrapWith[AppComponent]
   
