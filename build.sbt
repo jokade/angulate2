@@ -35,14 +35,18 @@ lazy val angulate2 = project.in(file(".")).
     )
   )
 
+
 lazy val plugin = project.
   settings(commonSettings:_*).
+  settings(publishingSettings:_*).
   settings(
     name := "sbt-angulate2",
+    description := "sbt plugin for angulate2 (Angular2 bindings for Scala.js)",
     sbtPlugin := true,
     scalaVersion := "2.10.5",
     addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.2")
   )
+
 
 lazy val tests = project.
   dependsOn(angulate2).
