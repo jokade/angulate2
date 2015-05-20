@@ -43,9 +43,13 @@ object Component {
 
       val annots = annotations( extractAnnotationParameters(c.prefix.tree,annotationParamNames) )
 
+      // we use this dummy class only for type checking, so that we can access the types of the constructor parameters
+      val cl = (q"""class $name ( ..$params )""").duplicate
+      val diTypes = constructorDI(cl)
+
       val objName = fullName+"_"
 
-      val jsAnnot = s"$fullName.annotations = $objName().annotations();"
+      val jsAnnot = s"$fullName.annotations = $objName().annotations(); $fullName.parameters = $objName().parameters();"
 
       val tree =
         q"""{@scalajs.js.annotation.JSExport($fullName)
@@ -57,6 +61,8 @@ object Component {
                import biz.enef.angulate2.annotations._
                @scalajs.js.annotation.JSExport
                def annotations() = $annots
+               @scalajs.js.annotation.JSExport
+               def parameters() = $diTypes
              }
             }"""
 
@@ -65,23 +71,6 @@ object Component {
       c.Expr[Any](tree)
     }
 
-    /*
-    def annotations(fullName: String, params: Map[String,Option[Tree]]) = {
-      val definedParams = params.collect{ case (name,Some(tree)) => (name,tree) }.groupBy{
-        case ("selector",_) => "ComponentAnnotation"
-        case ("template"|"directives", _) => "ViewAnnotation"
-      }
-
-      definedParams.map{
-        case (atype,m) =>
-          m.map{
-            case (param,tree) =>
-              val v = c.eval( c.Expr[String](tree) )
-              s"""$param: "$v""""
-          }.mkString(s"new angular.$atype(",",",")")
-      }.mkString(s"$fullName.annotations = [",",","];")
-    }
-    */
 
     def annotations(params: Map[String,Option[Tree]]) = {
       val groups = params.collect {
@@ -101,6 +90,15 @@ object Component {
       q"scalajs.js.Array( ..$groups )"
     }
 
+
+    def constructorDI(classDecl: Tree) = {
+      val paramTypes = c.typecheck(classDecl) match {
+        case q"class $_ ( ..$params )" => params.map {
+          case q"$_ val $_: $tpe" => q"scalajs.js.Array(${selectGlobalDynamic(tpe.toString)})"
+        }
+      }
+      q"scalajs.js.Array( ..$paramTypes )"
+    }
 
   }
 
