@@ -7,6 +7,7 @@ package angulate2
 
 import scala.annotation.StaticAnnotation
 import scala.scalajs.js
+import scala.scalajs.js.annotation.JSName
 
 object Angular {
   import scala.reflect.macros.blackbox
@@ -44,6 +45,7 @@ object Angular {
   class AngulateAnnotated(annotation: String) extends StaticAnnotation
 }
 
+@JSName("angular")
 trait Angular extends js.Object {
 
   def bootstrap(appComponentType: js.Object) : Unit = js.native
@@ -51,6 +53,6 @@ trait Angular extends js.Object {
   def bootstrap(appComponentType: js.Dynamic) : Unit = js.native
 
   //--------------- DIRECTIVES -----------------
-  def For: js.Object = js.native
-  def If: js.Object = js.native
+  def NgFor: js.Object = js.native
+  def NgIf: js.Object = js.native
 }

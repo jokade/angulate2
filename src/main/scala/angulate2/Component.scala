@@ -15,7 +15,7 @@ import scala.scalajs.js
 class Component(selector: String,
                 template: String = null,
                 directives: js.Array[js.Any] = null,
-                injectables: js.Array[js.Any] = null) extends StaticAnnotation {
+                appInjector: js.Array[js.Any] = null) extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro Component.Macro.impl
 }
 
@@ -30,7 +30,7 @@ object Component {
       Seq("selector",
           "template",
           "directives",
-          "injectables")
+          "appInjector")
 
     def impl(annottees: c.Expr[Any]*) : c.Expr[Any] = annottees.map(_.tree).toList match {
       case (classDecl: ClassDef) :: Nil => modifiedDeclaration(classDecl)
@@ -78,7 +78,7 @@ object Component {
         case ("injectables",Some(rhs)) => ("injectables",c.typecheck(rhs))
         case (name, Some(rhs)) => (name, rhs)
       }.groupBy {
-        case ("selector"|"injectables", _) => "ComponentAnnotation"
+        case ("selector"|"appInjector", _) => "ComponentAnnotation"
         case ("template"|"directives", _) => "ViewAnnotation"
         case _ => ???
       }.map{

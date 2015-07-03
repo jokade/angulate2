@@ -14,11 +14,11 @@ object ComponentAnnotation {
   import js.Dynamic.literal
 
   def apply(selector: String,
-            injectables: js.Array[js.Any] = null) : ComponentAnnotation = {
+            appInjector: js.Array[js.Any] = null) : ComponentAnnotation = {
     val dict = js.Dictionary[Any]()
     dict("selector") = selector
-    if (injectables != null)
-      dict("injectables") = injectables
+    if (appInjector != null)
+      dict("appInjector") = appInjector
     new ComponentAnnotation(dict)
   }
 
