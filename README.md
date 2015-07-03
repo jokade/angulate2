@@ -70,6 +70,25 @@ document.addEventListener('DOMContentLoaded',function() {
 </html>
 ```
 
+### Dependency Injection
+```scala
+import biz.enef.angulate2._
+
+@Injectable
+class FriendsService {
+  val names = js.Array("Aarav","Martín","Shannon","Ariana","Kai")
+}
+
+@Component(
+  selector ="display",
+  template = "<p>Friends: {{names}}</p>",
+  injectables = js.Array( @@[FriendsService] )   // inject FriendsService into this component
+)
+class DisplayComponent(friends: FriendsService) {
+  val names = friends.names.mkString(", ")
+}
+```
+
 License
 -------
 This code is open source software licensed under the [MIT License](http://opensource.org/licenses/MIT).
