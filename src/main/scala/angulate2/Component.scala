@@ -1,10 +1,11 @@
-// -   Project: angulate2 (https://github.com/jokade/angulate2)
-// Description: angulate2 implementation of Angular's @Component annotation
-//
-// Distributed under the MIT License (see included file LICENSE)
-package biz.enef.angulate2
+//     Project: angulate2 (https://github.com/jokade/angulate2)
+// Description:
 
-import scala.annotation.{compileTimeOnly, StaticAnnotation}
+// Copyright (c) 2015 Johannes.Kastner <jokade@karchedon.de>
+//               Distributed under the MIT License (see included file LICENSE)
+package angulate2
+
+import scala.annotation.{StaticAnnotation, compileTimeOnly}
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
 import scala.scalajs.js
@@ -23,7 +24,7 @@ object Component {
 
   private[angulate2] class Macro(val c: whitebox.Context) extends JsWhiteboxMacroTools {
     import c.universe._
-    lazy val debug = isSet("biz.enef.angulate2.debug.Component")
+    lazy val debug = isSet("angulate2.debug.Component")
 
     val annotationParamNames =
       Seq("selector",
@@ -54,11 +55,11 @@ object Component {
       val tree =
         q"""{@scalajs.js.annotation.JSExport($fullName)
              @scalajs.js.annotation.JSExportAll
-             @biz.enef.angulate2.Angular.AngulateAnnotated($jsAnnot)
+             @angulate2.Angular.AngulateAnnotated($jsAnnot)
              class $name ( ..$params ) extends ..$parents { ..$body }
              @scalajs.js.annotation.JSExport($objName)
              object ${name.toTermName} {
-               import biz.enef.angulate2.annotations._
+               import angulate2.annotations._
                @scalajs.js.annotation.JSExport
                def annotations() = $annots
                @scalajs.js.annotation.JSExport

@@ -2,7 +2,7 @@
 // Description: Façade for the Angular2 ViewAnnotation
 //
 // Distributed under the MIT License (see included file LICENSE)
-package biz.enef.angulate2.annotations
+package angulate2.annotations
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName

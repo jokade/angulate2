@@ -1,11 +1,13 @@
-// -   Project: angulate2 (https://github.com/jokade/angulate2)
-// Description: Provides macro utility functions
-//
-// Distributed under the MIT License (see included file LICENSE)
-package biz.enef.angulate2
+//     Project: angulate2 (https://github.com/jokade/angulate2)
+// Description:
+
+// Copyright (c) 2015 Johannes.Kastner <jokade@karchedon.de>
+//               Distributed under the MIT License (see included file LICENSE)
+package angulate2
+
+import biz.enef.smacrotools.{BlackboxMacroTools, CommonMacroTools, WhiteboxMacroTools}
 
 import scala.language.reflectiveCalls
-import biz.enef.smacrotools.{WhiteboxMacroTools, CommonMacroTools, BlackboxMacroTools}
 
 trait JsCommonMacroTools {
   this: CommonMacroTools =>

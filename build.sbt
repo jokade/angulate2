@@ -1,4 +1,3 @@
-//import SonatypeKeys._
 
 lazy val commonSettings = Seq(
   organization := "biz.enef",
@@ -24,7 +23,6 @@ lazy val angulate2 = project.in(file(".")).
   aggregate(plugin).
   settings(commonSettings: _*).
   settings(publishingSettings: _*).
-  //settings(sonatypeSettings: _*).
   settings( 
     name := "angulate2",
     addCompilerPlugin("org.scalamacros" % "paradise" % "2.0.1" cross CrossVersion.full),
@@ -99,5 +97,5 @@ lazy val publishingSettings = Seq(
 )
  
 lazy val angulateDebugFlags = Seq(
-).map( f => s"-Xmacro-settings:biz.enef.angulate2.debug.$f" )
+).map( f => s"-Xmacro-settings:angulate2.debug.$f" )
 

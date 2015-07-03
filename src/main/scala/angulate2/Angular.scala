@@ -1,24 +1,12 @@
-// -   Project: angulate2 (https://github.com/jokade/angulate2)
-// Description: Façade trait and rich wrapper for the Angular2 angular object
-//
-// Distributed under the MIT License (see included file LICENSE)
-package biz.enef.angulate2
+//     Project: angulate2 (https://github.com/jokade/angulate2)
+// Description:
 
-import biz.enef.smacrotools.BlackboxMacroTools
+// Copyright (c) 2015 Johannes.Kastner <jokade@karchedon.de>
+//               Distributed under the MIT License (see included file LICENSE)
+package angulate2
 
 import scala.annotation.StaticAnnotation
 import scala.scalajs.js
-
-trait Angular extends js.Object {
-
-  def bootstrap(appComponentType: js.Object) : Unit = js.native
-
-  def bootstrap(appComponentType: js.Dynamic) : Unit = js.native
-
-  //--------------- DIRECTIVES -----------------
-  def For: js.Object = js.native
-  def If: js.Object = js.native
-}
 
 object Angular {
   import scala.reflect.macros.blackbox
@@ -56,3 +44,13 @@ object Angular {
   class AngulateAnnotated(annotation: String) extends StaticAnnotation
 }
 
+trait Angular extends js.Object {
+
+  def bootstrap(appComponentType: js.Object) : Unit = js.native
+
+  def bootstrap(appComponentType: js.Dynamic) : Unit = js.native
+
+  //--------------- DIRECTIVES -----------------
+  def For: js.Object = js.native
+  def If: js.Object = js.native
+}

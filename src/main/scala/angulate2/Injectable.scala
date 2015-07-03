@@ -1,13 +1,13 @@
-// -   Project: angulate2 (https://github.com/jokade/angulate2)
-// Description: angulate2 implementation of Angular's @Injectable annotation
-//
-// Distributed under the MIT License (see included file LICENSE)
-package biz.enef.angulate2
+//     Project: angulate2 (https://github.com/jokade/angulate2)
+// Description:
+
+// Copyright (c) 2015 Johannes.Kastner <jokade@karchedon.de>
+//               Distributed under the MIT License (see included file LICENSE)
+package angulate2
 
 import scala.annotation.StaticAnnotation
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
-import scala.scalajs.js
 
 class Injectable extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro Injectable.Macro.impl
