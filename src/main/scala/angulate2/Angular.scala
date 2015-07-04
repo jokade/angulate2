@@ -17,6 +17,7 @@ object Angular {
 
     @inline def bootstrapWith[T] : Unit = macro Macros.bootstrapWith[T]
 
+    @inline def register[T]: Unit = macro Macros.register[T]
   }
 
 
@@ -31,12 +32,26 @@ object Angular {
       r
     }
 
+    def register[T: c.WeakTypeTag] = {
+      val name = weakTypeOf[T].typeSymbol.fullName
+      val t = selectGlobalDynamic(name)
+      val obj = selectGlobalDynamic(name+"_")
+      val res = q"""{$t.annotations = $obj().annotations()
+           ()
+          }"""
+      res
+    }
+
     private def registerAll(annottees: Map[String,Any]) =
       annottees.toSeq.map{
         case (_,tree:Tree) => tree
       }
 
     def jsClassOf[T: c.WeakTypeTag] = selectGlobalDynamic[T]
+
+    // TODO: should we use this instead of jsClassOf?
+    def jsClassArray[T: c.WeakTypeTag] =
+      q"scalajs.js.Array(${selectGlobalDynamic[T]})"
   }
 
   /**

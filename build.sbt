@@ -45,7 +45,6 @@ lazy val plugin = project.
     addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.2")
   )
 
-
 lazy val tests = project.
   dependsOn(angulate2).
   enablePlugins(ScalaJSPlugin).
@@ -57,11 +56,14 @@ lazy val tests = project.
     scalaJSStage in Test := FastOptStage,
     testFrameworks += new TestFramework("utest.runner.Framework"),
     requiresDOM := true,
-    libraryDependencies ++= Seq("com.lihaoyi" %%% "utest" % "0.3.0" % "test",
-      "be.doeraene" %%% "scalajs-jquery" % "0.8.0"),
+    libraryDependencies ++= Seq(
+      "com.lihaoyi" %%% "utest" % "0.3.0" % "test",
+      "org.querki" %%% "jquery-facade" % "0.6"
+    ),
     jsDependencies += RuntimeDOM,
+    jsDependencies += ProvidedJS / "angular2-alpha28.sfx.dev.js",
     scalacOptions ++= angulateDebugFlags
-    //scalacOptions += "-Xmacro-settings:biz.enef.angulate2.debug.Component"
+    //scalacOptions += "-Xmacro-settings:angulate2.debug.Component"
   )
 
 
