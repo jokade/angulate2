@@ -18,6 +18,8 @@ trait JsCommonMacroTools {
 
   def selectGlobalDynamic(fullName: String) : Tree = fullName.split("\\.").
     foldLeft(q"scalajs.js.Dynamic.global":Tree)((b,name) => q"""$b.selectDynamic($name)""")
+
+
 }
 
 abstract class JsBlackboxMacroTools extends BlackboxMacroTools with JsCommonMacroTools

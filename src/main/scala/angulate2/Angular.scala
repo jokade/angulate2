@@ -70,4 +70,5 @@ trait Angular extends js.Object {
   //--------------- DIRECTIVES -----------------
   def NgFor: js.Object = js.native
   def NgIf: js.Object = js.native
+
 }

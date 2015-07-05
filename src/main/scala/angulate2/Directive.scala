@@ -1,5 +1,5 @@
 //     Project: angulate2 (https://github.com/jokade/angulate2)
-// Description: Angular2 @Component macro annotation
+// Description: Angular2 @Directive macro annotation
 
 // Copyright (c) 2015 Johannes.Kastner <jokade@karchedon.de>
 //               Distributed under the MIT License (see included LICENSE file)
@@ -10,31 +10,30 @@ import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
 import scala.scalajs.js
 
-// NOTE: keep the constructor parameter list and Component.Macro.annotationParamNames in sync!
+// NOTE: keep the constructor parameter list and Directive.Macro.annotationParamNames in sync!
 @compileTimeOnly("enable macro paradise to expand macro annotations")
-class Component(selector: String,
+class Directive(selector: String,
                 template: String = null,
                 directives: js.Array[js.Any] = null,
                 appInjector: js.Array[js.Any] = null) extends StaticAnnotation {
-  def macroTransform(annottees: Any*): Any = macro Component.Macro.impl
+  def macroTransform(annottees: Any*): Any = macro Directive.Macro.impl
 }
 
 
-object Component {
+object Directive {
 
   private[angulate2] class Macro(val c: whitebox.Context) extends JsWhiteboxMacroTools {
+
     import c.universe._
-    lazy val debug = isSet("angulate2.debug.Component")
+
+    lazy val debug = isSet("angulate2.debug.Directive")
 
     val annotationParamNames =
-      Seq("selector",
-          "template",
-          "directives",
-          "appInjector")
+      Seq("selector")
 
-    def impl(annottees: c.Expr[Any]*) : c.Expr[Any] = annottees.map(_.tree).toList match {
+    def impl(annottees: c.Expr[Any]*): c.Expr[Any] = annottees.map(_.tree).toList match {
       case (classDecl: ClassDef) :: Nil => modifiedDeclaration(classDecl)
-      case _ => c.abort(c.enclosingPosition, "Invalid annottee for @Component")
+      case _ => c.abort(c.enclosingPosition, "Invalid annottee for @Directive")
     }
 
 
@@ -51,6 +50,7 @@ object Component {
       val objName = fullName+"_"
 
       val jsAnnot = s"$fullName.annotations = $objName().annotations(); $fullName.parameters = $objName().parameters();"
+      //val jsAnnot = s"$fullName.annotations = $objName().annotations();"
 
       val tree =
         q"""{@scalajs.js.annotation.JSExport($fullName)
@@ -75,10 +75,10 @@ object Component {
 
     def annotations(params: Map[String,Option[Tree]]) = {
       val groups = params.collect {
-        case ("appInjector",Some(rhs)) => ("appInjector",c.typecheck(rhs))
+        case ("appInjector",Some(rhs)) => ("injectables",c.typecheck(rhs))
         case (name, Some(rhs)) => (name, rhs)
       }.groupBy {
-        case ("selector"|"appInjector", _) => "ComponentAnnotation"
+        case ("selector", _) => "DirectiveAnnotation"
         case ("template"|"directives", _) => "ViewAnnotation"
         case _ => ???
       }.map{
@@ -103,5 +103,5 @@ object Component {
 
   }
 
-
 }
+

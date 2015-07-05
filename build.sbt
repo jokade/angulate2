@@ -107,5 +107,6 @@ lazy val publishingSettings = Seq(
 )
  
 lazy val angulateDebugFlags = Seq(
+  "Directive"
 ).map( f => s"-Xmacro-settings:angulate2.debug.$f" )
 

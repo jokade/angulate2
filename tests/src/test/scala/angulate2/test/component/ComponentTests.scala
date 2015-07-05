@@ -1,5 +1,5 @@
 //     Project: angulate2 (https://github.com/jokade/angulate2)
-// Description: 
+// Description: Test cases for @Component
 
 // Copyright (c) 2015 Johannes.Kastner <jokade@karchedon.de>
 //               Distributed under the MIT License (see included file LICENSE)
@@ -19,20 +19,20 @@ object ComponentTests extends TestBase {
   val tests = TestSuite {
 
     'simple-{
-      withHtml("""<comp1 id="test1"></comp1>"""){
+      withHtml("""<comp1 id="comp1"></comp1>"""){
         assert( jq("#test").children.length == 0 )
         angular.bootstrapWith[Component1]
-        laterWithChildren("#test1"){ c =>
+        laterWithChildren("#comp1"){ c =>
           assert( c.first().text() == "Hello, world!" )
         }
       }
     }
 
     'withDirectives-{
-      withHtml("""<comp2 id="test2"></comp2>"""){
+      withHtml("""<comp2 id="comp2"></comp2>"""){
         assert( jq("#test2").children.length == 0 )
         angular.bootstrapWith[Component2]
-        laterWithChildren("#test2"){ c =>
+        laterWithChildren("#comp2"){ c =>
           assert( c.length == 4 ) // the first element is the template
         }
       }
