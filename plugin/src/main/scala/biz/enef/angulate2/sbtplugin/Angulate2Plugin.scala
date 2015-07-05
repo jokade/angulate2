@@ -7,6 +7,8 @@ package biz.enef.angulate2.sbtplugin
 import sbt.Keys._
 import sbt._
 import org.scalajs.sbtplugin.ScalaJSPlugin
+import org.scalajs.sbtplugin.impl.{DependencyBuilders, ScalaJSGroupID}
+
 
 object Angulate2Plugin extends sbt.AutoPlugin {
   import Angulate2PluginInternal._
@@ -22,14 +24,13 @@ object Angulate2Plugin extends sbt.AutoPlugin {
 
   override def projectSettings = Seq(
     addCompilerPlugin("org.scalamacros" % "paradise" % "2.0.1" cross CrossVersion.full),
+    libraryDependencies += DepBuilder.toScalaJSGroupID("biz.enef") %%% "angulate2" % Version.angulateVersion,
     angulateAnnotationsFile := (crossTarget in compile).value / "annotations.js",
     angulateAnnotated := discoverAnnotations((compile in Compile).value),
-    angulateWriteAnnotations <<= (angulateAnnotationsFile, angulateAnnotated, streams) map {
-      (file: File, annotations: Iterable[String],streams: TaskStreams) =>
-        streams.log.info(s"Writing Angular annotations to $file")
-        IO.write(file,annotations.mkString("\n"))
-    },
-    (fastOptJS in Compile) <<= (fastOptJS in Compile).dependsOn(angulateWriteAnnotations)
+    angulateWriteAnnotations <<= (angulateAnnotationsFile, angulateAnnotated, streams) map writeAnnotations,
+    (fastOptJS in Compile) <<= (fastOptJS in Compile).dependsOn(angulateWriteAnnotations),
+    (fullOptJS in Compile) <<= (fullOptJS in Compile).dependsOn(angulateWriteAnnotations)
   )
 
+  private object DepBuilder extends DependencyBuilders
 }

@@ -4,21 +4,22 @@
 // Distributed under the MIT License (see included file LICENSE)
 package biz.enef.angulate2.sbtplugin
 
+import sbt.Keys.TaskStreams
 import sbt._
 import sbt.inc.Analysis
 import xsbti.api.{Definition, Projection}
 
 object Angulate2PluginInternal {
 
-  def writeAnnotations(file: String, annotations: Iterable[String]) : Unit = {
-    println("WRITING ANNOTATIONS")
-  }
-
   def discoverAnnotations(analysis: Analysis) : Iterable[String] = {
-
     Tests.allDefs(analysis).collect {
       case AngulateAnnotated(annot) => annot
     }
+  }
+
+  def writeAnnotations(file: File, annotations: Iterable[String],streams: TaskStreams): Unit = {
+    streams.log.info(s"Writing Angular annotations to $file")
+    IO.write(file,annotations.mkString("\n"))
   }
 
   object AngulateAnnotated {
