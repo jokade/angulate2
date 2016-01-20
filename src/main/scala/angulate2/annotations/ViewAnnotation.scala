@@ -8,6 +8,7 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
 
 @JSName("angular.ViewAnnotation")
+@js.native
 class ViewAnnotation(annotations: js.Any) extends js.Object
 
 // TODO: is there a more efficient way to create the annotation object? In particular w.r.t. the usage in macros ...

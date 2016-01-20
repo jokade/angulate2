@@ -1,8 +1,8 @@
 
 lazy val commonSettings = Seq(
-  organization := "biz.enef",
+  organization := "de.surfice",
   version := "0.1-SNAPSHOT",
-  scalaVersion := "2.11.6",
+  scalaVersion := "2.11.7",
   scalacOptions ++= Seq("-deprecation","-unchecked","-feature","-language:implicitConversions","-Xlint"),
   autoCompilerPlugins := true,
   //addCompilerPlugin("com.lihaoyi" %% "acyclic" % "0.1.2"),
@@ -42,11 +42,11 @@ lazy val plugin = project.
     description := "sbt plugin for angulate2 (Angular2 bindings for Scala.js)",
     sbtPlugin := true,
     scalaVersion := "2.10.5",
-    addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.3"),
+    addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.5"),
     sourceGenerators in Compile += Def.task {
       val file = (sourceManaged in Compile).value / "Version.scala"
       IO.write(file,
-        s"""package biz.enef.angulate2.sbtplugin
+        s"""package de.surfice.angulate2.sbtplugin
           |object Version { val angulateVersion = "${version.value}" }
         """.stripMargin)
       Seq(file)

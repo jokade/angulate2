@@ -8,6 +8,7 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
 
 @JSName("angular.ComponentAnnotation")
+@js.native
 class ComponentAnnotation(annotations: js.Any) extends js.Object
 
 object ComponentAnnotation {

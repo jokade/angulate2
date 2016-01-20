@@ -15,7 +15,7 @@ Add the following lines to your `project/plugins.sbt`:
 ```scala
 resolvers += Resolver.sonatypeRepo("snapshots")
 
-addSbtPlugin("biz.enef" % "sbt-angulate2" % "0.1-SNAPSHOT")
+addSbtPlugin("de.surfice" % "sbt-angulate2" % "0.1-SNAPSHOT")
 ```
 and this to your `build.sbt`:
 ```scala

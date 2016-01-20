@@ -61,6 +61,7 @@ object Angular {
 }
 
 @JSName("angular")
+@js.native
 trait Angular extends js.Object {
 
   def bootstrap(appComponentType: js.Object) : Unit = js.native

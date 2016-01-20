@@ -2,7 +2,7 @@
 // Description:
 //
 // Distributed under the MIT License (see included file LICENSE)
-package biz.enef.angulate2.sbtplugin
+package de.surfice.angulate2.sbtplugin
 
 import sbt.Keys.TaskStreams
 import sbt._

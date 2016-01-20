@@ -9,6 +9,7 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
 
 @JSName("angular.DirectiveAnnotation")
+@js.native
 class DirectiveAnnotation(annotations: js.Any) extends js.Object
 
 object DirectiveAnnotation {

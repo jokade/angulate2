@@ -2,7 +2,7 @@
 // Description: sbt plugin for angulate2
 //
 // Distributed under the MIT License (see included file LICENSE)
-package biz.enef.angulate2.sbtplugin
+package de.surfice.angulate2.sbtplugin
 
 import sbt.Keys._
 import sbt._
@@ -24,7 +24,7 @@ object Angulate2Plugin extends sbt.AutoPlugin {
 
   override def projectSettings = Seq(
     addCompilerPlugin("org.scalamacros" % "paradise" % "2.0.1" cross CrossVersion.full),
-    libraryDependencies += DepBuilder.toScalaJSGroupID("biz.enef") %%% "angulate2" % Version.angulateVersion,
+    libraryDependencies += DepBuilder.toScalaJSGroupID("de.surfice") %%% "angulate2" % Version.angulateVersion,
     angulateAnnotationsFile := (crossTarget in compile).value / "annotations.js",
     angulateAnnotated := discoverAnnotations((compile in Compile).value),
     angulateWriteAnnotations <<= (angulateAnnotationsFile, angulateAnnotated, streams) map writeAnnotations,
