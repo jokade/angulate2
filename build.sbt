@@ -69,7 +69,10 @@ lazy val tests = project.
       "org.querki" %%% "jquery-facade" % "0.6"
     ),
     jsDependencies += RuntimeDOM,
-    jsDependencies += ProvidedJS / "angular2-alpha28.sfx.dev.js",
+    jsDependencies ++= Seq(
+      "org.webjars.npm" % "angular2" % "2.0.0-beta.1" / "bundles/angular2-polyfills.js",
+      "org.webjars.npm" % "angular2" % "2.0.0-beta.1" / "bundles/angular2-all.umd.js"
+    ),
     scalacOptions ++= angulateDebugFlags
     //scalacOptions += "-Xmacro-settings:angulate2.debug.Component"
   )

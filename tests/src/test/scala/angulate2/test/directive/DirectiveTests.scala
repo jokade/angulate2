@@ -16,17 +16,17 @@ object DirectiveTests extends TestBase {
 
   var data: Any = null
 
-  angular.register[DirTest1]
-  angular.register[Directive1]
-  angular.register[DirTest2]
-  angular.register[Directive2]
+  ng.register[DirTest1]
+  ng.register[Directive1]
+  ng.register[DirTest2]
+  ng.register[Directive2]
 
   val tests = TestSuite {
     data = null
 
     'simple-{
       withHtml("""<dirtest1 id="dir1"></dirtest1>""") {
-        angular.bootstrapWith[DirTest1]
+        ng.bootstrapWith[DirTest1]
         invokeLater( assert( data == "dir1" ) )
       }
     }

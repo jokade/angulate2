@@ -24,4 +24,12 @@ trait JsCommonMacroTools {
 
 abstract class JsBlackboxMacroTools extends BlackboxMacroTools with JsCommonMacroTools
 
-abstract class JsWhiteboxMacroTools extends WhiteboxMacroTools with JsCommonMacroTools
+abstract class JsWhiteboxMacroTools extends WhiteboxMacroTools with JsCommonMacroTools {
+  import c.universe._
+
+  def getJSBaseClass(parents: Iterable[c.Tree]) = parents match {
+        case Seq(x) if x.toString == "scala.AnyRef" => Seq(tq"scalajs.js.Object")
+        case x => x
+      }
+}
+

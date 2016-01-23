@@ -29,10 +29,12 @@ object Injectable {
       val parts = extractClassParts(classDecl)
       import parts._
 
+      val base = getJSBaseClass(parents)
+
       val tree =
         q"""{@scalajs.js.annotation.JSExport($fullName)
-             @scalajs.js.annotation.JSExportAll
-             class $name ( ..$params ) extends ..$parents { ..$body }
+             @scalajs.js.annotation.ScalaJSDefined
+             class $name ( ..$params ) extends ..$base { ..$body }
             }"""
 
       c.Expr(tree)

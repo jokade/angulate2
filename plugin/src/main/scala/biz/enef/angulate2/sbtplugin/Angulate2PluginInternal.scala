@@ -19,7 +19,9 @@ object Angulate2PluginInternal {
 
   def writeAnnotations(file: File, annotations: Iterable[String],streams: TaskStreams): Unit = {
     streams.log.info(s"Writing Angular annotations to $file")
-    IO.write(file,annotations.mkString("\n"))
+    // TODO: currently we need to replace \' quotes; find out why/where quotation of ' occurs...
+    val annots = annotations.map( _.replaceAll("\\\\'","'")).mkString("\n")
+    IO.write(file,annots)
   }
 
   object AngulateAnnotated {

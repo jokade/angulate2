@@ -8,8 +8,10 @@ import scala.scalajs.js
 
 package object angulate2 {
 
-  final val angular : Angular = js.Dynamic.global.angular.asInstanceOf[Angular]
+  def @@[T1] : js.Array[js.Any] = macro impl.Macros.jsClassArray1[T1]
+  def @@[T1,T2] : js.Array[js.Any] = macro impl.Macros.jsClassArray2[T1,T2]
+  def @@[T1,T2,T3] : js.Array[js.Any] = macro impl.Macros.jsClassArray3[T1,T2,T3]
+  def @@[T1,T2,T3,T4] : js.Array[js.Any] = macro impl.Macros.jsClassArray4[T1,T2,T3,T4]
 
-  def @@[T] : js.Any = macro Angular.Macros.jsClassOf[T]
-
+  def @@(items: String*) : js.Array[String] = js.Array(items:_*)
 }

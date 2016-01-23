@@ -13,15 +13,15 @@ import scala.scalajs.js
 
 object ComponentTests extends TestBase {
 
-  angular.register[Component1]
-  angular.register[Component2]
+  ng.register[Component1]
+  ng.register[Component2]
 
   val tests = TestSuite {
 
     'simple-{
       withHtml("""<comp1 id="comp1"></comp1>"""){
         assert( jq("#test").children.length == 0 )
-        angular.bootstrapWith[Component1]
+        ng.bootstrapWith[Component1]
         laterWithChildren("#comp1"){ c =>
           assert( c.first().text() == "Hello, world!" )
         }
@@ -31,7 +31,7 @@ object ComponentTests extends TestBase {
     'withDirectives-{
       withHtml("""<comp2 id="comp2"></comp2>"""){
         assert( jq("#test2").children.length == 0 )
-        angular.bootstrapWith[Component2]
+        ng.bootstrapWith[Component2]
         laterWithChildren("#comp2"){ c =>
           assert( c.length == 4 ) // the first element is the template
         }
@@ -52,7 +52,7 @@ class Component1
 @Component(
   selector = "comp2",
   template = """<span *ng-for="#name of names">{{name}}</span>""",
-  directives = js.Array(angular.NgFor)
+  directives = js.Array(ng.NgFor)
 )
 class Component2 {
   val names = js.Array("Luke","Lea","Han")
