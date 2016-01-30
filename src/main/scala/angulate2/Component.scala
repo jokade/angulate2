@@ -6,6 +6,7 @@
 package angulate2
 
 import scala.annotation.{StaticAnnotation, compileTimeOnly}
+import scala.collection.Searching.search
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
 import scala.scalajs.js
@@ -17,6 +18,7 @@ class Component(selector: String,
                 outputs: js.Array[String] = null,
                 providers: js.Array[js.Any] = null,
                 template: String = null,
+                templateUrl: String = null,
                 directives: js.Array[js.Any] = null,
                 styles: js.Array[String] = null) extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro Component.Macro.impl
@@ -33,6 +35,7 @@ object Component {
       "outputs",
       "providers",
       "template",
+      "templateUrl",
       "directives",
       "styles")
 
@@ -51,7 +54,7 @@ object Component {
       }
 
       val parameterTypes = params map {
-        case q"$mods val $name: $tpe = $e" => tpe.toString
+        case q"$mods val $name: $tpe = $e" => getQualifiedTypeName(tpe)
       } mkString(",")
 
       val angulateAnnotation =
