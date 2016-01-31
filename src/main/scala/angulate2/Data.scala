@@ -1,4 +1,4 @@
-//     Project: angulate2
+//     Project: angulate2 (https://github.com/jokade/angulate2)
 // Description: Angulate2 extension for definition of data objects/classes via an @Data annotation
 
 // Copyright (c) 2016 Johannes.Kastner <jokade@karchedon.de>
@@ -8,8 +8,29 @@ package angulate2
 import scala.annotation.{StaticAnnotation, compileTimeOnly}
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
-import scala.scalajs.js
 
+/**
+ * Annotation for case classes to mark them as a pure JavaScript data object.
+ *
+ * @example
+ * {{{
+ * @Data
+ * case class Foo(id: Int, var bar: String)
+ * }}}
+ * is expanded to
+ * {{{
+ * @js.native
+ * trait Foo extends js.Object {
+ *   val id: Int = js.native
+ *   var bar: String = js.native
+ * }
+ *
+ * object Foo {
+ *   def apply(id: Int, bar: String): Foo =
+ *     js.Dynamic.literal(id = id, bar = bar).asInstanceOf[Foo]
+ * }
+ * }}}
+ */
 @compileTimeOnly("enable macro paradise to expand macro annotations")
 class Data extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro Data.Macro.impl
@@ -21,11 +42,6 @@ object Data {
 
     import c.universe._
 
-    lazy val debug = isSet("angulate2.debug.Data")
-
-    //    val annotationParamNames = Seq(
-    //      "styles")
-
     def impl(annottees: c.Expr[Any]*): c.Expr[Any] = annottees.map(_.tree).toList match {
       case (classDecl: ClassDef) :: Nil => modifiedDeclaration(classDecl)
       case _ => c.abort(c.enclosingPosition, "Invalid annottee for @Data")
@@ -34,6 +50,8 @@ object Data {
     def modifiedDeclaration(classDecl: ClassDef) = {
       val parts = extractClassParts(classDecl)
       import parts._
+
+      val showExpansion = getDebugConfig(modifiers).showExpansion
 
       val members = params map {
         case q"$mods val $name: $tpe = $rhs" => ("val",name,tpe)
@@ -59,7 +77,7 @@ object Data {
               }"""
         } else c.abort(c.enclosingPosition,"@Data may only be used on case classes")
 
-      if(debug) printTree(tree)
+      if(showExpansion) printTree(tree)
 
       c.Expr[Any](tree)
     }

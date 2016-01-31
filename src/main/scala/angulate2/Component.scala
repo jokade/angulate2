@@ -6,7 +6,6 @@
 package angulate2
 
 import scala.annotation.{StaticAnnotation, compileTimeOnly}
-import scala.collection.Searching.search
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
 import scala.scalajs.js
@@ -27,7 +26,6 @@ class Component(selector: String,
 object Component {
   private[angulate2] class Macro(val c: whitebox.Context) extends JsWhiteboxMacroTools {
     import c.universe._
-    lazy val debug = isSet("angulate2.debug.Component")
 
     val annotationParamNames = Seq(
       "selector",
@@ -47,6 +45,8 @@ object Component {
     def modifiedDeclaration(classDecl: ClassDef) = {
       val parts = extractClassParts(classDecl)
       import parts._
+
+      val showExpansion = getDebugConfig(modifiers).showExpansion
 
       val objName = fullName + "_"
       val annots = extractAnnotationParameters(c.prefix.tree,annotationParamNames) collect {
@@ -77,7 +77,7 @@ object Component {
             }
          """
 
-      if(debug) printTree(tree)
+      if(showExpansion) printTree(tree)
 
       c.Expr[Any](tree)
     }

@@ -19,6 +19,16 @@ trait JsCommonMacroTools {
   def selectGlobalDynamic(fullName: String) : Tree = fullName.split("\\.").
     foldLeft(q"scalajs.js.Dynamic.global":Tree)((b,name) => q"""$b.selectDynamic($name)""")
 
+  def getDebugConfig(modifiers: Modifiers): debug.DebugConfig = modifiers.annotations collectFirst {
+    case d @ Apply((q"new debug",_)) =>
+      val args = extractAnnotationParameters(d:Tree,Seq("showExpansion"))
+      debug.DebugConfig(args("showExpansion") match {
+        case None => true
+        case Some(q"false") => false
+        case Some(q"true") => true
+        case Some(x) => c.abort(c.enclosingPosition,s"Invalid value for @debug parameter showExpansion: $x (must be true or false)")
+      })
+  } getOrElse(debug.defaultDebugConfig)
 
 }
 

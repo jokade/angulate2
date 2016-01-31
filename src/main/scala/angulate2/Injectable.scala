@@ -1,5 +1,5 @@
 //     Project: angulate2 (https://github.com/jokade/angulate2)
-// Description:
+// Description: Angular2 @Injectable annotation.
 
 // Copyright (c) 2015 Johannes.Kastner <jokade@karchedon.de>
 //               Distributed under the MIT License (see included file LICENSE)
@@ -29,6 +29,8 @@ object Injectable {
       val parts = extractClassParts(classDecl)
       import parts._
 
+      val showExpansion = getDebugConfig(modifiers).showExpansion
+
       val base = getJSBaseClass(parents)
 
       val tree =
@@ -36,6 +38,8 @@ object Injectable {
              @scalajs.js.annotation.ScalaJSDefined
              class $name ( ..$params ) extends ..$base { ..$body }
             }"""
+
+      if(showExpansion) printTree(tree)
 
       c.Expr(tree)
     }
