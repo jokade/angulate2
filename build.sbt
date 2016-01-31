@@ -15,11 +15,11 @@ lazy val commonSettings = Seq(
       }))
 )
 
-lazy val macros = RootProject(file("../smacrotools"))
+//lazy val macros = RootProject(file("../smacrotools"))
 
 lazy val angulate2 = project.in(file(".")).
   enablePlugins(ScalaJSPlugin).
-  dependsOn(macros).
+  //dependsOn(macros).
   aggregate(plugin).
   settings(commonSettings: _*).
   settings(publishingSettings: _*).
@@ -29,6 +29,7 @@ lazy val angulate2 = project.in(file(".")).
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "org.scala-js"   %%% "scalajs-dom" % "0.8.0",
+      "biz.enef" %% "smacrotools" % "0.1-SNAPSHOT",
       "be.doeraene" %%% "scalajs-jquery" % "0.8.0" % "provided",
       "de.surfice" %%% "scalajs-rxjs" % "0.1-SNAPSHOT"
     )

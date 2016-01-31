@@ -1,4 +1,8 @@
-# angulate2
+angulate2
+===========
+[![Scala.js](https://www.scala-js.org/assets/badges/scalajs-0.6.5.svg)](https://www.scala-js.org)
+[![Build Status](https://travis-ci.org/jokade/angulate2.svg?branch=master)](https://travis-ci.org/jokade/angulate2)
+
 [Scala.js](http://www.scala-js.org/) bindings for [Angular 2](http://www.angular.io). The goal is to provide an API/ experience very similar to the [TypeScript API](https://angular.io/docs/ts/latest/guide/cheatsheet.html) of Angular 2.
 
 **WARNING: This is work in progress (alpha status)!**  
