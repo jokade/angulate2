@@ -30,7 +30,7 @@ lazy val angulate2 = project.in(file(".")).
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "org.scala-js"   %%% "scalajs-dom" % "0.8.0",
       "biz.enef" %% "smacrotools" % "0.1-SNAPSHOT",
-      "be.doeraene" %%% "scalajs-jquery" % "0.8.0" % "provided",
+      //"be.doeraene" %%% "scalajs-jquery" % "0.8.0" % "provided",
       "de.surfice" %%% "scalajs-rxjs" % "0.1-SNAPSHOT"
     )
   )
@@ -55,30 +55,30 @@ lazy val plugin = project.
     }.taskValue
   )
 
-lazy val tests = project.
-  dependsOn(angulate2).
-  enablePlugins(ScalaJSPlugin).
-  settings(commonSettings: _*).
-  settings(
-    addCompilerPlugin("org.scalamacros" % "paradise" % "2.0.1" cross CrossVersion.full),
-    publish := {},
-    scalacOptions ++= angulateDebugFlags,
-    scalaJSStage in Test := FastOptStage,
-    testFrameworks += new TestFramework("utest.runner.Framework"),
-    requiresDOM := true,
-    libraryDependencies ++= Seq(
-      "com.lihaoyi" %%% "utest" % "0.3.0" % "test",
-      "org.querki" %%% "jquery-facade" % "0.6"
-    ),
-    jsDependencies += RuntimeDOM,
-    jsDependencies ++= Seq(
-      "org.webjars.npm" % "angular2" % "2.0.0-beta.1" / "bundles/angular2-polyfills.js",
-      "org.webjars.npm" % "angular2" % "2.0.0-beta.1" / "bundles/angular2-all.umd.js"
-    ),
-    scalacOptions ++= angulateDebugFlags
-    //scalacOptions += "-Xmacro-settings:angulate2.debug.Component"
-  )
-
+//lazy val tests = project.
+//  dependsOn(angulate2).
+//  enablePlugins(ScalaJSPlugin).
+//  settings(commonSettings: _*).
+//  settings(
+//    addCompilerPlugin("org.scalamacros" % "paradise" % "2.0.1" cross CrossVersion.full),
+//    publish := {},
+//    scalacOptions ++= angulateDebugFlags,
+//    scalaJSStage in Test := FastOptStage,
+//    testFrameworks += new TestFramework("utest.runner.Framework"),
+//    requiresDOM := true,
+//    libraryDependencies ++= Seq(
+//      "com.lihaoyi" %%% "utest" % "0.3.0" % "test",
+//      "org.querki" %%% "jquery-facade" % "0.6"
+//    ),
+//    jsDependencies += RuntimeDOM,
+//    jsDependencies ++= Seq(
+//      "org.webjars.npm" % "angular2" % "2.0.0-beta.1" / "bundles/angular2-polyfills.js",
+//      "org.webjars.npm" % "angular2" % "2.0.0-beta.1" / "bundles/angular2-all.umd.js"
+//    ),
+//    scalacOptions ++= angulateDebugFlags
+//    //scalacOptions += "-Xmacro-settings:angulate2.debug.Component"
+//  )
+//
 
 lazy val publishingSettings = Seq(
   publishMavenStyle := true,
