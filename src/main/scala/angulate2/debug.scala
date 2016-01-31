@@ -9,10 +9,15 @@ import scala.annotation.StaticAnnotation
 
 /**
  * Enables debugging of an annotated angulate2 class during macro expansion and/or at runtime.
+ *
+ * @param showExpansion If true, the expanded macro code is logged during compilation
+ * @param logInstances If true, log every instantiation during runtime
  */
-class debug(showExpansion: Boolean = true) extends StaticAnnotation
+class debug(showExpansion: Boolean = true,
+            logInstances: Boolean = true) extends StaticAnnotation
 
 object debug {
-  private[angulate2] case class DebugConfig(showExpansion: Boolean)
-  private[angulate2] lazy val defaultDebugConfig = DebugConfig(false)
+  private[angulate2] case class DebugConfig(showExpansion: Boolean,
+                                            logInstances: Boolean)
+  private[angulate2] lazy val defaultDebugConfig = DebugConfig(false,false)
 }

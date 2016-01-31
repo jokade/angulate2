@@ -21,15 +21,20 @@ trait JsCommonMacroTools {
 
   def getDebugConfig(modifiers: Modifiers): debug.DebugConfig = modifiers.annotations collectFirst {
     case d @ Apply((q"new debug",_)) =>
-      val args = extractAnnotationParameters(d:Tree,Seq("showExpansion"))
-      debug.DebugConfig(args("showExpansion") match {
-        case None => true
-        case Some(q"false") => false
-        case Some(q"true") => true
-        case Some(x) => c.abort(c.enclosingPosition,s"Invalid value for @debug parameter showExpansion: $x (must be true or false)")
-      })
+      val args = extractAnnotationParameters(d:Tree,Seq("showExpansion","logInstances"))
+      debug.DebugConfig(
+        booleanDebugArg(args,"showExpansion"),
+        booleanDebugArg(args,"logInstances")
+      )
   } getOrElse(debug.defaultDebugConfig)
 
+
+  private def booleanDebugArg(args: Map[String,Option[Tree]], name: String): Boolean = args(name) match {
+    case None => true
+    case Some(q"false") => false
+    case Some(q"true") => true
+    case Some(x) => c.abort(c.enclosingPosition,s"Invalid value for @debug parameter $name: $x (must be true or false)")
+  }
 }
 
 abstract class JsBlackboxMacroTools extends BlackboxMacroTools with JsCommonMacroTools

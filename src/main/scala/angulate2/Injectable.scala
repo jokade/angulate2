@@ -29,17 +29,23 @@ object Injectable {
       val parts = extractClassParts(classDecl)
       import parts._
 
-      val showExpansion = getDebugConfig(modifiers).showExpansion
+      val debug = getDebugConfig(modifiers)
 
       val base = getJSBaseClass(parents)
+      val log =
+        if(debug.logInstances) {
+          val msg = s"created Injectable $fullName:"
+          q"""scalajs.js.Dynamic.global.console.debug($msg,this)"""
+        }
+        else q""
 
       val tree =
         q"""{@scalajs.js.annotation.JSExport($fullName)
              @scalajs.js.annotation.ScalaJSDefined
-             class $name ( ..$params ) extends ..$base { ..$body }
+             class $name ( ..$params ) extends ..$base { ..$body; $log }
             }"""
 
-      if(showExpansion) printTree(tree)
+      if(debug.showExpansion) printTree(tree)
 
       c.Expr(tree)
     }

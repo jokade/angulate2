@@ -46,7 +46,7 @@ object Component {
       val parts = extractClassParts(classDecl)
       import parts._
 
-      val showExpansion = getDebugConfig(modifiers).showExpansion
+      val debug = getDebugConfig(modifiers)
 
       val objName = fullName + "_"
       val annots = extractAnnotationParameters(c.prefix.tree,annotationParamNames) collect {
@@ -63,12 +63,18 @@ object Component {
           else "")
 
       val base = getJSBaseClass(parents)
+      val log =
+        if(debug.logInstances) {
+          val msg = s"created Component $fullName:"
+          q"""scalajs.js.Dynamic.global.console.debug($msg,this)"""
+        }
+        else q""
 
       val tree =
         q"""{@scalajs.js.annotation.JSExport($fullName)
              @scalajs.js.annotation.ScalaJSDefined
              @angulate2.impl.AngulateAnnotated( $angulateAnnotation )
-             class $name ( ..$params ) extends ..$base { ..$body }
+             class $name ( ..$params ) extends ..$base { ..$body; $log }
              @scalajs.js.annotation.JSExport($objName)
              @scalajs.js.annotation.ScalaJSDefined
              object ${name.toTermName} extends scalajs.js.Object {
@@ -77,7 +83,7 @@ object Component {
             }
          """
 
-      if(showExpansion) printTree(tree)
+      if(debug.showExpansion) printTree(tree)
 
       c.Expr[Any](tree)
     }

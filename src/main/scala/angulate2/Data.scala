@@ -51,7 +51,7 @@ object Data {
       val parts = extractClassParts(classDecl)
       import parts._
 
-      val showExpansion = getDebugConfig(modifiers).showExpansion
+      val debug = getDebugConfig(modifiers)
 
       val members = params map {
         case q"$mods val $name: $tpe = $rhs" => ("val",name,tpe)
@@ -64,6 +64,12 @@ object Data {
       val args = members map ( p => q"${p._2}: ${p._3}" )
       val literalArgs = members map ( p => q"${p._2} = ${p._2}" )
 
+      val log =
+        if(debug.logInstances) {
+          val msg = s"created Data object $fullName:"
+          q"""scalajs.js.Dynamic.global.console.debug($msg,this)"""
+        }
+        else q""
 
       val tree =
         if(isCase) {
@@ -72,12 +78,12 @@ object Data {
               ..$bodyMembers
               }
               object ${name.toTermName} {
-                def apply(..$args) = scalajs.js.Dynamic.literal(..$literalArgs).asInstanceOf[$name]
+                def apply(..$args) = {$log;scalajs.js.Dynamic.literal(..$literalArgs).asInstanceOf[$name]}
               }
               }"""
         } else c.abort(c.enclosingPosition,"@Data may only be used on case classes")
 
-      if(showExpansion) printTree(tree)
+      if(debug.showExpansion) printTree(tree)
 
       c.Expr[Any](tree)
     }
