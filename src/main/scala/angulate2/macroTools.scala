@@ -28,6 +28,18 @@ trait JsCommonMacroTools {
       )
   } getOrElse(debug.defaultDebugConfig)
 
+  // TODO: simpler :)
+  def getDINames(params: Iterable[Tree]): String = {
+    params map {
+      case q"$mods val $name: $tpe = $e" =>
+        val t = c.typecheck(tpe,c.TYPEmode).tpe
+        t.typeSymbol.annotations.map(_.tree).collectFirst{
+          case q"new $name( ..$params )" if name.toString == "scala.scalajs.js.annotation.JSName" => params.head match {
+            case Literal(Constant(x)) => x.toString
+          }
+        }.getOrElse(t.toString)
+    } mkString(",")
+  }
 
   private def booleanDebugArg(args: Map[String,Option[Tree]], name: String): Boolean = args(name) match {
     case None => true

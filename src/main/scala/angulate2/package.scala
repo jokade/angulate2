@@ -14,4 +14,5 @@ package object angulate2 {
   def @@[T1,T2,T3,T4] : js.Array[js.Any] = macro impl.Macros.jsClassArray4[T1,T2,T3,T4]
 
   def @@(items: String*) : js.Array[String] = js.Array(items:_*)
+
 }

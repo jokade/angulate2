@@ -53,9 +53,7 @@ object Component {
         case (name,Some(value)) => q"${Ident(TermName(name))} = $value"
       }
 
-      val parameterTypes = params map {
-        case q"$mods val $name: $tpe = $e" => getQualifiedTypeName(tpe)
-      } mkString(",")
+      val parameterTypes = getDINames(params)
 
       val angulateAnnotation =
         s"$fullName.annotations = [ new ng.core.Component($objName().annotation) ];" +

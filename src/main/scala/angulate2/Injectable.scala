@@ -31,6 +31,8 @@ object Injectable {
 
       val debug = getDebugConfig(modifiers)
 
+      val diArray = s"$fullName.parameters = [[${getDINames(params)}]];"
+
       val base = getJSBaseClass(parents)
       val log =
         if(debug.logInstances) {
@@ -42,6 +44,7 @@ object Injectable {
       val tree =
         q"""{@scalajs.js.annotation.JSExport($fullName)
              @scalajs.js.annotation.ScalaJSDefined
+             @angulate2.impl.AngulateAnnotated( $diArray )
              class $name ( ..$params ) extends ..$base { ..$body; $log }
             }"""
 

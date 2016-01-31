@@ -29,7 +29,8 @@ lazy val angulate2 = project.in(file(".")).
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "org.scala-js"   %%% "scalajs-dom" % "0.8.0",
-      "be.doeraene" %%% "scalajs-jquery" % "0.8.0" % "provided"
+      "be.doeraene" %%% "scalajs-jquery" % "0.8.0" % "provided",
+      "de.surfice" %%% "scalajs-rxjs" % "0.1-SNAPSHOT"
     )
   )
 
