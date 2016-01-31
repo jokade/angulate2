@@ -45,6 +45,7 @@ lazy val plugin = project.
     sbtPlugin := true,
     scalaVersion := "2.10.5",
     resolvers += Resolver.url("bintray-scalajs", url("http://dl.bintray.com/scala-js/scala-js-releases/"))( Resolver.ivyStylePatterns),
+    //resolvers += Resolver.bintrayRepo("scala-js","scala-js-releases"),
     addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.5"),
     sourceGenerators in Compile += Def.task {
       val file = (sourceManaged in Compile).value / "Version.scala"
