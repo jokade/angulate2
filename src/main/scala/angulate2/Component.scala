@@ -1,7 +1,7 @@
 //     Project: angulate2 (https://github.com/jokade/angulate2)
 // Description: Angular2 @Component macro annotation
 
-// Copyright (c) 2015 Johannes.Kastner <jokade@karchedon.de>
+// Copyright (c) 2015, 2016 Johannes.Kastner <jokade@karchedon.de>
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2
 
@@ -53,12 +53,10 @@ object Component {
         case (name,Some(value)) => q"${Ident(TermName(name))} = $value"
       }
 
-      val parameterTypes = getDINames(params)
+      val parameterAnnot = parameterAnnotation(fullName,params)
 
       val angulateAnnotation =
-        s"$fullName.annotations = [ new ng.core.Component($objName().annotation) ];" +
-          (if(parameterTypes!="") s"$fullName.parameters = [[$parameterTypes]];"
-          else "")
+        s"$fullName.annotations = [ new ng.core.Component($objName().annotation) ]; $parameterAnnot"
 
       val base = getJSBaseClass(parents)
       val log =

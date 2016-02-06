@@ -1,7 +1,7 @@
 //     Project: angulate2 (https://github.com/jokade/angulate2)
 // Description: Angular2 @Injectable annotation.
 
-// Copyright (c) 2015 Johannes.Kastner <jokade@karchedon.de>
+// Copyright (c) 2015, 2016 Johannes.Kastner <jokade@karchedon.de>
 //               Distributed under the MIT License (see included file LICENSE)
 package angulate2
 
@@ -31,7 +31,7 @@ object Injectable {
 
       val debug = getDebugConfig(modifiers)
 
-      val diArray = s"$fullName.parameters = [[${getDINames(params)}]];"
+      val diArray = parameterAnnotation(fullName,params)
 
       val base = getJSBaseClass(parents)
       val log =
