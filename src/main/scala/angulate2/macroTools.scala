@@ -19,15 +19,19 @@ trait JsCommonMacroTools {
    *
    * @tparam T
    */
-  def selectGlobalDynamic[T: c.WeakTypeTag] : Tree = selectGlobalDynamic(weakTypeOf[T].typeSymbol.fullName)
+  def selectGlobalDynamic[T: c.WeakTypeTag] : Tree = selectGlobalDynamic( weakTypeOf[T].typeSymbol.fullName )
 
   /**
    * Returns a Tree that represents a type or object (specified by its fully qualified name) as a `js.Dynamic`.
    *
    * @param fullName
    */
-  def selectGlobalDynamic(fullName: String) : Tree = fullName.split("\\.").
-    foldLeft(q"scalajs.js.Dynamic.global":Tree)((b,name) => q"""$b.selectDynamic($name)""")
+  def selectGlobalDynamic(fullName: String) : Tree =
+    (fullName.split("\\.").toList match {
+      case "angulate2" :: xs => "ng" :: xs
+      case xs => xs
+    }).foldLeft(q"scalajs.js.Dynamic.global":Tree)((b,name) => q"""$b.selectDynamic($name)""")
+
 
   def getDebugConfig(modifiers: Modifiers): debug.DebugConfig = modifiers.annotations collectFirst {
     case d @ Apply((q"new debug",_)) =>

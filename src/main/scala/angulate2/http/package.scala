@@ -9,8 +9,4 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
 
 package object http {
-
-  @JSName("ng.http.HTTP_PROVIDERS")
-  @js.native
-  object HTTP_PROVIDERS extends js.Object
 }

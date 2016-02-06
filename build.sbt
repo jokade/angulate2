@@ -20,7 +20,7 @@ lazy val commonSettings = Seq(
 lazy val angulate2 = project.in(file(".")).
   enablePlugins(ScalaJSPlugin).
   //dependsOn(macros).
-  aggregate(plugin).
+  aggregate(plugin,stubs).
   settings(commonSettings: _*).
   settings(publishingSettings: _*).
   settings( 
@@ -53,6 +53,13 @@ lazy val plugin = project.
         """.stripMargin)
       Seq(file)
     }.taskValue
+  )
+
+lazy val stubs = project
+  .settings(commonSettings:_*)
+  .settings(publishingSettings:_*)
+  .settings(
+    name := "angulate2-stubs"
   )
 
 //lazy val tests = project.
