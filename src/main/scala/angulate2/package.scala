@@ -8,6 +8,10 @@ import scala.scalajs.js
 
 package object angulate2 {
 
+  @js.native
+  trait JSClass extends js.Any
+
+  def @#[T]: JSClass = macro impl.Macros.jsClassOf[T]
   def @@[T1] : js.Array[js.Any] = macro impl.Macros.jsClassArray1[T1]
   def @@[T1,T2] : js.Array[js.Any] = macro impl.Macros.jsClassArray2[T1,T2]
   def @@[T1,T2,T3] : js.Array[js.Any] = macro impl.Macros.jsClassArray3[T1,T2,T3]
