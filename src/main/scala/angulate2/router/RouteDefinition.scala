@@ -5,7 +5,8 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2.router
 
-import angulate2.JSClass
+
+import angulate2.impl.JSType
 
 import scala.scalajs.js
 
@@ -13,13 +14,13 @@ import scala.scalajs.js
 trait RouteDefinition extends js.Object {
   def path: js.UndefOr[String] = js.native
   def name: js.UndefOr[String] = js.native
-  def component: js.UndefOr[JSClass] = js.native
+  def component: js.UndefOr[JSType] = js.native
 }
 
 object RDef {
   def apply(path: String = null,
             name: String = null,
-            component: js.Any = null) : RouteDefinition = {
+            component: JSType = null) : RouteDefinition = {
     val d = js.Dynamic.literal()
     if(path!=null)
       d.path = path

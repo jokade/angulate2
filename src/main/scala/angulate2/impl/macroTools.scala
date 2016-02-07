@@ -56,9 +56,9 @@ trait JsCommonMacroTools {
   } getOrElse debug.defaultDebugConfig
 
   // TODO: simpler :)
-  def getDINames(params: Iterable[Tree]): Option[String] =
+  def getDINames(params: Iterable[Tree]): Iterable[String] =
     if(params.isEmpty) None
-    else Some{
+    else
       params map {
         case q"$mods val $name: $tpe = $e" =>
           val t = c.typecheck(tpe,c.TYPEmode).tpe
@@ -67,12 +67,13 @@ trait JsCommonMacroTools {
               case Literal(Constant(x)) => x.toString
             }
           }.getOrElse(t.toString)
-      } mkString ","
-    }
+      }
 
-  def parameterAnnotation(fullClassName: String, params: Iterable[Tree]) : String = getDINames(params) map {
-    s => s"$fullClassName.parameters = [[$s]];"
-  } getOrElse ""
+
+  def parameterAnnotation(fullClassName: String, params: Iterable[Tree]) : String = getDINames(params) match {
+    case Nil => ""
+    case list => list.map( p => "["+p+"]").mkString(s"$fullClassName.parameters = [",",","];")
+  }
 
   private def booleanDebugArg(args: Map[String,Option[Tree]], name: String): Boolean = args(name) match {
     case None => true

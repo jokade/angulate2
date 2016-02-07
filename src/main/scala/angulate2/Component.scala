@@ -65,7 +65,7 @@ object Component {
       val parameterAnnot = parameterAnnotation(fullName,params)
 
       // string to be written to the annotations.js file
-      val angulateAnnotation = s"$fullName.annotations = $objName().annotations"
+      val angulateAnnotation = s"$fullName.annotations = $objName().annotations; $parameterAnnot"
 
       // list of trees to be included in the component's annotation array
       val annotations =

@@ -5,8 +5,6 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2.impl
 
-import angulate2.JSClass
-
 import scala.reflect.macros.blackbox
 
 
@@ -35,7 +33,7 @@ private[angulate2] class Macros(val c: blackbox.Context) extends JsBlackboxMacro
       case (_,tree:Tree) => tree
     }
 
-  def jsClassOf[T: c.WeakTypeTag] = q"${selectGlobalDynamic[T]}.asInstanceOf[angulate2.JSClass]"
+  def jsClassOf[T: c.WeakTypeTag] = q"${selectGlobalDynamic[T]}.asInstanceOf[angulate2.impl.JSType]"
 
   def jsClassArray1[T: c.WeakTypeTag] =
     q"scalajs.js.Array(${selectGlobalDynamic[T]})"
