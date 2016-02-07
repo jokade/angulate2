@@ -16,6 +16,26 @@ import scala.scalajs.js.annotation.JSName
 @js.native
 @JSName("ng.router.RouteParams")
 trait RouteParams extends js.Object {
-  def params: js.Dictionary[String] = js.native
-  def get(param: String): js.UndefOr[String] = js.native
+  def params: js.Dictionary[js.Any] = js.native
+  def get(param: String): Any = js.native
+}
+
+object RouteParams {
+  implicit class RichRouteParams(val rp: RouteParams) extends AnyVal {
+
+    def int(param: String): Int = rp.get(param) match {
+      case s: String => s.toInt
+      case i: Int => i
+    }
+
+    def bool(param: String): Boolean = rp.get(param) match {
+      case s: String => s.toBoolean
+      case b: Boolean => b
+    }
+
+    def str(param: String): String = rp.get(param) match {
+      case s: String => s
+      case x => x.toString
+    }
+  }
 }

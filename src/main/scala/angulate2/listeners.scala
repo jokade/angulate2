@@ -1,5 +1,5 @@
 //     Project: angulate2
-// Description: Façade traits for Angular2 lifecycle listeners.
+// Description: Traits for Angular2 core lifecycle hooks.
 
 // Copyright (c) 2016 Johannes.Kastner <jokade@karchedon.de>
 //               Distributed under the MIT License (see included LICENSE file)

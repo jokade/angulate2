@@ -15,12 +15,14 @@ trait RouteDefinition extends js.Object {
   def path: js.UndefOr[String] = js.native
   def name: js.UndefOr[String] = js.native
   def component: js.UndefOr[JSType] = js.native
+  def useAsDefault: Boolean = js.native
 }
 
 object RDef {
   def apply(path: String = null,
             name: String = null,
-            component: JSType = null) : RouteDefinition = {
+            component: JSType = null,
+            useAsDefault: Boolean = false) : RouteDefinition = {
     val d = js.Dynamic.literal()
     if(path!=null)
       d.path = path
@@ -28,6 +30,7 @@ object RDef {
       d.name = name
     if(component!=null)
       d.component = component
+    d.useAsDefault = useAsDefault
     d.asInstanceOf[RouteDefinition]
   }
 }
