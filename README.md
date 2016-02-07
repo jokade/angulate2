@@ -87,6 +87,33 @@ class DisplayComponent(friends: FriendsService) {
   val names = friends.names.mkString(", ")
 }
 ```
+Extensions
+----------
+angulate2 provides some features not present in Angular2:
+
+#### @Data annotation
+All Scala `case class`es annotated with `@Data` will be represented as pure JavaScript data objects when compiled by Scala.js, with all constructor arguments exported to JavaScript. Hence, classes annotated with `@Data` are no longer Scala case classes at runtime (JavaScript), and it is (currently) not possible to use them for pattern matching, or their `copy` function.
+
+It is possible to use `@Data` annotations on case classes defined in shared code (cross-projects), which allows consistent data representation and JSON serialization (e.g. when using [upickle](https://github.com/lihaoyi/upickle-pprint) on the JVM side). If you want to use the `@Data` annotation in shared code, add
+```scala
+  libraryDependencies += "de.surfice" %% "angulate2-stubs" % VERSION
+```
+to the sbt settings of the JVM project.
+
+#### Debugging
+Since angulate2 uses Scala macro annotations to transform classes at compile time, it is sometimes useful to inspect the generated code. To enable logging of the generated code to, you can annotate a class with `@debug`. This annotation will also print out a logging statement to the browser console whenever the class is instantiated at runtime. You may disable either of these features by explicitly setting the arguments of `@debug` to false. 
+
+
+Status and Known Limitations
+----------------------------
+Angular2 features currently supported by angulate2:
+* Core annotations: `@Component`, `@Injectable` (implemented as Scala macro annotations, i.e. the annotated class will be transformed during compilation)
+* Http API: basic support for `get`, `post`, `put` and `delete`; `Observable` façade traits and extensions provided by [scalajs-rxjs](https://github.com/jokade/scalajs-rxjs).
+* Router API: basic support for @RouteConfig
+
+Beside a lot of Angular2 features currently not accessible from angulate2, there are the following limitations specific to angulate2:
+* Classes annotated with macro annotations (`@Component`,`@Injectable`) currently can not have a Scala companion object.
+
 
 License
 -------
