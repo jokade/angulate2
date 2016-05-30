@@ -27,9 +27,9 @@ class Component(selector: String = null,
 }
 
 object Component {
-  @JSName("ng.core.Component")
-  @js.native
-  class JSAnnot(annots: js.Dynamic) extends js.Object
+//  @JSName("ng.core.Component")
+//  @js.native
+//  class JSAnnot(annots: js.Dynamic) extends js.Object
 
   private[angulate2] class Macro(val c: whitebox.Context) extends JsWhiteboxMacroTools {
     import c.universe._
@@ -69,7 +69,7 @@ object Component {
 
       // list of trees to be included in the component's annotation array
       val annotations =
-        q"new angulate2.Component.JSAnnot(scalajs.js.Dynamic.literal( ..$componentAnnotationParams ))" +: translateAngulateAnnotations(modifiers)
+        q"new angulate2.core.Component(scalajs.js.Dynamic.literal( ..$componentAnnotationParams ))" +: translateAngulateAnnotations(modifiers)
 
       val base = getJSBaseClass(parents)
       val log =
@@ -82,7 +82,8 @@ object Component {
       val tree =
         q"""{@scalajs.js.annotation.JSExport($fullName)
              @scalajs.js.annotation.ScalaJSDefined
-             @angulate2.impl.AngulateAnnotated( $angulateAnnotation )
+             @sjsx.SJSXStatic(1000, $angulateAnnotation )
+             @sjsx.SJSXRequire("angular2/core","ng.core")
              class $name ( ..$params ) extends ..$base { ..$body; $log }
              @scalajs.js.annotation.JSExport($objName)
              @scalajs.js.annotation.ScalaJSDefined

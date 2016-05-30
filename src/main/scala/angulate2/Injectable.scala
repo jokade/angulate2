@@ -46,7 +46,7 @@ object Injectable {
       val tree =
         q"""{@scalajs.js.annotation.JSExport($fullName)
              @scalajs.js.annotation.ScalaJSDefined
-             @angulate2.impl.AngulateAnnotated( $diArray )
+             @sjsx.SJSXStatic(1000, $diArray )
              class $name ( ..$params ) extends ..$base { ..$body; $log }
             }"""
 

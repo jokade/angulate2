@@ -57,7 +57,7 @@ object Directive {
       val tree =
         q"""{@scalajs.js.annotation.JSExport($fullName)
              @scalajs.js.annotation.JSExportAll
-             @angulate2.Angular.AngulateAnnotated($jsAnnot)
+             @de.surfice.sjsannots.SJSAnnotation(1000,$jsAnnot)
              class $name ( ..$params ) extends ..$parents { ..$body }
              @scalajs.js.annotation.JSExport($objName)
              object ${name.toTermName} {

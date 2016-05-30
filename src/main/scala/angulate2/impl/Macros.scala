@@ -47,6 +47,15 @@ private[angulate2] class Macros(val c: blackbox.Context) extends JsBlackboxMacro
   def jsClassArray4[T1: c.WeakTypeTag, T2: c.WeakTypeTag, T3: c.WeakTypeTag, T4: c.WeakTypeTag] =
     q"""scalajs.js.Array(${selectGlobalDynamic[T1]},${selectGlobalDynamic[T2]},${selectGlobalDynamic[T3]},
         ${selectGlobalDynamic[T4]})"""
+
+  def jsClassArray5[T1: c.WeakTypeTag, T2: c.WeakTypeTag, T3: c.WeakTypeTag, T4: c.WeakTypeTag, T5: c.WeakTypeTag] =
+    q"""scalajs.js.Array(${selectGlobalDynamic[T1]},${selectGlobalDynamic[T2]},${selectGlobalDynamic[T3]},
+        ${selectGlobalDynamic[T4]},${selectGlobalDynamic[T5]})"""
+
+  def jsClassArray6[T1: c.WeakTypeTag, T2: c.WeakTypeTag, T3: c.WeakTypeTag, T4: c.WeakTypeTag, T5: c.WeakTypeTag,
+                    T6: c.WeakTypeTag] =
+    q"""scalajs.js.Array(${selectGlobalDynamic[T1]},${selectGlobalDynamic[T2]},${selectGlobalDynamic[T3]},
+        ${selectGlobalDynamic[T4]},${selectGlobalDynamic[T5]},${selectGlobalDynamic[T6]})"""
 }
 
 
