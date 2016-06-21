@@ -5,6 +5,10 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2.router
 
+import sjsx.SJSXRequire
+
+import scala.scalajs.js.annotation.JSName
+
 /**
  * This trait serves as token to inject all directives required for the router service.
  */
@@ -13,6 +17,8 @@ trait ROUTER_DIRECTIVES
 /**
  * This trait serves as token to inject all dependencies required for the router service.
  */
+@SJSXRequire("angular2/core","ng.router")
+@JSName("ng.router.ROUTER_PROVIDERS")
 trait ROUTER_PROVIDERS
 
 /**

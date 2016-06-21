@@ -13,4 +13,9 @@ import scala.scalajs.js.annotation.JSName
 @JSName("ng.core.Component")
 @js.native
 @SJSXRequire("angular2/core","ng.core")
-class Component(config: js.Object) extends js.Object
+class Component(options: js.Object) extends js.Object
+
+@JSName("ng.core.Injectable")
+@js.native
+@SJSXRequire("angular2/core","ng.core")
+class Injectable(options: js.Object) extends js.Object

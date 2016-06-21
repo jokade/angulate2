@@ -5,10 +5,13 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2.router
 
+import sjsx.SJSXRequire
+
 import scala.annotation.StaticAnnotation
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
 
+@SJSXRequire("angular2/router","ng.router")
 class RouteConfig(defs: RouteDefinition*) extends StaticAnnotation
 
 object RouteConfig {

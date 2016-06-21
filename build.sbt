@@ -1,8 +1,9 @@
+val sjsxVersion = "0.3.0-SNAPSHOT"
 
 lazy val commonSettings = Seq(
   organization := "de.surfice",
   version := "0.1-SNAPSHOT",
-  scalaVersion := "2.11.7",
+  scalaVersion := "2.11.8",
   scalacOptions ++= Seq("-deprecation","-unchecked","-feature","-language:implicitConversions","-Xlint"),
   autoCompilerPlugins := true,
   //addCompilerPlugin("com.lihaoyi" %% "acyclic" % "0.1.2"),
@@ -25,12 +26,12 @@ lazy val angulate2 = project.in(file(".")).
   settings(publishingSettings: _*).
   settings( 
     name := "angulate2",
-    addCompilerPlugin("org.scalamacros" % "paradise" % "2.0.1" cross CrossVersion.full),
+    addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "org.scala-js"   %%% "scalajs-dom" % "0.8.0",
-      //"de.surfice" %%% "smacrotools-sjs" % "0.1-SNAPSHOT",
-      "de.surfice" %%% "sjsx" % "0.2-SNAPSHOT",
+      "de.surfice" %%% "smacrotools-sjs" % "0.1-SNAPSHOT",
+      "de.surfice" %%% "sjsx" % sjsxVersion,
       //"be.doeraene" %%% "scalajs-jquery" % "0.8.0" % "provided",
       "de.surfice" %%% "scalajs-rxjs" % "0.1-SNAPSHOT"
     )
@@ -45,8 +46,7 @@ lazy val plugin = project.
     description := "sbt plugin for angulate2 (Angular2 bindings for Scala.js)",
     sbtPlugin := true,
     scalaVersion := "2.10.5",
-    //addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.5"),
-    addSbtPlugin("de.surfice" % "sbt-sjsx" % "0.2-SNAPSHOT"),
+    addSbtPlugin("de.surfice" % "sbt-sjsx" % sjsxVersion),
     sourceGenerators in Compile += Def.task {
       val file = (sourceManaged in Compile).value / "Version.scala"
       IO.write(file,
