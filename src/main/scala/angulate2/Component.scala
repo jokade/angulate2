@@ -51,16 +51,39 @@ object Component {
 
     def modifiedDeclaration(classDecl: ClassDef) = {
       val parts = extractClassParts(classDecl)
+
       import parts._
 
       // load debug annotation values (returns default config, if there is no @debug on this component)
       val debug = getDebugConfig(modifiers)
 
+      val inputStrLiterals = body collect {
+        case q"@Input() var $iName: $iType = $iRhs" => iName.toString
+        case q"@Input($extName) var $iName: $iType = $iRhs" => extName match {
+          case Literal(Constant(value)) => s"$iName:$value"
+          case currentTree => c.abort(currentTree.pos, "@Input() parameter must be a literal String")
+        }
+      }
+
 
       val objName = fullName + "_"
-      val componentAnnotationParams = extractAnnotationParameters(c.prefix.tree,annotationParamNames) collect {
+      val allComponentAnnotationParams = extractAnnotationParameters(c.prefix.tree, annotationParamNames).collect {
         case (name,Some(value)) => q"${Ident(TermName(name))} = $value"
       }
+
+      val (nonInputAnnotationParams, inputAnnotationParams) = allComponentAnnotationParams.partition {
+        case q"inputs = $v" => false
+        case _ => true
+      }
+
+      val inputs = inputAnnotationParams match {
+        case q"inputs = js.Array(..$ins)" :: Nil =>
+          q"inputs = scalajs.js.Array(..${ins ++ inputStrLiterals.map(s => Literal(Constant(s)))})"
+        case _ =>
+          q"inputs = scalajs.js.Array(..$inputStrLiterals)"
+      }
+
+      val componentAnnotationParams = Iterable(inputs) ++ nonInputAnnotationParams
 
       val parameterAnnot = parameterAnnotation(fullName,params)
 
