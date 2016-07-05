@@ -49,14 +49,7 @@ object Component {
       case _ => c.abort(c.enclosingPosition, "Invalid annottee for @Component")
     }
 
-    def modifiedDeclaration(classDecl: ClassDef) = {
-      val parts = extractClassParts(classDecl)
-
-      import parts._
-
-      // load debug annotation values (returns default config, if there is no @debug on this component)
-      val debug = getDebugConfig(modifiers)
-
+    def expandInputs(body: Iterable[Tree], inputAnnotationParams: Iterable[Tree]) = {
       val inputStrLiterals = body collect {
         case q"@Input() var $iName: $iType = $iRhs" => iName.toString
         case q"@Input($extName) var $iName: $iType = $iRhs" => extName match {
@@ -65,6 +58,21 @@ object Component {
         }
       }
 
+      inputAnnotationParams match {
+        case q"inputs = js.Array(..$ins)" :: Nil =>
+          q"inputs = scalajs.js.Array(..${ins ++ inputStrLiterals.map(s => Literal(Constant(s)))})"
+        case _ =>
+          q"inputs = scalajs.js.Array(..$inputStrLiterals)"
+      }
+    }
+
+    def modifiedDeclaration(classDecl: ClassDef) = {
+      val parts = extractClassParts(classDecl)
+
+      import parts._
+
+      // load debug annotation values (returns default config, if there is no @debug on this component)
+      val debug = getDebugConfig(modifiers)
 
       val objName = fullName + "_"
       val allComponentAnnotationParams = extractAnnotationParameters(c.prefix.tree, annotationParamNames).collect {
@@ -76,12 +84,7 @@ object Component {
         case _ => true
       }
 
-      val inputs = inputAnnotationParams match {
-        case q"inputs = js.Array(..$ins)" :: Nil =>
-          q"inputs = scalajs.js.Array(..${ins ++ inputStrLiterals.map(s => Literal(Constant(s)))})"
-        case _ =>
-          q"inputs = scalajs.js.Array(..$inputStrLiterals)"
-      }
+      val inputs = expandInputs(body, inputAnnotationParams)
 
       val componentAnnotationParams = Iterable(inputs) ++ nonInputAnnotationParams
 
