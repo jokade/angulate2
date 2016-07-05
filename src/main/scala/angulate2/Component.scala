@@ -66,6 +66,37 @@ object Component {
       }
     }
 
+    def expandProviders(params: Iterable[Tree], providerAnnotationParams: Iterable[Tree]): Option[Tree] = {
+      val incomingProviders = params.flatMap {
+        case q"$mods val $tname: $tpt ~~ Provider = $expr" => Some(tpt)
+        case q"$mods val $tname: $tpt = $expr" => None
+      }
+
+      val definedProviders = providerAnnotationParams.collect {
+        case q"providers = @@[..$provs]" => provs
+      }.flatten
+
+      val definedProvidersSet = definedProviders.map(_.toString).toSet
+      val filteredIncoming = incomingProviders.filter { inc =>
+        !definedProvidersSet(inc.toString)
+      }
+
+      val finalProviders = definedProviders ++ filteredIncoming
+      if (finalProviders.size > 0) {
+        Some(q"providers = angulate2.@@[..${definedProviders ++ filteredIncoming}]")
+      } else {
+        None
+      }
+    }
+
+    def removeParamTags(params: Iterable[Tree]): Iterable[Tree] = {
+      params.map {
+        case q"$mods val $tname: $tpt ~~ Provider = $expr" =>
+          q"$mods val $tname: $tpt = $expr"
+        case param => param
+      }
+    }
+
     def modifiedDeclaration(classDecl: ClassDef) = {
       val parts = extractClassParts(classDecl)
 
@@ -84,11 +115,21 @@ object Component {
         case _ => true
       }
 
+      val (nonProviderAnnotationParams, providerAnnotationParams) = nonInputAnnotationParams.partition {
+        case q"providers = $v" => false
+        case _ => true
+      }
+
       val inputs = expandInputs(body, inputAnnotationParams)
 
-      val componentAnnotationParams = Iterable(inputs) ++ nonInputAnnotationParams
+      val providers = expandProviders(params, providerAnnotationParams)
 
-      val parameterAnnot = parameterAnnotation(fullName,params)
+      val generatedAnnotationParams = Iterable(inputs) ++ providers
+
+      val componentAnnotationParams = generatedAnnotationParams ++ nonProviderAnnotationParams
+
+      val cleanedParams = removeParamTags(params)
+      val parameterAnnot = parameterAnnotation(fullName, cleanedParams)
 
       // string to be written to the annotations.js file
       val angulateAnnotation = s"$fullName.annotations = $objName().annotations; $parameterAnnot"
@@ -96,6 +137,7 @@ object Component {
       // list of trees to be included in the component's annotation array
       val annotations =
         q"new angulate2.core.Component(scalajs.js.Dynamic.literal( ..$componentAnnotationParams ))" +: translateAngulateAnnotations(modifiers)
+
 
       val base = getJSBaseClass(parents)
       val log =
@@ -110,7 +152,7 @@ object Component {
              @scalajs.js.annotation.ScalaJSDefined
              @sjsx.SJSXStatic(1000, $angulateAnnotation )
              @sjsx.SJSXRequire("angular2/core","ng.core")
-             class $name ( ..$params ) extends ..$base { ..$body; $log }
+             class $name ( ..$cleanedParams ) extends ..$base { ..$body; $log }
              @scalajs.js.annotation.JSExport($objName)
              @scalajs.js.annotation.ScalaJSDefined
              object ${name.toTermName} extends scalajs.js.Object {
@@ -126,5 +168,3 @@ object Component {
 
   }
 }
-
-
