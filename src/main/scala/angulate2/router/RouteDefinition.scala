@@ -22,6 +22,8 @@ object RDef {
   def apply(path: String = null,
             name: String = null,
             component: JSType = null,
+            redirectTo: js.UndefOr[String] = js.undefined,
+            pathMatch: js.UndefOr[String] = js.undefined,
             useAsDefault: Boolean = false) : RouteDefinition = {
     val d = js.Dynamic.literal()
     if(path!=null)
@@ -30,6 +32,10 @@ object RDef {
       d.name = name
     if(component!=null)
       d.component = component
+
+    redirectTo.foreach(d.redirectTo = _)
+    pathMatch.foreach(d.pathMatch = _)
+
     d.useAsDefault = useAsDefault
     d.asInstanceOf[RouteDefinition]
   }
