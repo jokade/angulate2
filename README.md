@@ -5,7 +5,7 @@ angulate2
 
 [Scala.js](http://www.scala-js.org/) bindings for [Angular 2](http://www.angular.io). The goal is to provide an API/ experience very similar to the [TypeScript API](https://angular.io/docs/ts/latest/guide/cheatsheet.html) of Angular 2.
 
-**WARNING: This is work in progress (alpha status)!**  
+**WARNING: This is work in progress (alpha status) and some information in this README is out of date!**
 Most of the features of Angular2 are still missing and the API may change at any time without notice!
 
 For Scala.js bindings to [Angular 1.x](https://angularjs.org) see [scalajs-angulate](https://github.com/jokade/scalajs-angulate).
