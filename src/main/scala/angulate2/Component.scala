@@ -46,6 +46,12 @@ object Component {
       "styles",
       "styleUrls")
 
+    object InputAnnot {
+      def unapply(annotations: Seq[Tree]): Option[Option[Tree]] = findAnnotation(annotations,"Input")
+        .map( t => extractAnnotationParameters(t,Seq("externalName")).apply("externalName") )
+      def unapply(modifiers: Modifiers): Option[Option[Tree]] = unapply(modifiers.annotations)
+    }
+
     def impl(annottees: c.Expr[Any]*) : c.Expr[Any] = annottees.map(_.tree).toList match {
       case (classDecl: ClassDef) :: Nil => modifiedDeclaration(classDecl)
       case _ => c.abort(c.enclosingPosition, "Invalid annottee for @Component")
@@ -60,13 +66,8 @@ object Component {
       val debug = getDebugConfig(modifiers)
 
       val inputStrLiterals = body collect {
-        case q"@Input() var $iName: $iType = $iRhs" => iName.toString
-        case q"@Input($extName) var $iName: $iType = $iRhs" => extName match {
-          case Literal(Constant(value)) => s"$iName:$value"
-          case currentTree => c.abort(currentTree.pos, "@Input() parameter must be a literal String")
-        }
+        case ValDef(InputAnnot(externalName),term,_,_) => externalName.flatMap(extractStringConstant).getOrElse(term.toString)
       }
-
 
       val objName = fullName + "_"
       val allComponentAnnotationParams = extractAnnotationParameters(c.prefix.tree, annotationParamNames).collect {
@@ -79,7 +80,7 @@ object Component {
       }
 
       val inputs = inputAnnotationParams match {
-        case q"inputs = js.Array(..$ins)" :: Nil =>
+        case q"inputs = $call(..$ins)" :: Nil =>
           q"inputs = scalajs.js.Array(..${ins ++ inputStrLiterals.map(s => Literal(Constant(s)))})"
         case _ =>
           q"inputs = scalajs.js.Array(..$inputStrLiterals)"
