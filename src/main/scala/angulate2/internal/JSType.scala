@@ -3,7 +3,7 @@
 
 // Copyright (c) 2016 Johannes.Kastner <jokade@karchedon.de>
 //               Distributed under the MIT License (see included LICENSE file)
-package angulate2.impl
+package angulate2.internal
 
 import scala.scalajs.js
 

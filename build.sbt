@@ -31,9 +31,9 @@ lazy val angulate2 = project.in(file(".")).
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "org.scala-js"   %%% "scalajs-dom" % "0.8.0",
       "de.surfice" %%% "smacrotools-sjs" % "0.1-SNAPSHOT",
-      "de.surfice" %%% "sjsx" % sjsxVersion,
+      "de.surfice" %%% "sjsx" % sjsxVersion
       //"be.doeraene" %%% "scalajs-jquery" % "0.8.0" % "provided",
-      "de.surfice" %%% "scalajs-rxjs" % "0.1-SNAPSHOT"
+      //"de.surfice" %%% "scalajs-rxjs" % "0.1-SNAPSHOT"
     )
   )
 
@@ -45,7 +45,7 @@ lazy val plugin = project.
     name := "sbt-angulate2",
     description := "sbt plugin for angulate2 (Angular2 bindings for Scala.js)",
     sbtPlugin := true,
-    scalaVersion := "2.10.5",
+    scalaVersion := "2.10.6",
     addSbtPlugin("de.surfice" % "sbt-sjsx" % sjsxVersion),
     sourceGenerators in Compile += Def.task {
       val file = (sourceManaged in Compile).value / "Version.scala"

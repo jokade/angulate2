@@ -5,7 +5,7 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2
 
-import angulate2.impl.JsWhiteboxMacroTools
+import angulate2.internal.JsWhiteboxMacroTools
 
 import scala.annotation.{StaticAnnotation, compileTimeOnly}
 import scala.language.experimental.macros
@@ -90,11 +90,11 @@ object Component {
       val parameterAnnot = parameterAnnotation(fullName,params)
 
       // string to be written to the annotations.js file
-      val angulateAnnotation = s"$fullName.annotations = $objName().annotations; $parameterAnnot"
+      val decoration = s"$$s.$fullName = __decorate($$s.$objName().decorators,$$s.$fullName);"
 
       // list of trees to be included in the component's annotation array
       val annotations =
-        q"new angulate2.core.Component(scalajs.js.Dynamic.literal( ..$componentAnnotationParams ))" +: translateAngulateAnnotations(modifiers)
+        q"angulate2.core.Component( scalajs.js.Dynamic.literal( ..$componentAnnotationParams ))"// +: translateAngulateAnnotations(modifiers)
 
       val base = getJSBaseClass(parents)
       val log =
@@ -107,13 +107,12 @@ object Component {
       val tree =
         q"""{@scalajs.js.annotation.JSExport($fullName)
              @scalajs.js.annotation.ScalaJSDefined
-             @sjsx.SJSXStatic(1000, $angulateAnnotation )
-             @sjsx.SJSXRequire("angular2/core","ng.core")
+             @sjsx.SJSXStatic(1000, $decoration )
              class $name ( ..$params ) extends ..$base { ..$body; $log }
              @scalajs.js.annotation.JSExport($objName)
              @scalajs.js.annotation.ScalaJSDefined
              object ${name.toTermName} extends scalajs.js.Object {
-               def annotations = scalajs.js.Array( ..$annotations )
+               val decorators = scalajs.js.Array( ..$annotations )
              }
             }
          """

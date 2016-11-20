@@ -5,7 +5,7 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2
 
-import angulate2.impl.JsWhiteboxMacroTools
+import angulate2.internal.JsWhiteboxMacroTools
 
 import scala.annotation.{StaticAnnotation, compileTimeOnly}
 import scala.language.experimental.macros
