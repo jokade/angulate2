@@ -8,6 +8,7 @@ import angulate2.internal.{JsBlackboxMacroTools, JSType}
 import scala.language.experimental.macros
 import scala.scalajs.js
 import scala.reflect.macros.blackbox
+import scala.scalajs.js.Thenable
 
 package object angulate2 {
 

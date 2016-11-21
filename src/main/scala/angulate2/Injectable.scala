@@ -5,7 +5,7 @@
 //               Distributed under the MIT License (see included file LICENSE)
 package angulate2
 
-import angulate2.internal.JsWhiteboxMacroTools
+import angulate2.internal.{DecoratedClass, JsWhiteboxMacroTools}
 
 import scala.annotation.StaticAnnotation
 import scala.language.experimental.macros
@@ -18,41 +18,12 @@ class Injectable extends StaticAnnotation {
 
 object Injectable {
 
-  private[angulate2] class Macro(val c: whitebox.Context) extends JsWhiteboxMacroTools {
-
+  private[angulate2] class Macro(val c: whitebox.Context) extends DecoratedClass {
     import c.universe._
+    override val mainAnnotation: String = "Injectable"
 
-    def impl(annottees: c.Expr[Any]*) : c.Expr[Any] = annottees.map(_.tree).toList match {
-      case (classDecl: ClassDef) :: Nil => modifiedClassDecl(classDecl)
-      case _ => c.abort(c.enclosingPosition, "Invalid annottee for @Injectable")
-    }
+    override val annotationParamNames: Seq[String] = Seq()
 
-    def modifiedClassDecl(classDecl: ClassDef) = {
-      val parts = extractClassParts(classDecl)
-      import parts._
-
-      val debug = getDebugConfig(modifiers)
-
-      val diArray = parameterAnnotation(fullName,params)
-
-      val base = getJSBaseClass(parents)
-      val log =
-        if(debug.logInstances) {
-          val msg = s"created Injectable $fullName:"
-          q"""scalajs.js.Dynamic.global.console.debug($msg,this)"""
-        }
-        else q""
-
-      val tree =
-        q"""{@scalajs.js.annotation.JSExport($fullName)
-             @scalajs.js.annotation.ScalaJSDefined
-             @sjsx.SJSXStatic(1000, $diArray )
-             class $name ( ..$params ) extends ..$base { ..$body; $log }
-            }"""
-
-      if(debug.showExpansion) printTree(tree)
-
-      c.Expr(tree)
-    }
+    override def mainAnnotationObject = q"angulate2.core.Injectable"
   }
 }

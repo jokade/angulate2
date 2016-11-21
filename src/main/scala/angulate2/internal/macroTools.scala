@@ -55,31 +55,6 @@ abstract class JsBlackboxMacroTools extends de.surfice.smacrotools.JsBlackboxMac
 abstract class JsWhiteboxMacroTools extends de.surfice.smacrotools.JsWhiteboxMacroTools with JsCommonMacroTools {
   import c.universe._
 
-  def decoratorParameters(tree: Tree, annotationParamNames: Seq[String]) =
-    extractAnnotationParameters(c.prefix.tree, annotationParamNames).collect {
-      case (name,Some(value)) => q"${Ident(TermName(name))} = $value"
-    }
 
-  def makeDecoratedClass(parts: ClassParts, decorators: Tree, debugMsg: String)(implicit debug: de.surfice.smacrotools.debug.DebugConfig): Tree = {
-    import parts._
-    val objName = fullName + "_"
-    val decoration = s"$$s.$fullName = __decorate($$s.$objName().decorators,$$s.$fullName);"
-    val base = getJSBaseClass(parents)
-    val log =
-      if(debug.logInstances)
-        q"""scalajs.js.Dynamic.global.console.debug($debugMsg,this)"""
-      else q""
-
-    val tree = q"""@scalajs.js.annotation.JSExport($fullName)
-                   @scalajs.js.annotation.ScalaJSDefined
-                   @sjsx.SJSXStatic(1000, $decoration )
-                   class $name ( ..$params ) extends ..$base { ..$body; $log }
-                   @scalajs.js.annotation.JSExport($objName)
-                   @scalajs.js.annotation.ScalaJSDefined
-                   object ${name.toTermName} extends scalajs.js.Object {
-                     val decorators = scalajs.js.Array( ..$decorators )
-                   }"""
-    tree
-  }
 }
 

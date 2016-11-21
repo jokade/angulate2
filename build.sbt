@@ -16,11 +16,9 @@ lazy val commonSettings = Seq(
       }))
 )
 
-//lazy val macros = RootProject(file("../smacrotools"))
 
 lazy val angulate2 = project.in(file(".")).
   enablePlugins(ScalaJSPlugin).
-  //dependsOn(macros).
   aggregate(plugin,stubs).
   settings(commonSettings: _*).
   settings(publishingSettings: _*).
@@ -123,4 +121,5 @@ lazy val publishingSettings = Seq(
 lazy val angulateDebugFlags = Seq(
   "Directive"
 ).map( f => s"-Xmacro-settings:angulate2.debug.$f" )
+
 

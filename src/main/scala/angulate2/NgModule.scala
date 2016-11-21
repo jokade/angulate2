@@ -5,7 +5,7 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2
 
-import angulate2.internal.JsWhiteboxMacroTools
+import angulate2.internal.{DecoratedClass, JsWhiteboxMacroTools}
 
 import scala.annotation.{StaticAnnotation, compileTimeOnly}
 import scala.language.experimental.macros
@@ -21,7 +21,7 @@ class NgModule(imports: js.Array[js.Any] = null,
 }
 
 object NgModule {
-  private[angulate2] class Macro(val c: whitebox.Context) extends JsWhiteboxMacroTools {
+  private[angulate2] class Macro(val c: whitebox.Context) extends DecoratedClass {
     import c.universe._
 
     val annotationParamNames = Seq(
@@ -29,25 +29,9 @@ object NgModule {
       "declarations",
       "bootstrap")
 
-    def impl(annottees: c.Expr[Any]*): c.Expr[Any] = annottees.map(_.tree).toList match {
-      case (classDecl: ClassDef) :: Nil => modifiedDeclaration(classDecl)
-      case _ => c.abort(c.enclosingPosition, "Invalid annottee for @NgModule")
-    }
+    override val mainAnnotation: String = "NgModule"
 
-    def modifiedDeclaration(classDecl: ClassDef) = {
-      val parts = extractClassParts(classDecl)
-
-      import parts._
-
-      implicit val debug = getDebugConfig(modifiers)
-
-      val decoratorParams = decoratorParameters(c.prefix.tree,annotationParamNames)
-      val annotation =
-        q"angulate2.core.NgModule( scalajs.js.Dynamic.literal(..$decoratorParams) )"
-      val tree = makeDecoratedClass(parts,q"..$annotation",s"created NgModule $fullName")
-
-      c.Expr[Any](tree)
-    }
+    override def mainAnnotationObject = q"angulate2.core.NgModule"
   }
 
 }
