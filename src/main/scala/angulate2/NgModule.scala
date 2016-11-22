@@ -5,7 +5,7 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2
 
-import angulate2.internal.{DecoratedClass, JsWhiteboxMacroTools}
+import angulate2.internal.{JSType, DecoratedClass, JsWhiteboxMacroTools}
 
 import scala.annotation.{StaticAnnotation, compileTimeOnly}
 import scala.language.experimental.macros
@@ -14,9 +14,14 @@ import scala.scalajs.js
 
 // NOTE: keep the constructor parameter list and Component.Macro.annotationParamNames in sync!
 @compileTimeOnly("enable macro paradise to expand macro annotations")
-class NgModule(imports: js.Array[js.Any] = null,
+class NgModule(providers: js.Array[js.Any] = null,
                declarations: js.Array[js.Any] = null,
-               bootstrap: js.Array[js.Any] = null) extends StaticAnnotation {
+               imports: js.Array[js.Any] = null,
+               exports: js.Array[js.Any] = null,
+               entryComponents: js.Array[js.Any] = null,
+               bootstrap: js.Array[js.Any] = null,
+               schemas: js.Array[js.Any] = null,
+               id: String = null) extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro NgModule.Macro.impl
 }
 
@@ -25,9 +30,15 @@ object NgModule {
     import c.universe._
 
     val annotationParamNames = Seq(
-      "imports",
+      "providers",
       "declarations",
-      "bootstrap")
+      "imports",
+      "exports",
+      "entryComponents",
+      "bootstrap",
+      "schemas",
+      "id"
+    )
 
     override val mainAnnotation: String = "NgModule"
 

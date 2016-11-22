@@ -3,16 +3,15 @@
 
 // Copyright (c) 2015 Johannes.Kastner <jokade@karchedon.de>
 //               Distributed under the MIT License (see included file LICENSE)
-import angulate2.internal.{JsBlackboxMacroTools, JSType}
+import angulate2.internal.{JSType, JsBlackboxMacroTools}
 
 import scala.language.experimental.macros
-import scala.scalajs.js
 import scala.reflect.macros.blackbox
-import scala.scalajs.js.Thenable
+import scala.scalajs.js
 
 package object angulate2 {
 
-  def @#[T]: js.Any = macro Macros.jsRef[T]
+  def %%[T]: JSType = macro Macros.jsType[T]
   def @@[T1] : js.Array[js.Any] = macro Macros.jsRefArray1[T1]
   def @@[T1,T2] : js.Array[js.Any] = macro Macros.jsRefArray2[T1,T2]
   def @@[T1,T2,T3] : js.Array[js.Any] = macro Macros.jsRefArray3[T1,T2,T3]
@@ -57,6 +56,13 @@ package angulate2 {
     private def findJSRef(symbol: Symbol) = findAnnotations(symbol).collectFirst{
       case ("scala.scalajs.js.annotation.JSExport",_) => selectExported(symbol.fullName)
       case ("scala.scalajs.js.annotation.JSImport",a) => q"scalajs.runtime.constructorOf(classOf[$symbol])"
+    }
+
+    def jsType[T: c.WeakTypeTag]: Tree = findJSRef(weakTypeOf[T].typeSymbol) match {
+      case Some(t) => q"$t.asInstanceOf[angulate2.internal.JSType]"
+      case None =>
+        error(s"Cannot get JS reference for type ${weakTypeOf[T].typeSymbol.fullName}")
+        q""
     }
 
     def jsRef[T: c.WeakTypeTag]: Tree = findJSRef(weakTypeOf[T].typeSymbol)

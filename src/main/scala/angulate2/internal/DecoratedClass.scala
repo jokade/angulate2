@@ -64,7 +64,7 @@ abstract class DecoratedClass extends JsWhiteboxMacroTools {
     val decoration =
       if(metadata.isEmpty) s"$exports.$objName().decorators"
       else s"$exports.$objName().decorators.concat(" + metadata.map(p => s"__metadata('${p._1}',${p._2})").mkString("[",",","]") + ")"
-    val annotation = s"$exports.$fullName = __decorate($decoration,$exports.$fullName)"
+    val annotation = s"$exports.$fullName = __decorate($decoration,$exports.$fullName);"
     val base = getJSBaseClass(parents)
     val log =
       if(debug.logInstances)
