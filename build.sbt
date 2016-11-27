@@ -2,7 +2,7 @@ val sjsxVersion = "0.3.0-SNAPSHOT"
 
 lazy val commonSettings = Seq(
   organization := "de.surfice",
-  version := "0.1-SNAPSHOT",
+  version := "0.0.1-SNAPSHOT",
   scalaVersion := "2.11.8",
   scalacOptions ++= Seq("-deprecation","-unchecked","-feature","-language:implicitConversions","-Xlint"),
   autoCompilerPlugins := true,
@@ -29,9 +29,9 @@ lazy val angulate2 = project.in(file(".")).
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "org.scala-js"   %%% "scalajs-dom" % "0.8.0",
       "de.surfice" %%% "smacrotools-sjs" % "0.1-SNAPSHOT",
-      "de.surfice" %%% "sjsx" % sjsxVersion
+      "de.surfice" %%% "sjsx" % sjsxVersion,
+      "de.surfice" %%% "scalajs-rxjs" % "0.0.1-SNAPSHOT"
       //"be.doeraene" %%% "scalajs-jquery" % "0.8.0" % "provided",
-      //"de.surfice" %%% "scalajs-rxjs" % "0.1-SNAPSHOT"
     )
   )
 

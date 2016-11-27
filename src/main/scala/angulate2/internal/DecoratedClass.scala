@@ -40,7 +40,10 @@ abstract class DecoratedClass extends JsWhiteboxMacroTools {
       else
         q"$mainAnnotationObject( scalajs.js.Dynamic.literal(..$decoratorParams) )"
 
-    val diTypes = getDINames(params) map ("$s."+_)
+    val diTypes = getInjectionDependencies(params) map {
+      case ScalaDependency(fqn) => s"$exports.$fqn"
+      case RequireDependency(module,name) => s"require('$module').$name"
+    }
 
     val metadata =
       if(diTypes.isEmpty) Map.empty[String,String]

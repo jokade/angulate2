@@ -10,6 +10,7 @@ import scala.reflect.macros.blackbox
 import scala.scalajs.js
 
 package object angulate2 {
+  import js.JSConverters._
 
   def %%[T]: JSType = macro Macros.jsType[T]
   def @@[T1] : js.Array[js.Any] = macro Macros.jsRefArray1[T1]
@@ -22,35 +23,35 @@ package object angulate2 {
   def @@[T1,T2,T3,T4,T5,T6,T7,T8] : js.Array[js.Any] = macro Macros.jsRefArray8[T1,T2,T3,T4,T5,T6,T7,T8]
   def @@[T1,T2,T3,T4,T5,T6,T7,T8,T9] : js.Array[js.Any] = macro Macros.jsRefArray9[T1,T2,T3,T4,T5,T6,T7,T8,T9]
 
-  def @@(items: String*) : js.Array[String] = js.Array(items:_*)
-
+  def @@(items: String*) : js.Array[String] = items.toJSArray
+  def @@@[T<:js.Any](items: T*): js.Array[T] = items.toJSArray
 }
 
 package angulate2 {
   private[angulate2] class Macros(val c: blackbox.Context) extends JsBlackboxMacroTools {
     import c.universe._
 
-    def bootstrapWith[T: c.WeakTypeTag] = {
-      val t = selectGlobalDynamic[T]
-      val r =
-        q"""angulate2.es5.ng.platform.browser.bootstrap($t)"""
-      r
-    }
+//    def bootstrapWith[T: c.WeakTypeTag] = {
+//      val t = selectGlobalDynamic[T]
+//      val r =
+//        q"""angulate2.es5.ng.platform.browser.bootstrap($t)"""
+//      r
+//    }
 
-    def register[T: c.WeakTypeTag] = {
-      val name = weakTypeOf[T].typeSymbol.fullName
-      val t = selectGlobalDynamic(name)
-      val obj = selectGlobalDynamic(name+"_")
-      val res = q"""{$t.annotations = $obj().annotations()
-           ()
-          }"""
-      res
-    }
+//    def register[T: c.WeakTypeTag] = {
+//      val name = weakTypeOf[T].typeSymbol.fullName
+//      val t = selectGlobalDynamic(name)
+//      val obj = selectGlobalDynamic(name+"_")
+//      val res = q"""{$t.annotations = $obj().annotations()
+//           ()
+//          }"""
+//      res
+//    }
 
-    private def registerAll(annottees: Map[String,Any]) =
-      annottees.toSeq.map{
-        case (_,tree:Tree) => tree
-      }
+//    private def registerAll(annottees: Map[String,Any]) =
+//      annottees.toSeq.map{
+//        case (_,tree:Tree) => tree
+//      }
 
 
     private def findJSRef(symbol: Symbol) = findAnnotations(symbol).collectFirst{
@@ -61,7 +62,7 @@ package angulate2 {
     def jsType[T: c.WeakTypeTag]: Tree = findJSRef(weakTypeOf[T].typeSymbol) match {
       case Some(t) => q"$t.asInstanceOf[angulate2.internal.JSType]"
       case None =>
-        error(s"Cannot get JS reference for type ${weakTypeOf[T].typeSymbol.fullName}")
+        error(s"Cannot get JS reference for type ${weakTypeOf[T].typeSymbol.fullName}; maybe you forgot @JSExport?")
         q""
     }
 

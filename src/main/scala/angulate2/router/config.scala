@@ -11,8 +11,27 @@ import de.surfice.smacrotools.JSOptionsObject
 
 import scala.scalajs.js
 
+@js.native
+trait Data extends js.Object
+
+@js.native
+trait ResolveData extends js.Object
+
+@js.native
+trait LoadChildren extends js.Object
+
 @JSOptionsObject
 case class Route(path: js.UndefOr[String] = js.undefined,
                  pathMatch: js.UndefOr[String] = js.undefined,
                  matcher: js.UndefOr[UrlMatcher] = js.undefined,
-                 component: js.UndefOr[JSType] = js.undefined)
+                 component: js.UndefOr[JSType] = js.undefined,
+                 redirectTo: js.UndefOr[String] = js.undefined,
+                 outlet: js.UndefOr[String] = js.undefined,
+                 canActivate: js.UndefOr[js.Array[js.Any]] = js.undefined,
+                 canActivateChild: js.UndefOr[js.Array[js.Any]] = js.undefined,
+                 canDeactivate: js.UndefOr[js.Array[js.Any]] = js.undefined,
+                 canLoad: js.UndefOr[js.Array[js.Any]] = js.undefined,
+                 data: js.UndefOr[Data] = js.undefined,
+                 resolveData: js.UndefOr[ResolveData] = js.undefined,
+                 children: js.UndefOr[Route] = js.undefined,
+                 loadChildren: js.UndefOr[LoadChildren] = js.undefined)

@@ -11,6 +11,7 @@ import scala.scalajs.js
 package object router {
 
   type UrlMatcher = (js.Dynamic,js.Dynamic,Route) => js.Dynamic
+  type UrlTree = js.Object
   type Routes = js.Array[Route]
 
 }

@@ -5,14 +5,10 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2.internal
 
-import angulate2.debug
-import angulate2.debug.DebugConfig
-
 import scala.language.reflectiveCalls
 
 trait JsCommonMacroTools extends de.surfice.smacrotools.JsCommonMacroTools {
   import c.universe._
-
 
   private val ignoreAnnotations = Seq("debug")
 
@@ -29,32 +25,33 @@ trait JsCommonMacroTools extends de.surfice.smacrotools.JsCommonMacroTools {
 
 
   // TODO: simpler :)
-  def getDINames(params: Iterable[Tree]): Iterable[String] =
+  def getInjectionDependencies(params: Iterable[Tree]): Iterable[Dependency] =
     if(params.isEmpty) None
     else
       params map {
         case q"$mods val $name: $tpe = $e" =>
           val t = c.typecheck(tpe,c.TYPEmode).tpe
           t.typeSymbol.annotations.map(_.tree).collectFirst{
-            case q"new $name( ..$params )" if name.toString == "scala.scalajs.js.annotation.JSName" => params.head match {
-              case Literal(Constant(x)) => x.toString
+            case q"new $name( ..$params )" if name.toString == "scala.scalajs.js.annotation.JSImport" => params match {
+              case Seq(Literal(Constant(module)),Literal(Constant(name))) => RequireDependency(module.toString,name.toString)
             }
-          }.getOrElse(t.toString)
+          }.getOrElse(ScalaDependency(t.toString))
       }
 
-
-  def parameterAnnotation(fullClassName: String, params: Iterable[Tree]) : String = getDINames(params) match {
-    case Nil => ""
-    case list => list.map( p => "["+p+"]").mkString(s"$fullClassName.parameters = [",",","];")
-  }
+//  def parameterAnnotation(fullClassName: String, params: Iterable[Tree]) : String = getInjectionDependencies(params) match {
+//    case Nil => ""
+//    case list => list.map( p => "["+p+"]").mkString(s"$fullClassName.parameters = [",",","];")
+//  }
 
 }
 
 abstract class JsBlackboxMacroTools extends de.surfice.smacrotools.JsBlackboxMacroTools with JsCommonMacroTools
 
 abstract class JsWhiteboxMacroTools extends de.surfice.smacrotools.JsWhiteboxMacroTools with JsCommonMacroTools {
-  import c.universe._
 
 
 }
 
+sealed trait Dependency
+case class ScalaDependency(fqn: String) extends Dependency
+case class RequireDependency(module: String, name: String) extends Dependency
