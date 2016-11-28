@@ -15,7 +15,7 @@ The old version with global scope is available [here](https://github.com/jokade/
 
 For Scala.js bindings to [Angular 1.x](https://angularjs.org) see [scalajs-angulate](https://github.com/jokade/scalajs-angulate).
 
-A basic [Quickstart Example](https://github.com/jokade/angulate2-quickstart) is available.
+A basic [Quickstart Example](https://github.com/jokade/angulate2-quickstart) that may serve as template is available, as well as set of **[extended examples](https://github.com/jokade/angulate2-examples)**.
 
 
 Getting Started
