@@ -12,6 +12,10 @@ import scala.scalajs.js.annotation.JSImport
 
 @js.native
 @JSImport("@angular/router","RouterModule")
+class RouterModule extends js.Object
+
+@js.native
+@JSImport("@angular/router","RouterModule")
 object RouterModule extends js.Object {
   def forRoot(routes: Routes, config: js.UndefOr[js.Dynamic] = js.undefined): ModuleWithProviders = js.native
   def forChild(routes: Routes): ModuleWithProviders = js.native
