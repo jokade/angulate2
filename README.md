@@ -1,5 +1,6 @@
 angulate2
 ===========
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/angulate2/Lobby)
 [![Scala.js](https://www.scala-js.org/assets/badges/scalajs-0.6.13.svg)](https://www.scala-js.org)
 <!--[![Build Status](https://travis-ci.org/jokade/angulate2.svg?branch=master)](https://travis-ci.org/jokade/angulate2)-->
 
