@@ -6,19 +6,20 @@
 package angulate2.core
 
 import scala.scalajs.js
+import scala.scalajs.js.annotation.ScalaJSDefined
 
 /**
  * Lifecycle hook that is called after data-bound properties of a directive are initialized.
  */
-@js.native
+@ScalaJSDefined
 trait OnInit extends js.Object {
-  def ngOnInit(): Unit = js.native
+  def ngOnInit(): Unit
 }
 
 /**
  * Lifecycle hook that is called when a directive or pipe is destroyed.
  */
-@js.native
+@ScalaJSDefined
 trait OnDestroy extends js.Object {
   def ngOnDestroy() : Unit
 }

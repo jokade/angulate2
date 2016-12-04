@@ -3,7 +3,7 @@
 
 // Copyright (c) 2016 Johannes.Kastner <jokade@karchedon.de>
 //               Distributed under the MIT License (see included LICENSE file)
-package angulate2.extra.inMemoryWebApi
+package angulate2.ext.inMemoryWebApi
 
 import angulate2.core.ModuleWithProviders
 import angulate2.internal.JSType

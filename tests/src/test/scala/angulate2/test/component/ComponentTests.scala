@@ -6,8 +6,8 @@
 package angulate2.test.component
 
 import angulate2._
+import angulate2.core.Component
 import angulate2.test.TestBase
-import utest._
 
 import scala.scalajs.js
 

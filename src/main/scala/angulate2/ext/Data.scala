@@ -3,7 +3,7 @@
 
 // Copyright (c) 2016 Johannes.Kastner <jokade@karchedon.de>
 //               Distributed under the MIT License (see included LICENSE file)
-package angulate2
+package angulate2.ext
 
 import angulate2.internal.JsWhiteboxMacroTools
 

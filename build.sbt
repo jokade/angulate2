@@ -1,19 +1,16 @@
-val sjsxVersion = "0.3.0-SNAPSHOT"
+val smacrotoolsVersion = "0.0.1"
+val sjsxVersion = "0.3.0"
+val rxjsVersion = "0.0.1"
 
 lazy val commonSettings = Seq(
   organization := "de.surfice",
-  version := "0.0.1-SNAPSHOT",
+  version := "0.0.1",
   scalaVersion := "2.11.8",
   scalacOptions ++= Seq("-deprecation","-unchecked","-feature","-language:implicitConversions","-Xlint"),
   autoCompilerPlugins := true,
   //addCompilerPlugin("com.lihaoyi" %% "acyclic" % "0.1.2"),
   resolvers += Resolver.sonatypeRepo("releases"),
-  resolvers += Resolver.sonatypeRepo("snapshots"),
-  scalacOptions ++= (if (isSnapshot.value) Seq.empty else Seq({
-        val a = baseDirectory.value.toURI.toString.replaceFirst("[^/]+/?$", "")
-        val g = "https://raw.githubusercontent.com/jokade/angulate2"
-        s"-P:scalajs:mapSourceURI:$a->$g/v${version.value}/"
-      }))
+  resolvers += Resolver.sonatypeRepo("snapshots")
 )
 
 
@@ -28,11 +25,17 @@ lazy val angulate2 = project.in(file(".")).
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "org.scala-js"   %%% "scalajs-dom" % "0.8.0",
-      "de.surfice" %%% "smacrotools-sjs" % "0.1-SNAPSHOT",
+      "de.surfice" %%% "smacrotools-sjs" % smacrotoolsVersion,
       "de.surfice" %%% "sjsx" % sjsxVersion,
-      "de.surfice" %%% "scalajs-rxjs" % "0.0.1-SNAPSHOT"
+      "de.surfice" %%% "scalajs-rxjs_cjsm" % rxjsVersion
       //"be.doeraene" %%% "scalajs-jquery" % "0.8.0" % "provided",
-    )
+    ),
+    crossScalaVersions := Seq("2.11.8","2.12.0"),
+    scalacOptions ++= (if (isSnapshot.value) Seq.empty else Seq({
+        val a = baseDirectory.value.toURI.toString.replaceFirst("[^/]+/?$", "")
+        val g = "https://raw.githubusercontent.com/jokade/angulate2"
+        s"-P:scalajs:mapSourceURI:$a->$g/v${version.value}/"
+      }))
   )
 
 
@@ -59,7 +62,8 @@ lazy val stubs = project
   .settings(commonSettings:_*)
   .settings(publishingSettings:_*)
   .settings(
-    name := "angulate2-stubs"
+    name := "angulate2-stubs",
+    crossScalaVersions := Seq("2.11.8","2.12.0")
   )
 
 //lazy val tests = project.
@@ -118,8 +122,4 @@ lazy val publishingSettings = Seq(
   )
 )
  
-lazy val angulateDebugFlags = Seq(
-  "Directive"
-).map( f => s"-Xmacro-settings:angulate2.debug.$f" )
-
 

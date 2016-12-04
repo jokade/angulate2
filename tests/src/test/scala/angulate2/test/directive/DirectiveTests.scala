@@ -6,7 +6,7 @@
 package angulate2.test.directive
 
 import angulate2._
-import utest._
+import angulate2.core.Component
 import angulate2.test.TestBase
 
 import scala.scalajs.js

@@ -7,7 +7,7 @@ package angulate2.internal
 
 import scala.language.reflectiveCalls
 
-abstract class DecoratedClass extends JsWhiteboxMacroTools {
+abstract class ClassDecorator extends JsWhiteboxMacroTools {
   import c.universe._
 
   // Prefix for accessing the Scala module's exports object from within the sjsx module
