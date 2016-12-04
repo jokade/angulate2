@@ -11,15 +11,13 @@ import scala.scalajs.js.annotation.ScalaJSDefined
 /**
  * Lifecycle hook that is called after data-bound properties of a directive are initialized.
  */
-@ScalaJSDefined
-trait OnInit extends js.Object {
+trait OnInit {
   def ngOnInit(): Unit
 }
 
 /**
  * Lifecycle hook that is called when a directive or pipe is destroyed.
  */
-@ScalaJSDefined
-trait OnDestroy extends js.Object {
+trait OnDestroy {
   def ngOnDestroy() : Unit
 }

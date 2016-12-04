@@ -48,19 +48,19 @@ abstract class ClassDecorator extends MacroAnnotationHandler with AngulateWhiteb
       case parts: ClassParts =>
         // assemble JS for class decoration
         val decoration =
-          if(metadata.isEmpty) s"$exports.$objName().__decorators"
-          else s"$exports.$objName().__decorators.concat(" + metadata.map(p => s"__metadata('${p._1}',${p._2})").mkString("[",",","]") + ")"
+          if(metadata.isEmpty) s"$exports.$objName()._decorators"
+          else s"$exports.$objName()._decorators.concat(" + metadata.map(p => s"__metadata('${p._1}',${p._2})").mkString("[",",","]") + ")"
         val js = s"$exports.$fullName = __decorate($decoration,$exports.$fullName);"
         (parts.modifiers.annotations ++ Seq(
+          q"new scalajs.js.annotation.JSExportAll",
           q"new scalajs.js.annotation.JSExport(${parts.fullName})",
-          q"new scalajs.js.annotation.ScalaJSDefined",
           q"new sjsx.SJSXStatic(1000,$js)"
         ),data)
       // modify annotations for the companion object
       case parts: ObjectParts =>
         (parts.modifiers.annotations ++ Seq(
-          q"new scalajs.js.annotation.JSExport($objName)",
-          q"new scalajs.js.annotation.ScalaJSDefined"
+          q"new scalajs.js.annotation.JSExportAll",
+          q"new scalajs.js.annotation.JSExport($objName)"
         ),data)
       case _ =>
         super.modifiedAnnotations(parts,data)
@@ -68,7 +68,8 @@ abstract class ClassDecorator extends MacroAnnotationHandler with AngulateWhiteb
   }
 
   private def extendFromJSObject(parents: Seq[Tree]): Seq[Tree] = {
-    tq"scalajs.js.Object" +: parents.filter(_.toString != "scala.AnyRef")
+    //    tq"scalajs.js.Object" +: parents.filter(_.toString != "scala.AnyRef")
+    parents
   }
 
   override def modifiedParents(parts: CommonParts, data: Data): (Seq[Tree],Data) = parts match {
@@ -84,7 +85,7 @@ abstract class ClassDecorator extends MacroAnnotationHandler with AngulateWhiteb
     if(parts.isObject) {
       val decoratorData = data("decoratorData").asInstanceOf[ClassDecoratorData]
       import decoratorData._
-      val stats = q"""val __decorators = scalajs.js.Array( ..$decorators )"""
+      val stats = q"""val _decorators = scalajs.js.Array( ..$decorators )"""
       (parts.body :+ stats,data)
     }
     else
