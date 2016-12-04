@@ -5,8 +5,8 @@ angulate2
 
 [Scala.js](http://www.scala-js.org/) bindings for [Angular 2](http://www.angular.io). The goal is to provide an API/ experience very similar to the [TypeScript API](https://angular.io/docs/ts/latest/guide/cheatsheet.html) of Angular 2.
 
-**WARNING: This is work in progress (alpha status)!**
-Most of the features of Angular2 are still missing and the API may change at any time without notice!
+**WARNING: This is work in progress!**  
+Many of the features of Angular2 are still missing and the angulate2 API may still change significantly.
 
 **IMPORTANT: angulate2 now uses the CommonJS module format introduced with Scala.js 0.6.13 instead of global scope.
   The entire code basis is currently being refactored to facilitate this.**
@@ -23,16 +23,12 @@ Getting Started
 ### SBT Settings
 Add the following lines to your `project/plugins.sbt`:
 ```scala
-resolvers += Resolver.sonatypeRepo("snapshots")
-
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.13")
 
-addSbtPlugin("de.surfice" % "sbt-angulate2" % "0.0.1-SNAPSHOT")
+addSbtPlugin("de.surfice" % "sbt-angulate2" % "0.0.1")
 ```
 and this to your `build.sbt`:
 ```scala
-resolvers += Resolver.sonatypeRepo("snapshots")
-
 enablePlugins(Angulate2Plugin)
 
 ngBootstrap := Some("NAME_OF_THE_MODULE_TO_BOOTSTRAP")
@@ -116,6 +112,29 @@ Then you only need to import the `app` module from within your `index.html` to b
     <my-app>Loading...</my-app>
   </body>
 </html>
+``` 
+
+### Create root NgModule and Component
+```scala
+import angulate2.std._
+import angulate2.platformBrowser.BrowserModule
+
+@NgModule(
+  imports = @@[BrowserModule],
+  declarations = @@[AppComponent],
+  bootstrap = @@[AppComponent]
+)
+class AppModule {
+
+}
+
+@Component(
+  selector = "my-app",
+  template = "<h1>Hello Angular!<h1>"
+)
+class AppComponent {
+
+}
 ``` 
 
 License
