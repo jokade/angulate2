@@ -25,7 +25,7 @@ Add the following lines to your `project/plugins.sbt`:
 ```scala
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.13")
 
-addSbtPlugin("de.surfice" % "sbt-angulate2" % "0.0.1")
+addSbtPlugin("de.surfice" % "sbt-angulate2" % "0.0.2")
 ```
 and this to your `build.sbt`:
 ```scala
