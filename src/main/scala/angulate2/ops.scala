@@ -5,7 +5,7 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2
 
-import angulate2.internal.{JSType, JsBlackboxMacroTools}
+import angulate2.internal.{AngulateBlackboxMacroTools, JSType}
 
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
@@ -46,7 +46,7 @@ private[angulate2] trait OpsTrait {
   def @@@[T](items: T*): js.Array[T] = items.toJSArray
 }
 
-private[angulate2] class OpsMacros(val c: blackbox.Context) extends JsBlackboxMacroTools {
+private[angulate2] class OpsMacros(val c: blackbox.Context) extends AngulateBlackboxMacroTools {
   import c.universe._
 
 

@@ -5,7 +5,7 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2.ext
 
-import angulate2.internal.JsWhiteboxMacroTools
+import angulate2.internal.AngulateWhiteboxMacroTools
 
 import scala.annotation.{StaticAnnotation, compileTimeOnly}
 import scala.language.experimental.macros
@@ -40,7 +40,7 @@ class Data extends StaticAnnotation {
 
 object Data {
 
-  private[angulate2] class Macro(val c: whitebox.Context) extends JsWhiteboxMacroTools {
+  private[angulate2] class Macro(val c: whitebox.Context) extends AngulateWhiteboxMacroTools {
 
     import c.universe._
 
@@ -50,7 +50,7 @@ object Data {
     }
 
     def modifiedDeclaration(classDecl: ClassDef) = {
-      val parts = extractClassParts(classDecl)
+      val parts = extractTypeParts(classDecl).asInstanceOf[ClassParts]
       import parts._
 
       val debug = getDebugConfig(modifiers)

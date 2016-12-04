@@ -5,88 +5,121 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2.internal
 
+import de.surfice.smacrotools.MacroAnnotationHandler
+
 import scala.language.reflectiveCalls
 
-abstract class ClassDecorator extends JsWhiteboxMacroTools {
+abstract class ClassDecorator extends MacroAnnotationHandler with AngulateWhiteboxMacroTools {
   import c.universe._
+
+  override def supportsClasses: Boolean = true
+  override def supportsTraits: Boolean = false
+  override def supportsObjects: Boolean = false
+  override def createCompanion: Boolean = true
+
+  type Metadata = Map[String,String]
+  case class ClassDecoratorData(objName: String,
+                                decorators: Seq[Tree],
+                                metadata: Metadata
+                               )
+  object ClassDecoratorData {
+    def apply(data: Data): ClassDecoratorData = data("decoratorData").asInstanceOf[ClassDecoratorData]
+  }
 
   // Prefix for accessing the Scala module's exports object from within the sjsx module
   private val exports = "$s"
 
-  def mainAnnotation: String
 
   def mainAnnotationObject: Tree
 
   def annotationParamNames: Seq[String]
 
-  def impl(annottees: c.Expr[Any]*): c.Expr[Any] = annottees.map(_.tree).toList match {
-    case (classDecl: ClassDef) :: Nil => modifiedDeclaration(classDecl)
-    case _ => c.abort(c.enclosingPosition, s"Invalid annottee for @$mainAnnotation")
+  override def modifiedClassDef(classParts: ClassParts, data: Data): (c.universe.Tree, Data) = {
+    super.modifiedClassDef(classParts, decoratorData(classParts,data))
   }
 
-  def modifiedDeclaration(classDecl: ClassDef) = {
-    val parts = extractClassParts(classDecl)
 
+  override def modifiedAnnotations(parts: CommonParts, data: Data): (List[c.universe.Tree], Data) = {
+    val decoratorData = ClassDecoratorData(data)
+    import decoratorData._
     import parts._
-
-    // load debug annotation values (returns default config, if there is no @debug on this component)
-    implicit val debug = getDebugConfig(modifiers)
-
-    val decoratorParams = decoratorParameters(parts,annotationParamNames)
-
-    val annotation =
-      if(decoratorParams.isEmpty)
-        q"$mainAnnotationObject()"
-      else
-        q"$mainAnnotationObject( scalajs.js.Dynamic.literal(..$decoratorParams) )"
-
-    val diTypes = getInjectionDependencies(params) map {
-      case ScalaDependency(fqn) => s"$exports.$fqn"
-      case RequireDependency(module,name) => s"require('$module').$name"
+    parts match {
+      // modify annotations for the class carrying the macro annotation
+      case parts: ClassParts =>
+        // assemble JS for class decoration
+        val decoration =
+          if(metadata.isEmpty) s"$exports.$objName().__decorators"
+          else s"$exports.$objName().__decorators.concat(" + metadata.map(p => s"__metadata('${p._1}',${p._2})").mkString("[",",","]") + ")"
+        val js = s"$exports.$fullName = __decorate($decoration,$exports.$fullName);"
+        (parts.modifiers.annotations ++ Seq(
+          q"new scalajs.js.annotation.JSExport(${parts.fullName})",
+          q"new scalajs.js.annotation.ScalaJSDefined",
+          q"new sjsx.SJSXStatic(1000,$js)"
+        ),data)
+      // modify annotations for the companion object
+      case parts: ObjectParts =>
+        (parts.modifiers.annotations ++ Seq(
+          q"new scalajs.js.annotation.JSExport($objName)",
+          q"new scalajs.js.annotation.ScalaJSDefined"
+        ),data)
+      case _ =>
+        super.modifiedAnnotations(parts,data)
     }
-
-    val metadata =
-      if(diTypes.isEmpty) Map.empty[String,String]
-      else Map("design:paramtypes"->diTypes.mkString("[",",","]"))
-
-    val tree = makeDecoratedClass(parts,q"..$annotation",metadata,s"created $mainAnnotation $fullName")
-
-    c.Expr[Any](tree)
   }
 
+  private def extendFromJSObject(parents: Seq[Tree]): Seq[Tree] = {
+    tq"scalajs.js.Object" +: parents.filter(_.toString != "scala.AnyRef")
+  }
+
+  override def modifiedParents(parts: CommonParts, data: Data): (Seq[Tree],Data) = parts match {
+    case parts: ObjectParts =>
+      (extendFromJSObject(parts.parents),data)
+    case parts: ClassParts =>
+      (extendFromJSObject(parts.parents),data)
+    case _ =>
+      super.modifiedParents(parts,data)
+  }
+
+  override def modifiedBody(parts: CommonParts, data: Data): (Iterable[c.universe.Tree], Data) =
+    if(parts.isObject) {
+      val decoratorData = data("decoratorData").asInstanceOf[ClassDecoratorData]
+      import decoratorData._
+      val stats = q"""val __decorators = scalajs.js.Array( ..$decorators )"""
+      (parts.body :+ stats,data)
+    }
+    else
+      super.modifiedBody(parts, data)
 
   def decoratorParameters(parts: ClassParts, annotationParamNames: Seq[String]) =
     extractAnnotationParameters(c.prefix.tree, annotationParamNames).collect {
       case (name,Some(value)) => q"${Ident(TermName(name))} = $value"
     }
 
-
-  def makeDecoratedClass(parts: ClassParts, decorators: Tree, metadata: Map[String,String], debugMsg: String)(implicit debug: de.surfice.smacrotools.debug.DebugConfig): Tree = {
+  private def decoratorData(parts: ClassParts,data: Data): Data = {
     import parts._
+
     val objName = fullName + "_"
-    val decoration =
-      if(metadata.isEmpty) s"$exports.$objName().decorators"
-      else s"$exports.$objName().decorators.concat(" + metadata.map(p => s"__metadata('${p._1}',${p._2})").mkString("[",",","]") + ")"
-    val annotation = s"$exports.$fullName = __decorate($decoration,$exports.$fullName);"
-    val base = getJSBaseClass(parents)
-    val log =
-      if(debug.logInstances)
-        q"""scalajs.js.Dynamic.global.console.debug($debugMsg,this)"""
-      else q""
+    val mainAnnotationParams = decoratorParameters(parts,annotationParamNames)
+    val mainAnnotation =
+      if(mainAnnotationParams.isEmpty)
+        q"$mainAnnotationObject()"
+      else
+        q"$mainAnnotationObject( scalajs.js.Dynamic.literal(..$mainAnnotationParams) )"
 
-    val tree = q"""@scalajs.js.annotation.JSExport($fullName)
-                   @scalajs.js.annotation.ScalaJSDefined
-                   @sjsx.SJSXStatic(1000, $annotation )
-                   class $name ( ..$params ) extends ..$base { ..$body; $log }
-                   @scalajs.js.annotation.JSExport($objName)
-                   @scalajs.js.annotation.ScalaJSDefined
-                   object ${name.toTermName} extends scalajs.js.Object {
-                     val decorators = scalajs.js.Array( ..$decorators )
-                   }"""
+    val diTypes = getInjectionDependencies(params) map {
+      case ScalaDependency(fqn) => s"$exports.$fqn"
+      case RequireDependency(module,name) => s"require('$module').$name"
+    }
 
-    if(debug.showExpansion) printTree(tree)
+    val metadata: Metadata =
+      if(diTypes.isEmpty) Map.empty[String,String]
+      else Map("design:paramtypes"->diTypes.mkString("[",",","]"))
 
-    tree
+    data + ("decoratorData"->ClassDecoratorData(
+      objName,
+      Seq(mainAnnotation),
+      metadata
+    ))
   }
 
 }

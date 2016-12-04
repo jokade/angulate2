@@ -30,7 +30,7 @@ object Injectable {
 
   private[angulate2] class Macro(val c: whitebox.Context) extends ClassDecorator {
     import c.universe._
-    override val mainAnnotation: String = "Injectable"
+    override val annotationName: String = "Injectable"
 
     override val annotationParamNames: Seq[String] = Seq()
 

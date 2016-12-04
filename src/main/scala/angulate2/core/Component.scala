@@ -47,7 +47,7 @@ object Component {
     private[angulate2] class Macro(val c: whitebox.Context) extends ClassDecorator {
       import c.universe._
 
-      override def mainAnnotation: String = "Component"
+      override def annotationName = "Component"
 
       // IMPORTANT: this list must contain all annotation arguments in the SAME order they are
       // defined in the annotations constructor!

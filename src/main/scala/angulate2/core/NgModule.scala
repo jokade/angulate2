@@ -47,7 +47,7 @@ object NgModule {
       "id"
     )
 
-    override val mainAnnotation: String = "NgModule"
+    override val annotationName: String = "NgModule"
 
     override def mainAnnotationObject = q"angulate2.core.NgModuleFacade"
   }

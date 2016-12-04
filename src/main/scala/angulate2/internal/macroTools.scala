@@ -5,9 +5,11 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2.internal
 
+import de.surfice.smacrotools.{JsBlackboxMacroTools, JsWhiteboxMacroTools}
+
 import scala.language.reflectiveCalls
 
-trait JsCommonMacroTools extends de.surfice.smacrotools.JsCommonMacroTools {
+trait AngulateCommonMacroTools extends de.surfice.smacrotools.JsCommonMacroTools {
   import c.universe._
 
   private val ignoreAnnotations = Seq("debug")
@@ -45,12 +47,8 @@ trait JsCommonMacroTools extends de.surfice.smacrotools.JsCommonMacroTools {
 
 }
 
-abstract class JsBlackboxMacroTools extends de.surfice.smacrotools.JsBlackboxMacroTools with JsCommonMacroTools
-
-abstract class JsWhiteboxMacroTools extends de.surfice.smacrotools.JsWhiteboxMacroTools with JsCommonMacroTools {
-
-
-}
+trait AngulateWhiteboxMacroTools extends JsWhiteboxMacroTools with AngulateCommonMacroTools
+trait AngulateBlackboxMacroTools extends JsBlackboxMacroTools with AngulateCommonMacroTools
 
 sealed trait Dependency
 case class ScalaDependency(fqn: String) extends Dependency

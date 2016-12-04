@@ -5,7 +5,7 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2.core
 
-import angulate2.internal.{ClassDecorator, JsWhiteboxMacroTools}
+import angulate2.internal.ClassDecorator
 
 import scala.annotation.{StaticAnnotation, compileTimeOnly}
 import scala.language.experimental.macros
@@ -38,7 +38,7 @@ object Directive {
   private[angulate2] class Macro(val c: whitebox.Context) extends ClassDecorator {
     import c.universe._
 
-    override def mainAnnotation: String = "Directive"
+    override def annotationName = "Directive"
 
     override def mainAnnotationObject: c.universe.Tree = q"angulate2.core.DirectiveFacade"
 
