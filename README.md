@@ -30,9 +30,10 @@ addSbtPlugin("de.surfice" % "sbt-angulate2" % "0.0.2")
 ```
 and this to your `build.sbt`:
 ```scala
+enablePlugins(ScalaJSPlugin)
 enablePlugins(Angulate2Plugin)
 
-ngBootstrap := Some("NAME_OF_THE_MODULE_TO_BOOTSTRAP")
+ngBootstrap := Some("AppModule") //qualified name (including packages) of Scala class called NAME_OF_THE_MODULE_TO_BOOTSTRAP
 ```
 The current version of angulate2 is built for Angular-2.2.0 and Scala.js 0.6.13+.
 
@@ -86,8 +87,39 @@ If you use System.js to load your application, your `systemjs.config.js` must co
       }
     }
   });
+})(this);
 ```
-This configuration assumes that the Angular dependecies have been installed with `npm` in the root folder of your app.
+This configuration assumes that the Angular dependecies have been installed with `npm` in the root folder of your app. A simple package.json example would be:
+```json
+{
+  "name": "PROJECT",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "lite-server"
+  },
+  "dependencies": {
+    "@angular/common": "~2.2.0",
+    "@angular/compiler": "~2.2.0",
+    "@angular/core": "~2.2.0",
+    "@angular/forms": "~2.2.0",
+    "@angular/http": "~2.2.0",
+    "@angular/platform-browser": "~2.2.0",
+    "@angular/platform-browser-dynamic": "~2.2.0",
+    "@angular/router": "~3.2.0",
+    "@angular/upgrade": "~2.2.0",
+    "angular-in-memory-web-api": "~0.1.15",
+    "core-js": "^2.4.1",
+    "reflect-metadata": "^0.1.8",
+    "rxjs": "5.0.0-beta.12",
+    "systemjs": "0.19.39",
+    "zone.js": "^0.6.25"
+  },
+  "devDependencies": {
+    "lite-server": "^2.2.2"
+  }
+}
+```
+
 Then you only need to import the `app` module from within your `index.html` to bootstrap your Angular application (using the NgModule specified by the `ngBootstrap` property in your `build.sbt`):
 ```html
 <html>
@@ -137,6 +169,9 @@ class AppComponent {
 
 }
 ``` 
+Execute `sbt fastOptJS` to build your code and execute a simple server with `npm start` (or open the `index.html` manually in your browser). 
+
+Keeping up one terminal with `npm start` running and the other running `~fastOptJS` within an interactive `sbt` shell will immediately show any changes within the code in your browser.
 
 License
 -------
