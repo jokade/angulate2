@@ -5,6 +5,7 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2.internal
 
+import angulate2.ext.ClassMode
 import de.surfice.smacrotools.MacroAnnotationHandler
 
 import scala.language.reflectiveCalls
@@ -20,7 +21,9 @@ abstract class ClassDecorator extends MacroAnnotationHandler with AngulateWhiteb
   type Metadata = Map[String,String]
   case class ClassDecoratorData(objName: String,
                                 decorators: Seq[Tree],
-                                metadata: Metadata
+                                metadata: Metadata,
+                                userDefinedCompanion: Boolean,
+                                classMode: ClassMode.Value
                                )
   object ClassDecoratorData {
     def apply(data: Data): ClassDecoratorData = data("decoratorData").asInstanceOf[ClassDecoratorData]
@@ -43,6 +46,10 @@ abstract class ClassDecorator extends MacroAnnotationHandler with AngulateWhiteb
     val decoratorData = ClassDecoratorData(data)
     import decoratorData._
     import parts._
+    val classModeAnnotation = classMode match {
+      case ClassMode.Scala => q"new scalajs.js.annotation.JSExportAll"
+      case ClassMode.JS => q"new scalajs.js.annotation.ScalaJSDefined"
+    }
     parts match {
       // modify annotations for the class carrying the macro annotation
       case parts: ClassParts =>
@@ -52,14 +59,14 @@ abstract class ClassDecorator extends MacroAnnotationHandler with AngulateWhiteb
           else s"$exports.$objName()._decorators.concat(" + metadata.map(p => s"__metadata('${p._1}',${p._2})").mkString("[",",","]") + ")"
         val js = s"$exports.$fullName = __decorate($decoration,$exports.$fullName);"
         (parts.modifiers.annotations ++ Seq(
-          q"new scalajs.js.annotation.JSExportAll",
+          classModeAnnotation,
           q"new scalajs.js.annotation.JSExport(${parts.fullName})",
           q"new sjsx.SJSXStatic(1000,$js)"
         ),data)
       // modify annotations for the companion object
       case parts: ObjectParts =>
         (parts.modifiers.annotations ++ Seq(
-          q"new scalajs.js.annotation.JSExportAll",
+          classModeAnnotation,
           q"new scalajs.js.annotation.JSExport($objName)"
         ),data)
       case _ =>
@@ -68,17 +75,25 @@ abstract class ClassDecorator extends MacroAnnotationHandler with AngulateWhiteb
   }
 
   private def extendFromJSObject(parents: Seq[Tree]): Seq[Tree] = {
-    //    tq"scalajs.js.Object" +: parents.filter(_.toString != "scala.AnyRef")
-    parents
+        tq"scalajs.js.Object" +: parents.filter(_.toString != "scala.AnyRef")
+//    parents
   }
 
-  override def modifiedParents(parts: CommonParts, data: Data): (Seq[Tree],Data) = parts match {
-    case parts: ObjectParts =>
-      (extendFromJSObject(parts.parents),data)
-    case parts: ClassParts =>
-      (extendFromJSObject(parts.parents),data)
-    case _ =>
-      super.modifiedParents(parts,data)
+  override def modifiedParents(parts: CommonParts, data: Data): (Seq[Tree],Data) = {
+    val decoratorData = ClassDecoratorData(data)
+    import decoratorData._
+    parts match {
+      case parts: ObjectParts =>
+        if(userDefinedCompanion || classMode==ClassMode.Scala) (parts.parents,data)
+        else (Seq(tq"scalajs.js.Object"),data)
+      case parts: ClassParts =>
+        if(classMode==ClassMode.JS)
+          (extendFromJSObject(parts.parents),data)
+        else
+          (parts.parents,data)
+      case _ =>
+        super.modifiedParents(parts,data)
+    }
   }
 
   override def modifiedBody(parts: CommonParts, data: Data): (Iterable[c.universe.Tree], Data) =
@@ -112,6 +127,12 @@ abstract class ClassDecorator extends MacroAnnotationHandler with AngulateWhiteb
       case RequireDependency(module,name) => s"require('$module').$name"
     }
 
+    // determine class mode
+    // (default: Scala; with @classModeJS => JS)
+    val classMode =
+      if(findAnnotation(modifiers.annotations,"classModeJS").isDefined) ClassMode.JS
+      else ClassMode.Scala
+
     val metadata: Metadata =
       if(diTypes.isEmpty) Map.empty[String,String]
       else Map("design:paramtypes"->diTypes.mkString("[",",","]"))
@@ -119,7 +140,9 @@ abstract class ClassDecorator extends MacroAnnotationHandler with AngulateWhiteb
     data + ("decoratorData"->ClassDecoratorData(
       objName,
       Seq(mainAnnotation),
-      metadata
+      metadata,
+      companion.isDefined,
+      classMode
     ))
   }
 
