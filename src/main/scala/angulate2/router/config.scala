@@ -33,5 +33,5 @@ case class Route(path: js.UndefOr[String] = js.undefined,
                  canLoad: js.UndefOr[js.Array[js.Any]] = js.undefined,
                  data: js.UndefOr[Data] = js.undefined,
                  resolveData: js.UndefOr[ResolveData] = js.undefined,
-                 children: js.UndefOr[Route] = js.undefined,
+                 children: js.UndefOr[Routes] = js.undefined,
                  loadChildren: js.UndefOr[LoadChildren] = js.undefined)
