@@ -5,7 +5,8 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2.core
 
-import angulate2.internal.ClassDecorator
+import angulate2.core.HostListener.HostListenerDecorator
+import angulate2.internal.{ClassDecorator, ClassDecoratorNew}
 
 import scala.annotation.{StaticAnnotation, compileTimeOnly}
 import scala.language.experimental.macros
@@ -35,7 +36,7 @@ class Directive(selector: String = null,
 
 object Directive {
 
-  private[angulate2] class Macro(val c: whitebox.Context) extends ClassDecorator {
+  private[angulate2] class Macro(val c: whitebox.Context) extends ClassDecoratorNew with HostListenerDecorator {
     import c.universe._
 
     override def annotationName = "Directive"

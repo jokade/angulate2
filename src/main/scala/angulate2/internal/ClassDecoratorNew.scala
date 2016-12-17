@@ -5,14 +5,13 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2.internal
 
-import angulate2.core.HostListener.HostListenerDecorator
 import angulate2.ext.ClassMode
-import de.surfice.smacrotools.MacroAnnotationHandler
+import de.surfice.smacrotools.MacroAnnotationHandlerNew
 
 import scala.language.reflectiveCalls
 
-abstract class ClassDecorator extends MacroAnnotationHandler
-  with AngulateWhiteboxMacroTools with MethodDecorator {
+abstract class ClassDecoratorNew extends MacroAnnotationHandlerNew
+  with AngulateWhiteboxMacroTools {
 
   import c.universe._
 
@@ -26,14 +25,21 @@ abstract class ClassDecorator extends MacroAnnotationHandler
                                 decorators: Seq[Tree],
                                 metadata: Metadata,
                                 userDefinedCompanion: Boolean,
-                                classMode: ClassMode.Value
+                                classMode: ClassMode.Value,
+                                sjsxStatic: Seq[String] = Nil
                                )
   object ClassDecoratorData {
     def apply(data: Data): ClassDecoratorData = data("decoratorData").asInstanceOf[ClassDecoratorData]
+//    def update(data: Data, f: ClassDecoratorData=>ClassDecoratorData): Data = data + ("decoratorData" -> f(ClassDecoratorData(data)))
+    def update(data: Data, cdd: ClassDecoratorData): Data = data + ("decoratorData" -> cdd)
+    def addSjsxStatic(data: Data, js: Seq[String]): Data = {
+      val cdd = ClassDecoratorData(data)
+      update(data,cdd.copy(sjsxStatic = cdd.sjsxStatic++js))
+    }
   }
 
   // Prefix for accessing the Scala module's exports object from within the sjsx module
-  private val exports = "$s"
+  protected val exports = "$s"
 
 
   def mainAnnotationObject: Tree
@@ -41,72 +47,57 @@ abstract class ClassDecorator extends MacroAnnotationHandler
   def annotationParamNames: Seq[String]
 
 
-  override def modifiedClassDef(classParts: ClassParts, data: Data): (c.universe.Tree, Data) = {
-    super.modifiedClassDef(classParts, initClassDecoratorData(classParts,data))
+  override def analyze: Analysis = super.analyze andThen {
+    case (origParts:ClassParts,data) =>
+      (origParts,initClassDecoratorData(origParts,data))
+    case default => default
   }
 
 
-  override def modifiedAnnotations(parts: CommonParts, data: Data): (List[c.universe.Tree], Data) = {
-    val classDecoratorData = ClassDecoratorData(data)
-    import classDecoratorData._
-    import parts._
-    findMethodDecorations(body,classDecoratorData,Nil)
-    val classModeAnnotation = classMode match {
-      case ClassMode.Scala => q"new scalajs.js.annotation.JSExportAll"
-      case ClassMode.JS => q"new scalajs.js.annotation.ScalaJSDefined"
-    }
-    parts match {
-      // modify annotations for the class carrying the macro annotation
-      case parts: ClassParts =>
-        // assemble JS for class decoration
-        val js = genClassDecoration(parts,classDecoratorData)
-        (parts.modifiers.annotations ++ Seq(
-          classModeAnnotation,
-          q"new scalajs.js.annotation.JSExport(${parts.fullName})",
-          q"new sjsx.SJSXStatic(1000,$js)"
-        ),data)
-      // modify annotations for the companion object
-      case parts: ObjectParts =>
-        (parts.modifiers.annotations ++ Seq(
-          classModeAnnotation,
+  override def transform: Transformation = commonTransform andThen {
+    // modify annotations for the class carrying the macro annotation
+    case cls: ClassTransformData =>
+      val classDecoratorData = ClassDecoratorData(cls.data)
+      // assemble JS for class decoration
+      val js = classDecoratorData.sjsxStatic.mkString("","\n","\n") + genClassDecoration(cls.modParts,classDecoratorData)
+      cls.addAnnotations(
+        q"new scalajs.js.annotation.JSExport(${cls.modParts.fullName})",
+        q"new sjsx.SJSXStatic(1000,$js)"
+      )
+    case obj: ObjectTransformData =>
+      val classDecoratorData = ClassDecoratorData(obj.data)
+      import classDecoratorData._
+      obj
+        .addAnnotations(
           q"new scalajs.js.annotation.JSExport($objName)"
-        ),data)
-      case _ =>
-        super.modifiedAnnotations(parts,data)
-    }
+        )
+        .addStatements(
+          q"""val _decorators = scalajs.js.Array( ..$decorators )"""
+        )
+    case default => default
   }
 
-  private def extendFromJSObject(parents: Seq[Tree]): Seq[Tree] = {
-        tq"scalajs.js.Object" +: parents.filter(_.toString != "scala.AnyRef")
-//    parents
-  }
+  private val typeSeqJsObject = Seq(tq"scalajs.js.Object")
 
-  override def modifiedParents(parts: CommonParts, data: Data): (Seq[Tree],Data) = {
-    val classDecoratorData = ClassDecoratorData(data)
+  private def commonTransform: Transformation = { tdata =>
+    val classDecoratorData = ClassDecoratorData(tdata.data)
     import classDecoratorData._
-    parts match {
-      case parts: ObjectParts =>
-        if(userDefinedCompanion || classMode==ClassMode.Scala) (parts.parents,data)
-        else (Seq(tq"scalajs.js.Object"),data)
-      case parts: ClassParts =>
-        if(classMode==ClassMode.JS)
-          (extendFromJSObject(parts.parents),data)
-        else
-          (parts.parents,data)
-      case _ =>
-        super.modifiedParents(parts,data)
-    }
+    tdata
+      .addAnnotations( classModeAnnotation(classMode) )
+      .updParents(
+        if(classMode==ClassMode.JS) tdata.modParts.parents match {
+          case Nil => typeSeqJsObject
+          case Seq(x) if x.toString == "scala.AnyRef" => typeSeqJsObject
+          case x => x
+        }
+        else tdata.modParts.parents )
   }
 
-  override def modifiedBody(parts: CommonParts, data: Data): (Iterable[c.universe.Tree], Data) =
-    if(parts.isObject) {
-      val decoratorData = data("decoratorData").asInstanceOf[ClassDecoratorData]
-      import decoratorData._
-      val stats = q"""val _decorators = scalajs.js.Array( ..$decorators )"""
-      (parts.body :+ stats,data)
-    }
-    else
-      super.modifiedBody(parts, data)
+  private def classModeAnnotation(classMode: ClassMode.Value) = classMode match {
+    case ClassMode.Scala => q"new scalajs.js.annotation.JSExportAll"
+    case ClassMode.JS => q"new scalajs.js.annotation.ScalaJSDefined"
+  }
+
 
   def decoratorParameters(parts: ClassParts, annotationParamNames: Seq[String]) =
     extractAnnotationParameters(c.prefix.tree, annotationParamNames).collect {
@@ -159,8 +150,8 @@ abstract class ClassDecorator extends MacroAnnotationHandler
    * @return
    */
   private def genClassDecoration(parts: ClassParts, data: ClassDecoratorData): String = {
-    import parts._
     import data._
+    import parts._
 
     val decoration =
       if(metadata.isEmpty) s"$exports.$objName()._decorators"
@@ -168,3 +159,4 @@ abstract class ClassDecorator extends MacroAnnotationHandler
     s"$exports.$fullName = __decorate($decoration,$exports.$fullName);"
   }
 }
+

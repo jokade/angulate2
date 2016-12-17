@@ -5,6 +5,7 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2.core
 
+import angulate2.core.HostListener.HostListenerDecorator
 import angulate2.internal.ClassDecorator
 
 import scala.annotation.{StaticAnnotation, compileTimeOnly}
@@ -101,5 +102,7 @@ object Component {
       }
 
     }
+val func: Function2[Int,String,(Int,String)] = (i,s) => (i,s)
+
 
 }
