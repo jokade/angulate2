@@ -5,7 +5,6 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2.internal
 
-import angulate2.core.HostListener.HostListenerDecorator
 import angulate2.ext.ClassMode
 import de.surfice.smacrotools.MacroAnnotationHandler
 
@@ -159,8 +158,8 @@ abstract class ClassDecorator extends MacroAnnotationHandler
    * @return
    */
   private def genClassDecoration(parts: ClassParts, data: ClassDecoratorData): String = {
-    import parts._
     import data._
+    import parts._
 
     val decoration =
       if(metadata.isEmpty) s"$exports.$objName()._decorators"

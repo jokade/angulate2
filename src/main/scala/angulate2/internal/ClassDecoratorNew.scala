@@ -21,20 +21,26 @@ abstract class ClassDecoratorNew extends MacroAnnotationHandlerNew
   override def createCompanion: Boolean = true
 
   type Metadata = Map[String,String]
+  type MainAnnotationParams = Map[String,Tree]
+
   case class ClassDecoratorData(objName: String,
                                 decorators: Seq[Tree],
                                 metadata: Metadata,
                                 userDefinedCompanion: Boolean,
                                 classMode: ClassMode.Value,
+                                annotParams: MainAnnotationParams,
                                 sjsxStatic: Seq[String] = Nil
                                )
   object ClassDecoratorData {
     def apply(data: Data): ClassDecoratorData = data("decoratorData").asInstanceOf[ClassDecoratorData]
-//    def update(data: Data, f: ClassDecoratorData=>ClassDecoratorData): Data = data + ("decoratorData" -> f(ClassDecoratorData(data)))
     def update(data: Data, cdd: ClassDecoratorData): Data = data + ("decoratorData" -> cdd)
     def addSjsxStatic(data: Data, js: Seq[String]): Data = {
       val cdd = ClassDecoratorData(data)
       update(data,cdd.copy(sjsxStatic = cdd.sjsxStatic++js))
+    }
+    def updAnnotParam(data: Data, key: String, value: Tree): Data = {
+      val cdd = ClassDecoratorData(data)
+      update(data,cdd.copy(annotParams = cdd.annotParams + (key->value)))
     }
   }
 
@@ -67,12 +73,22 @@ abstract class ClassDecoratorNew extends MacroAnnotationHandlerNew
     case obj: ObjectTransformData =>
       val classDecoratorData = ClassDecoratorData(obj.data)
       import classDecoratorData._
+
+      val mainAnnotationParams = annotParams.map {
+        case (name,value) => q"${Ident(TermName(name))} = $value"
+      }
+      val mainAnnotation =
+        if(mainAnnotationParams.isEmpty)
+          q"$mainAnnotationObject()"
+        else
+          q"$mainAnnotationObject( scalajs.js.Dynamic.literal(..$mainAnnotationParams) )"
+
       obj
         .addAnnotations(
           q"new scalajs.js.annotation.JSExport($objName)"
         )
         .addStatements(
-          q"""val _decorators = scalajs.js.Array( ..$decorators )"""
+          q"""val _decorators = scalajs.js.Array( $mainAnnotation, ..$decorators )"""
         )
     case default => default
   }
@@ -99,9 +115,9 @@ abstract class ClassDecoratorNew extends MacroAnnotationHandlerNew
   }
 
 
-  def decoratorParameters(parts: ClassParts, annotationParamNames: Seq[String]) =
+  private def mainAnnotationParams(parts: ClassParts, annotationParamNames: Seq[String]): MainAnnotationParams =
     extractAnnotationParameters(c.prefix.tree, annotationParamNames).collect {
-      case (name,Some(value)) => q"${Ident(TermName(name))} = $value"
+      case (name,Some(value)) => (name,value)
     }
 
   /**
@@ -111,12 +127,12 @@ abstract class ClassDecoratorNew extends MacroAnnotationHandlerNew
     import parts._
 
     val objName = fullName + "_"
-    val mainAnnotationParams = decoratorParameters(parts,annotationParamNames)
-    val mainAnnotation =
-      if(mainAnnotationParams.isEmpty)
-        q"$mainAnnotationObject()"
-      else
-        q"$mainAnnotationObject( scalajs.js.Dynamic.literal(..$mainAnnotationParams) )"
+//    val mainAnnotationParams = mainAnnotationParams(parts,annotationParamNames)
+//    val mainAnnotation =
+//      if(mainAnnotationParams.isEmpty)
+//        q"$mainAnnotationObject()"
+//      else
+//        q"$mainAnnotationObject( scalajs.js.Dynamic.literal(..$mainAnnotationParams) )"
 
     val diTypes = getInjectionDependencies(params) map {
       case ScalaDependency(fqn) => s"$exports.$fqn"
@@ -135,10 +151,11 @@ abstract class ClassDecoratorNew extends MacroAnnotationHandlerNew
 
     data + ("decoratorData"->ClassDecoratorData(
       objName,
-      Seq(mainAnnotation),
+      Nil,
       metadata,
       companion.isDefined,
-      classMode
+      classMode,
+      mainAnnotationParams(parts,annotationParamNames)
     ))
   }
 
@@ -157,6 +174,20 @@ abstract class ClassDecoratorNew extends MacroAnnotationHandlerNew
       if(metadata.isEmpty) s"$exports.$objName()._decorators"
       else s"$exports.$objName()._decorators.concat(" + metadata.map(p => s"__metadata('${p._1}',${p._2})").mkString("[",",","]") + ")"
     s"$exports.$fullName = __decorate($decoration,$exports.$fullName);"
+  }
+
+  case class DecorationMetadata(key: String, value: String)
+  object DecorationMetadata {
+//    def designType(tree: Tree): DecorationMetadata = {
+//      DecorationMetadata("design:type","String")
+//    }
+  }
+
+  case class MethodDecoration(decorator: String, prototype: String, method: String, metadata: Iterable[DecorationMetadata]) {
+    def toJS: String = {
+      val metajs = metadata.map(s => s"__metadata('${s.key}',${s.value})").mkString(",")
+      s"__decorate([$decorator,$metajs],$exports.$prototype.prototype,'$method',null);"
+    }
   }
 }
 
