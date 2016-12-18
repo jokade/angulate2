@@ -1,10 +1,10 @@
-val smacrotoolsVersion = "0.0.2"
+val smacrotoolsVersion = "0.0.3"
 val sjsxVersion = "0.3.0"
 val rxjsVersion = "0.0.1"
 
 lazy val commonSettings = Seq(
   organization := "de.surfice",
-  version := "0.0.2.1-SNAPSHOT",
+  version := "0.0.3",
   scalaVersion := "2.11.8",
   scalacOptions ++= Seq("-deprecation","-unchecked","-feature","-language:implicitConversions","-Xlint"),
   autoCompilerPlugins := true,
