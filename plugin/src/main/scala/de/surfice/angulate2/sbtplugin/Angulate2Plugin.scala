@@ -40,6 +40,7 @@ object Angulate2Plugin extends sbt.AutoPlugin {
         |var __metadata = (this && this.__metadata) || function (k, v) {
         |  if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
         |};
+        |var core = require('@angular/core');
       """.stripMargin,
     ngScalaModule := "scalaModule",
     addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
