@@ -4,7 +4,7 @@ val rxjsVersion = "0.0.1"
 
 lazy val commonSettings = Seq(
   organization := "de.surfice",
-  version := "0.0.3",
+  version := "0.0.4-SNAPSHOT",
   scalaVersion := "2.11.8",
   scalacOptions ++= Seq("-deprecation","-unchecked","-feature","-language:implicitConversions","-Xlint"),
   autoCompilerPlugins := true,
