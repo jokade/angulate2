@@ -6,7 +6,6 @@
 package angulate2.core
 
 import angulate2.core.HostListener.HostListenerDecorator
-import angulate2.internal.ClassDecorator
 
 import scala.annotation.{StaticAnnotation, compileTimeOnly}
 import scala.collection.immutable.Iterable
@@ -45,64 +44,36 @@ class Component(selector: String = null,
 }
 
 object Component {
-    private[angulate2] class Macro(val c: whitebox.Context) extends ClassDecorator {
-      import c.universe._
+  private [angulate2] class Macro(val c: whitebox.Context) extends Directive.BaseMacro {
+    import c.universe._
 
-      override def annotationName = "Component"
+    override def annotationName = "Component"
 
-      // IMPORTANT: this list must contain all annotation arguments in the SAME order they are
-      // defined in the annotations constructor!
-      override def annotationParamNames: Seq[String] = Seq(
-        "selector",
-        "inputs",
-        "outputs",
-        "host",
-        "exportAs",
-        "moduleId",
-        "providers",
-        "viewProviders",
-        "changeDetection",
-        "queries",
-        "templateUrl",
-        "template",
-        "styles",
-        "styleUrls",
-        "animations",
-        "encapsulation",
-        "interpolation",
-        "entryComponents"
-      )
+    // IMPORTANT: this list must contain all annotation arguments in the SAME order they are
+    // defined in the annotations constructor!
+    override def annotationParamNames: Seq[String] = Seq(
+      "selector",
+      "inputs",
+      "outputs",
+      "host",
+      "exportAs",
+      "moduleId",
+      "providers",
+      "viewProviders",
+      "changeDetection",
+      "queries",
+      "templateUrl",
+      "template",
+      "styles",
+      "styleUrls",
+      "animations",
+      "encapsulation",
+      "interpolation",
+      "entryComponents"
+    )
 
-      override def mainAnnotationObject: c.universe.Tree = q"angulate2.core.ComponentFacade"
+    override def mainAnnotationObject: c.universe.Tree = q"angulate2.core.ComponentFacade"
 
-      object InputAnnot {
-        def unapply(annotations: Seq[Tree]): Option[Option[Tree]] = findAnnotation(annotations,"Input")
-          .map( t => extractAnnotationParameters(t,Seq("externalName")).apply("externalName") )
-        def unapply(modifiers: Modifiers): Option[Option[Tree]] = unapply(modifiers.annotations)
-      }
-
-      override def decoratorParameters(parts: ClassParts, annotationParamNames: Seq[String]) = {
-        import parts._
-
-        val inputStrLiterals = body collect {
-          case ValDef(InputAnnot(externalName),term,_,_) => externalName.flatMap(extractStringConstant).getOrElse(term.toString)
-        }
-        val (nonInputAnnotationParams, inputAnnotationParams) = super.decoratorParameters(parts,annotationParamNames).partition {
-          case q"inputs = $v" => false
-          case _ => true
-        }
-        val inputs = inputAnnotationParams match {
-          case q"inputs = $call(..$ins)" :: Nil =>
-            q"inputs = scalajs.js.Array(..${ins ++ inputStrLiterals.map(s => Literal(Constant(s)))})"
-          case _ =>
-            q"inputs = scalajs.js.Array(..$inputStrLiterals)"
-        }
-
-        Iterable(inputs) ++ nonInputAnnotationParams
-      }
-
-    }
-val func: Function2[Int,String,(Int,String)] = (i,s) => (i,s)
-
+  }
 
 }

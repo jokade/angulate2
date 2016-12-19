@@ -16,7 +16,7 @@ import scala.scalajs.js
  */
 object std extends OpsTrait {
 
-  // duplicate definition of core.Component since `type = core.Component` won't compile
+  // duplicate definition of core.Component since `type Component = core.Component` won't compile
   // NOTE: keep in sync with core.Component()!!
   @compileTimeOnly("enable macro paradise to expand macro annotations")
   class Component(selector: String = null,
@@ -47,7 +47,7 @@ object std extends OpsTrait {
     def macroTransform(annottees: Any*): Any = macro core.Injectable.Macro.impl
   }
 
-  // duplicate definition of core.NgModule since `type = core.NgModule` won't compile
+  // duplicate definition of core.NgModule since `type NgModule = core.NgModule` won't compile
   // NOTE: keep in sync with core.NgModule()!!
   @compileTimeOnly("enable macro paradise to expand macro annotations")
   class NgModule(providers: js.Array[js.Any] = null,
@@ -61,7 +61,7 @@ object std extends OpsTrait {
     def macroTransform(annottees: Any*): Any = macro core.NgModule.Macro.impl
   }
 
-  // duplicate definition of core.Directive since `type = core.Directive` won't compile
+  // duplicate definition of core.Directive since `type Directive = core.Directive` won't compile
   // NOTE: keep in sync with core.Directive()!!
   @compileTimeOnly("enable macro paradise to expand macro annotations")
   class Directive(selector: String = null,
@@ -78,9 +78,10 @@ object std extends OpsTrait {
   type Input = core.Input
   type OnInit = core.OnInit
   type OnDestroy = core.OnDestroy
+  type OnChanges = core.OnChanges
 
 
-  // duplicate definition of ext.Data since `type = ext.Data` won't compile
+  // duplicate definition of ext.Data since `type Data = ext.Data` won't compile
   // NOTE: keep in sync with ext.Data()!!
   @compileTimeOnly("enable macro paradise to expand macro annotations")
   class Data extends StaticAnnotation {

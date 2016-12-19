@@ -2,7 +2,7 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2.core
 
-import angulate2.internal.ClassDecoratorNew
+import angulate2.internal.ClassDecorator
 
 import scala.annotation.StaticAnnotation
 
@@ -11,7 +11,7 @@ class Input() extends StaticAnnotation {
 }
 
 object Input {
-  protected[angulate2] trait InputDecorator extends ClassDecoratorNew {
+  protected[angulate2] trait InputDecorator extends ClassDecorator {
     import c.universe._
 
     override def analyze: Analysis = super.analyze andThen {

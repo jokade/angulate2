@@ -5,7 +5,7 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2.core
 
-import angulate2.internal.ClassDecoratorNew
+import angulate2.internal.ClassDecorator
 
 import scala.annotation.StaticAnnotation
 import scala.scalajs.js
@@ -14,7 +14,7 @@ class HostListener(eventName: String,
                    args: js.UndefOr[js.Array[String]] = js.undefined) extends StaticAnnotation
 
 object HostListener {
-  protected[angulate2] trait HostListenerDecorator extends ClassDecoratorNew {
+  protected[angulate2] trait HostListenerDecorator extends ClassDecorator {
     import c.universe._
 
 

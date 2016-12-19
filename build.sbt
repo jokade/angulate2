@@ -1,4 +1,4 @@
-val smacrotoolsVersion = "0.0.3"
+val smacrotoolsVersion = "0.0.4-SNAPSHOT"
 val sjsxVersion = "0.3.0"
 val rxjsVersion = "0.0.1"
 
