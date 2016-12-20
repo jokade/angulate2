@@ -44,6 +44,7 @@ private[angulate2] trait OpsTrait {
   def @@[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12]: js.Array[js.Any] = macro OpsMacros.jsRefArray12[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12]
 
   def @@@[T](items: T*): js.Array[T] = items.toJSArray
+
 }
 
 private[angulate2] class OpsMacros(val c: blackbox.Context) extends AngulateBlackboxMacroTools {

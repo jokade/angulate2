@@ -76,6 +76,7 @@ object std extends OpsTrait {
   }
 
   type Input = core.Input
+  type Output = core.Output
   type OnInit = core.OnInit
   type OnDestroy = core.OnDestroy
   type OnChanges = core.OnChanges

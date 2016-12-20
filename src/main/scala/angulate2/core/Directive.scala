@@ -7,6 +7,7 @@ package angulate2.core
 
 import angulate2.core.HostListener.HostListenerDecorator
 import angulate2.core.Input.InputDecorator
+import angulate2.core.Output.OutputDecorator
 import angulate2.internal.ClassDecorator
 
 import scala.annotation.{StaticAnnotation, compileTimeOnly}
@@ -38,7 +39,7 @@ class Directive(selector: String = null,
 object Directive {
 
   private[angulate2] abstract class BaseMacro extends ClassDecorator
-  with InputDecorator with HostListenerDecorator
+  with InputDecorator with OutputDecorator with HostListenerDecorator
 
   private[angulate2] class Macro(val c: whitebox.Context) extends BaseMacro {
     import c.universe._
