@@ -142,8 +142,8 @@ abstract class ClassDecorator extends MacroAnnotationHandlerNew
     // determine class mode
     // (default: Scala; with @classModeJS => JS)
     val classMode =
-      if(findAnnotation(modifiers.annotations,"classModeJS").isDefined) ClassMode.JS
-      else ClassMode.Scala
+      if(findAnnotation(modifiers.annotations,"classModeScala").isDefined) ClassMode.Scala
+      else ClassMode.JS
 
     val metadata: Metadata =
       if(diTypes.isEmpty) Map.empty[String,String]
