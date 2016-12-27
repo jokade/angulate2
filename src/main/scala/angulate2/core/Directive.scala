@@ -5,6 +5,7 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2.core
 
+import angulate2.core.HostBinding.HostBindingDecorator
 import angulate2.core.HostListener.HostListenerDecorator
 import angulate2.core.Input.InputDecorator
 import angulate2.core.Output.OutputDecorator
@@ -39,7 +40,7 @@ class Directive(selector: String = null,
 object Directive {
 
   private[angulate2] abstract class BaseMacro extends ClassDecorator
-  with InputDecorator with OutputDecorator with HostListenerDecorator
+  with InputDecorator with OutputDecorator with HostListenerDecorator with HostBindingDecorator
 
   private[angulate2] class Macro(val c: whitebox.Context) extends BaseMacro {
     import c.universe._

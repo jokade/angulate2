@@ -75,6 +75,8 @@ object std extends OpsTrait {
     def macroTransform(annottees: Any*): Any = macro core.Directive.Macro.impl
   }
 
+  type HostListener = core.HostListener
+  type HostBinding = core.HostBinding
   type Input = core.Input
   type Output = core.Output
   type OnInit = core.OnInit
