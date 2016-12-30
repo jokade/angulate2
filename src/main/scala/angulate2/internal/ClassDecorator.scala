@@ -70,6 +70,7 @@ abstract class ClassDecorator extends MacroAnnotationHandlerNew
         q"new scalajs.js.annotation.JSExport(${cls.modParts.fullName})",
         q"new sjsx.SJSXStatic(1000,$js)"
       )
+    // update the companion object
     case obj: ObjectTransformData =>
       val classDecoratorData = ClassDecoratorData(obj.data)
       import classDecoratorData._
@@ -84,16 +85,14 @@ abstract class ClassDecorator extends MacroAnnotationHandlerNew
           q"$mainAnnotationObject( scalajs.js.Dynamic.literal(..$mainAnnotationParams) )"
 
       obj
-        .addAnnotations(
-          q"new scalajs.js.annotation.JSExport($objName)"
-        )
-        .addStatements(
-          q"""val _decorators = scalajs.js.Array( $mainAnnotation, ..$decorators )"""
-        )
+        .addAnnotations( q"new scalajs.js.annotation.JSExport($objName)" )
+        .addStatements( q"""val _decorators = scalajs.js.Array( $mainAnnotation, ..$decorators )""" )
     case default => default
   }
 
   private val typeSeqJsObject = Seq(tq"scalajs.js.Object")
+
+  private val jsObjectType = weakTypeOf[scalajs.js.Object]
 
   private def commonTransform: Transformation = { tdata =>
     val classDecoratorData = ClassDecoratorData(tdata.data)
@@ -104,7 +103,10 @@ abstract class ClassDecorator extends MacroAnnotationHandlerNew
         if(classMode==ClassMode.JS) tdata.modParts.parents match {
           case Nil => typeSeqJsObject
           case Seq(x) if x.toString == "scala.AnyRef" => typeSeqJsObject
-          case x => x
+          case parents => parents.map(c.typecheck(_,c.TYPEmode)) map {
+            case x if x.tpe <:< jsObjectType => x
+            case x => tq"${x.tpe.typeSymbol.companion}.JS"
+          }
         }
         else tdata.modParts.parents )
   }
@@ -127,12 +129,6 @@ abstract class ClassDecorator extends MacroAnnotationHandlerNew
     import parts._
 
     val objName = fullName + "_"
-//    val mainAnnotationParams = mainAnnotationParams(parts,annotationParamNames)
-//    val mainAnnotation =
-//      if(mainAnnotationParams.isEmpty)
-//        q"$mainAnnotationObject()"
-//      else
-//        q"$mainAnnotationObject( scalajs.js.Dynamic.literal(..$mainAnnotationParams) )"
 
     val diTypes = getInjectionDependencies(params) map {
       case ScalaDependency(fqn) => s"$exports.$fqn"

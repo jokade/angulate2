@@ -14,10 +14,11 @@ import scala.scalajs.js.annotation.ScalaJSDefined
 trait OnInit {
   def ngOnInit(): Unit
 }
-
-@ScalaJSDefined
-trait OnInitJS extends js.Object {
-  def ngOnInit(): Unit
+object OnInit {
+  @ScalaJSDefined
+  trait JS extends js.Object {
+    def ngOnInit(): Unit
+  }
 }
 
 /**
@@ -26,10 +27,11 @@ trait OnInitJS extends js.Object {
 trait OnDestroy {
   def ngOnDestroy() : Unit
 }
-
-@ScalaJSDefined
-trait OnDestroyJS extends js.Object {
-  def ngOnDestroy() : Unit
+object OnDestroy {
+  @ScalaJSDefined
+  trait JS extends js.Object {
+    def ngOnDestroy(): Unit
+  }
 }
 
 /**
@@ -39,15 +41,13 @@ trait OnChanges {
   import OnChanges._
   def ngOnChanges(changes: SimpleChanges) : Unit
 }
-
-@ScalaJSDefined
-trait OnChangesJS extends js.Object {
-  import OnChanges._
-  def ngOnChanges(changes: SimpleChanges) : Unit
-}
-
 object OnChanges {
   type SimpleChanges = js.Dictionary[SimpleChange]
+
+  @ScalaJSDefined
+  trait JS extends js.Object {
+    def ngOnChanges(changes: SimpleChanges): Unit
+  }
 }
 
 @js.native
@@ -63,10 +63,11 @@ trait SimpleChange extends js.Any {
 trait DoCheck {
   def ngDoCheck(): Unit
 }
-
-@ScalaJSDefined
-trait DoCheckJS extends js.Object {
-  def ngDoCheck(): Unit
+object DoCheck {
+  @ScalaJSDefined
+  trait JS extends js.Object {
+    def ngDoCheck(): Unit
+  }
 }
 
 /**
@@ -75,10 +76,11 @@ trait DoCheckJS extends js.Object {
 trait AfterContentInit {
   def ngAfterContentInit(): Unit
 }
-
-@ScalaJSDefined
-trait AfterContentInitJS extends js.Object {
-  def ngAfterContentInit(): Unit
+object AfterContentInit {
+  @ScalaJSDefined
+  trait JS extends js.Object {
+    def ngAfterContentInit(): Unit
+  }
 }
 
 /**
@@ -87,10 +89,11 @@ trait AfterContentInitJS extends js.Object {
 trait AfterContentChecked {
   def ngAfterContentChecked(): Unit
 }
-
-@ScalaJSDefined
-trait AfterContentCheckedJS extends js.Object {
-  def ngAfterContentChecked(): Unit
+object AfterContentChecked {
+  @ScalaJSDefined
+  trait JS extends js.Object {
+    def ngAfterContentChecked(): Unit
+  }
 }
 
 /**
@@ -99,10 +102,11 @@ trait AfterContentCheckedJS extends js.Object {
 trait AfterViewInit {
   def ngAfterViewInit(): Unit
 }
-
-@ScalaJSDefined
-trait AfterViewInitJS extends js.Object {
-  def ngAfterViewInit(): Unit
+object AfterViewInit {
+  @ScalaJSDefined
+  trait JS extends js.Object {
+    def ngAfterViewInit(): Unit
+  }
 }
 
 /**
@@ -111,8 +115,9 @@ trait AfterViewInitJS extends js.Object {
 trait AfterViewChecked {
   def ngAfterViewChecked(): Unit
 }
-
-@ScalaJSDefined
-trait AfterViewCheckedJS extends js.Object {
-  def ngAfterViewChecked(): Unit
+object AfterViewChecked {
+  @ScalaJSDefined
+  trait JS extends js.Object {
+    def ngAfterViewChecked(): Unit
+  }
 }
