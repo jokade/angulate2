@@ -5,7 +5,7 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2.ext.inMemoryWebApi
 
-import de.surfice.smacrotools.JSOptionsObject
+import de.surfice.smacrotools.{JSOptionsObject, debug}
 
 import scala.scalajs.js
 

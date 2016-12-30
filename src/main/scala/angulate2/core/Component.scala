@@ -5,10 +5,8 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2.core
 
-import angulate2.core.HostListener.HostListenerDecorator
 
 import scala.annotation.{StaticAnnotation, compileTimeOnly}
-import scala.collection.immutable.Iterable
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
 import scala.scalajs.js
