@@ -13,11 +13,11 @@ import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
 
 @compileTimeOnly("enable macro paradise to expand macro annotations")
-class Router(root: Boolean, routes: Route*) extends StaticAnnotation {
-  def macroTransform(annottees: Any*): Any = macro Router.Macro.impl
+class Routes(root: Boolean, routes: Route*) extends StaticAnnotation {
+  def macroTransform(annottees: Any*): Any = macro Routes.Macro.impl
 }
 
-object Router {
+object Routes {
   private[angulate2] class Macro(val c: whitebox.Context) extends ClassDecorator {
     import c.universe._
 
@@ -26,7 +26,7 @@ object Router {
       "routes*"
     )
 
-    override val annotationName: String = "Router"
+    override val annotationName: String = "Routes"
 
     override def mainAnnotationObject = q"angulate2.core.NgModuleFacade"
 
