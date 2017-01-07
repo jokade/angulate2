@@ -1,10 +1,13 @@
-val smacrotoolsVersion = "0.0.5-SNAPSHOT"
+version in ThisBuild := "0.0.5"
+
+val smacrotoolsVersion = "0.0.5"
 val sjsxVersion = "0.3.0"
-val rxjsVersion = "0.0.2-SNAPSHOT"
+val rxjsVersion = "0.0.2"
+val scalajsdomVersion = "0.9.1"
+val scalatagsVersion = "0.6.2"
 
 lazy val commonSettings = Seq(
   organization := "de.surfice",
-  version := "0.0.5-SNAPSHOT",
   scalaVersion := "2.11.8",
   scalacOptions ++= Seq("-deprecation","-unchecked","-feature","-language:implicitConversions","-Xlint"),
   autoCompilerPlugins := true,
@@ -13,25 +16,37 @@ lazy val commonSettings = Seq(
   resolvers += Resolver.sonatypeRepo("snapshots")
 )
 
+lazy val crossSettings = Seq(
+  crossScalaVersions := Seq("2.11.8","2.12.1")
+)
 
-lazy val angulate2 = project.in(file(".")).
-  enablePlugins(ScalaJSPlugin).
-  aggregate(plugin,stubs).
-  settings(commonSettings: _*).
-  settings(publishingSettings: _*).
-  settings( 
+
+lazy val angulate2 = project.in(file("."))
+  .aggregate(bindings,plugin,stubs)
+  .settings(commonSettings:_*)
+  .settings(crossSettings:_*)
+  .settings(
+    publish := {},
+    publishLocal := {}
+  )
+
+lazy val bindings = project
+  .enablePlugins(ScalaJSPlugin)
+  .settings(commonSettings: _*)
+  .settings(publishingSettings: _*)
+  .settings(crossSettings: _*)
+  .settings( 
     name := "angulate2",
     addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "org.scala-js"   %%% "scalajs-dom" % "0.8.0",
+      "org.scala-js"   %%% "scalajs-dom" % scalajsdomVersion,
       "de.surfice" %%% "smacrotools-sjs" % smacrotoolsVersion,
       "de.surfice" %%% "sjsx" % sjsxVersion,
       "de.surfice" %%% "scalajs-rxjs_cjsm" % rxjsVersion,
-      "com.lihaoyi" %%% "scalatags" % "0.6.1"
+      "com.lihaoyi" %%% "scalatags" % scalatagsVersion
       //"be.doeraene" %%% "scalajs-jquery" % "0.8.0" % "provided",
     ),
-    crossScalaVersions := Seq("2.11.8","2.12.0"),
     scalacOptions ++= (if (isSnapshot.value) Seq.empty else Seq({
         val a = baseDirectory.value.toURI.toString.replaceFirst("[^/]+/?$", "")
         val g = "https://raw.githubusercontent.com/jokade/angulate2"
@@ -40,10 +55,10 @@ lazy val angulate2 = project.in(file(".")).
   )
 
 
-lazy val plugin = project.
-  settings(commonSettings:_*).
-  settings(publishingSettings:_*).
-  settings(
+lazy val plugin = project
+  .settings(commonSettings:_*)
+  .settings(publishingSettings:_*)
+  .settings(
     name := "sbt-angulate2",
     description := "sbt plugin for angulate2 (Angular2 bindings for Scala.js)",
     sbtPlugin := true,
@@ -62,9 +77,9 @@ lazy val plugin = project.
 lazy val stubs = project
   .settings(commonSettings:_*)
   .settings(publishingSettings:_*)
+  .settings(crossSettings: _*)
   .settings(
-    name := "angulate2-stubs",
-    crossScalaVersions := Seq("2.11.8","2.12.0")
+    name := "angulate2-stubs"
   )
 
 //lazy val tests = project.
