@@ -35,7 +35,23 @@ class Router extends js.Object {
 object Router {
   implicit final class RichRouter(val r: Router) extends AnyVal {
     import scalajs.js.JSConverters._
+    import js.Dynamic.literal
+
+    /**
+     * Use `navigateTo("/foo",bar.id)`
+     * in place of `navigate(js.Array("/foo",bar.id))`.
+     *
+     * @param commands routing commands
+     */
     @inline
     def navigateTo(commands: js.Any*): RxPromise[Boolean] = r.navigate(commands.toJSArray)
+
+    /**
+     * Use `navigateRelativeTo(route,bar.id)`
+     * in place of `navigate(js.Array(bar.id), js.Dynamic.literal(relativeTo = route))`
+     */
+    @inline
+    def navigateRelativeTo(route: ActivatedRoute, commands: js.Any*): RxPromise[Boolean] =
+      r.navigate(commands.toJSArray,literal(relativeTo = route))
   }
 }

@@ -11,8 +11,8 @@ import de.surfice.smacrotools.JSOptionsObject
 
 import scala.scalajs.js
 
-@js.native
-trait Data extends js.Object
+//@js.native
+//trait Data extends js.Object
 
 @js.native
 trait ResolveData extends js.Object
@@ -31,7 +31,7 @@ case class Route(path: js.UndefOr[String] = js.undefined,
                  canActivateChild: js.UndefOr[js.Array[js.Any]] = js.undefined,
                  canDeactivate: js.UndefOr[js.Array[js.Any]] = js.undefined,
                  canLoad: js.UndefOr[js.Array[js.Any]] = js.undefined,
-                 data: js.UndefOr[Data] = js.undefined,
-                 resolveData: js.UndefOr[ResolveData] = js.undefined,
+                 data: js.UndefOr[js.Any] = js.undefined,
+                 resolve: js.UndefOr[js.Any] = js.undefined,
                  children: js.UndefOr[Routes] = js.undefined,
-                 loadChildren: js.UndefOr[LoadChildren] = js.undefined)
+                 loadChildren: js.UndefOr[js.Any] = js.undefined)

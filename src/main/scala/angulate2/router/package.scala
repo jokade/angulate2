@@ -13,5 +13,8 @@ package object router {
   type UrlMatcher = (js.Dynamic,js.Dynamic,Route) => js.Dynamic
   type UrlTree = js.Object
   type Routes = js.Array[Route]
+  type Params = js.Dictionary[String]
+  type Data = js.Dictionary[js.Any]
+//  type ResolveData = js.Dictionary[js.Any]
 
 }
