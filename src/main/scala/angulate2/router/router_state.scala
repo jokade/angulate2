@@ -24,7 +24,7 @@ class RouterStateSnapshot(val url: String, root: ActivatedRouteSnapshot) extends
 class ActivatedRoute(val url: Observable[js.Array[UrlSegment]],
                      val params: Observable[Params],
                      val queryParams: Observable[Params],
-                     val fragment: Observable[String],
+                     val fragment: Observable[js.UndefOr[String]],
                      val data: Observable[Data],
                      val outlet: String,
                      val component: js.Any,

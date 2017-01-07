@@ -34,4 +34,13 @@ case class Route(path: js.UndefOr[String] = js.undefined,
                  data: js.UndefOr[js.Any] = js.undefined,
                  resolve: js.UndefOr[js.Any] = js.undefined,
                  children: js.UndefOr[Routes] = js.undefined,
-                 loadChildren: js.UndefOr[js.Any] = js.undefined)
+                 loadChildren: js.UndefOr[js.Any] = js.undefined) extends js.Object
+
+@JSOptionsObject
+case class NavigationExtras(relativeTo: js.UndefOr[ActivatedRoute] = js.undefined,
+                            queryParams: js.UndefOr[js.Any] = js.undefined,
+                            fragment: js.UndefOr[String] = js.undefined,
+                            preserveQueryParams: js.UndefOr[Boolean] = js.undefined,
+                            preserveFragment: js.UndefOr[Boolean] = js.undefined,
+                            skipLocationChange: js.UndefOr[Boolean] = js.undefined,
+                            replaceUrl: js.UndefOr[Boolean] = js.undefined) extends js.Object

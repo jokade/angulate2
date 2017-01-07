@@ -46,6 +46,9 @@ object Router {
     @inline
     def navigateTo(commands: js.Any*): RxPromise[Boolean] = r.navigate(commands.toJSArray)
 
+    @inline
+    def navigateTo(extras: NavigationExtras)(commands: js.Any*): RxPromise[Boolean] = r.navigate(commands.toJSArray,extras)
+
     /**
      * Use `navigateRelativeTo(route,bar.id)`
      * in place of `navigate(js.Array(bar.id), js.Dynamic.literal(relativeTo = route))`
