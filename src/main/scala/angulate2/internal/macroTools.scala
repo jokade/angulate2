@@ -40,10 +40,6 @@ trait AngulateCommonMacroTools extends de.surfice.smacrotools.JsCommonMacroTools
           }.getOrElse(ScalaDependency(t.toString))
       }
 
-//  def parameterAnnotation(fullClassName: String, params: Iterable[Tree]) : String = getInjectionDependencies(params) match {
-//    case Nil => ""
-//    case list => list.map( p => "["+p+"]").mkString(s"$fullClassName.parameters = [",",","];")
-//  }
 
 }
 

@@ -9,4 +9,6 @@ import scala.scalajs.js
 
 package object core {
   type OptAnyArray = js.UndefOr[js.Array[js.Any]]
+
+
 }

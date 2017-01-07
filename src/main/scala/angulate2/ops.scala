@@ -45,6 +45,8 @@ private[angulate2] trait OpsTrait {
 
   def @@@[T](items: T*): js.Array[T] = items.toJSArray
 
+  val %%% = js.Dynamic.literal
+
 }
 
 private[angulate2] class OpsMacros(val c: blackbox.Context) extends AngulateBlackboxMacroTools {

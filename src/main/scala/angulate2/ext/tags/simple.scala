@@ -5,10 +5,11 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2.ext.tags
 
-import scalatags.Text.TypedTag
 import scalatags.Text.all._
+import scalatags.Text.TypedTag
 
 object simple extends NgSimpleScalatags
+
 
 private[angulate2] trait NgSimpleScalatags {
 
@@ -51,6 +52,12 @@ private[angulate2] trait NgSimpleScalatags {
    */
   val ngClick = attr("on-click")
 
+  /** Shortcut for `ngBind("disabled")`
+   */
+  val ngDisabled = attr("bind-disabled")
+
+  /** Shortcut for `ngBindOn("ngModel")`
+   */
   val ngModel = attr("[(ngModel)]", raw = true)
 
   /** Class binding.
@@ -77,14 +84,24 @@ private[angulate2] trait NgSimpleScalatags {
   val ngSwitchCase = attr("*ngSwitchCase", raw = true)
   val ngSwitchDefault = attr("*ngSwitchDefault", raw = true)
 
-  def routerLink(url: String, active: String = "", queryParams: String = "")(xs: Modifier*) =
-    tag("a")(attr("routerLink"):=url, attr("routerLinkActive"):=active, attr("queryParams") := queryParams)(xs)
+  @inline
+  def routerLink(url: String, active: String = "", activeOptions: String = "", queryParams: String = "")(xs: Modifier*) =
+    tag("a")(
+      attr("routerLink"):=url,
+      attr("routerLinkActive"):=active,
+      attr("queryParams") := queryParams,
+      attr("bind-routerLinkActiveOptions"):=activeOptions)(xs)
+
+  @inline
+  def bindRouterLink(expr: String, active: String = "", queryParams: String = "")(xs: Modifier*) =
+    tag("a")(attr("bind-routerLink"):=expr, attr("routerLinkActive"):=active, attr("queryParams") := queryParams)(xs)
+
+
   val routerLink = attr("routerLink")
-//  object routerLink {
-//    def :=(url: String) = attr("routerLink") := url
-//  }
 
   val routerOutlet = tag("router-outlet")
+  @inline
+  def routerOutlet(name: String) = tag("router-outlet")(attr("name"):=name)
 }
 
 

@@ -45,12 +45,20 @@ abstract class ClassDecorator extends MacroAnnotationHandlerNew
   }
 
   // Prefix for accessing the Scala module's exports object from within the sjsx module
-  protected val exports = "$s"
+  protected val exports = "s"
 
 
   def mainAnnotationObject: Tree
 
+  /** Names of the parameters in the last argument list of the main annotation
+   * (in the correct order).
+   */
   def annotationParamNames: Seq[String]
+
+  /** If the macro annotation has two argument lists,
+   * this sequence contains the names of the parameters in the first argument list.
+   */
+  def firstArglistParamNames: Seq[String] = Nil
 
 
   override def analyze: Analysis = super.analyze andThen {
@@ -105,7 +113,7 @@ abstract class ClassDecorator extends MacroAnnotationHandlerNew
           case Seq(x) if x.toString == "scala.AnyRef" => typeSeqJsObject
           case parents => parents.map(c.typecheck(_,c.TYPEmode)) map {
             case x if x.tpe <:< jsObjectType => x
-            case x => tq"${x.tpe.typeSymbol.companion}.JS"
+            case x => tq"${x.tpe.typeSymbol.companion}.JS[..${x.tpe.typeArgs}]"
           }
         }
         else tdata.modParts.parents )
@@ -117,10 +125,11 @@ abstract class ClassDecorator extends MacroAnnotationHandlerNew
   }
 
 
-  private def mainAnnotationParams(parts: ClassParts, annotationParamNames: Seq[String]): MainAnnotationParams =
-    extractAnnotationParameters(c.prefix.tree, annotationParamNames).collect {
+  private def mainAnnotationParams(parts: ClassParts, annotationParamNames: Seq[String]): MainAnnotationParams = {
+    extractAnnotationParameters(c.prefix.tree, annotationParamNames, firstArglistParamNames).collect {
       case (name,Some(value)) => (name,value)
     }
+  }
 
   /**
    * Assemble initial ClassDecoratorData

@@ -5,6 +5,9 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2
 
+import angulate2.core.AnimationEntryMetadata
+import angulate2.router.Route
+
 import scala.annotation.{StaticAnnotation, compileTimeOnly}
 import scala.language.experimental.macros
 import scala.scalajs.js
@@ -20,23 +23,23 @@ object std extends OpsTrait {
   // NOTE: keep in sync with core.Component()!!
   @compileTimeOnly("enable macro paradise to expand macro annotations")
   class Component(selector: String = null,
-                inputs: js.Array[String] = null,
-                outputs: js.Array[String] = null,
-                host: js.Any = null,
-                exportAs: String = null,
-                moduleId: js.Any = null,
-                providers: js.Array[js.Any] = null,
-                viewProviders: js.Array[js.Any] = null,
-                changeDetection: js.Any = null,
-                queries: js.Any = null,
-                templateUrl: String = null,
-                template: String = null,
-                styles: js.Array[String] = null,
-                styleUrls: js.Array[String] = null,
-                animations: js.Array[js.Any] = null,
-                encapsulation: js.Any = null,
-                interpolation: js.Any = null,
-                entryComponents: js.Array[js.Any] = null) extends StaticAnnotation {
+                  inputs: js.Array[String] = null,
+                  outputs: js.Array[String] = null,
+                  host: js.Any = null,
+                  exportAs: String = null,
+                  moduleId: js.Any = null,
+                  providers: js.Array[js.Any] = null,
+                  viewProviders: js.Array[js.Any] = null,
+                  changeDetection: js.Any = null,
+                  queries: js.Any = null,
+                  templateUrl: String = null,
+                  template: String = null,
+                  styles: js.Array[String] = null,
+                  styleUrls: js.Array[String] = null,
+                  animations: js.Array[AnimationEntryMetadata] = null,
+                  encapsulation: js.Any = null,
+                  interpolation: js.Any = null,
+                  entryComponents: js.Array[js.Any] = null) extends StaticAnnotation {
     def macroTransform(annottees: Any*): Any = macro core.Component.Macro.impl
   }
 
@@ -90,5 +93,23 @@ object std extends OpsTrait {
   class Data extends StaticAnnotation {
     def macroTransform(annottees: Any*): Any = macro ext.Data.Macro.impl
   }
+
+  // duplicate definition of ext.Routes since `type Routes = ext.Routes` won't compile
+  // NOTE: keep in sync with ext.Routes()!!
+  @compileTimeOnly("enable macro paradise to expand macro annotations")
+  class Routes(root: Boolean, routes: Route*) extends StaticAnnotation {
+    def this(providers: js.Array[js.Any])(root: Boolean, routes: Route*) = this(root,routes:_*)
+    def macroTransform(annottees: Any*): Any = macro ext.Routes.Macro.impl
+  }
+
+  type Route = router.Route
+  val Route = router.Route
+//  type Router = router.Router
+//  type Location = common.Location
+
+  type debug = de.surfice.smacrotools.debug
+
+  @inline
+  def undef[T]: js.UndefOr[T] = js.undefined.asInstanceOf[js.UndefOr[T]]
 }
 

@@ -13,6 +13,7 @@ import scala.annotation.StaticAnnotation
  * @param showExpansion If true, the expanded macro code is logged during compilation
  * @param logInstances If true, log every instantiation during runtime
  */
+@deprecated("Use angulate2.std.debug or de.surfice.smacrotools.debug instead","0.0.5")
 class debug(showExpansion: Boolean = true,
             logInstances: Boolean = true) extends StaticAnnotation
 

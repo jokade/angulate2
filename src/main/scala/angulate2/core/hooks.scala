@@ -5,49 +5,35 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2.core
 
+import de.surfice.smacrotools.createJS
+
 import scala.scalajs.js
-import scala.scalajs.js.annotation.ScalaJSDefined
 
 /**
  * Lifecycle hook that is called after data-bound properties of a directive are initialized.
  */
+@createJS
 trait OnInit {
   def ngOnInit(): Unit
-}
-object OnInit {
-  @ScalaJSDefined
-  trait JS extends js.Object {
-    def ngOnInit(): Unit
-  }
 }
 
 /**
  * Lifecycle hook that is called when a directive or pipe is destroyed.
  */
+@createJS
 trait OnDestroy {
   def ngOnDestroy() : Unit
-}
-object OnDestroy {
-  @ScalaJSDefined
-  trait JS extends js.Object {
-    def ngOnDestroy(): Unit
-  }
 }
 
 /**
  * Lifecycle hook that is called when any data-bound property of a directive changes.
  */
+@createJS
 trait OnChanges {
-  import OnChanges._
-  def ngOnChanges(changes: SimpleChanges) : Unit
+  def ngOnChanges(changes: OnChanges.SimpleChanges) : Unit
 }
 object OnChanges {
   type SimpleChanges = js.Dictionary[SimpleChange]
-
-  @ScalaJSDefined
-  trait JS extends js.Object {
-    def ngOnChanges(changes: SimpleChanges): Unit
-  }
 }
 
 @js.native
@@ -60,64 +46,40 @@ trait SimpleChange extends js.Any {
 /**
  * Lifecycle hook that is called when Angular dirty checks a directive.
  */
+@createJS
 trait DoCheck {
   def ngDoCheck(): Unit
-}
-object DoCheck {
-  @ScalaJSDefined
-  trait JS extends js.Object {
-    def ngDoCheck(): Unit
-  }
 }
 
 /**
  * Lifecycle hook that is called after a directive's content has been fully initialized.
  */
+@createJS
 trait AfterContentInit {
   def ngAfterContentInit(): Unit
-}
-object AfterContentInit {
-  @ScalaJSDefined
-  trait JS extends js.Object {
-    def ngAfterContentInit(): Unit
-  }
 }
 
 /**
  * Lifecycle hook that is called after every check of a directive's content.
  */
+@createJS
 trait AfterContentChecked {
   def ngAfterContentChecked(): Unit
-}
-object AfterContentChecked {
-  @ScalaJSDefined
-  trait JS extends js.Object {
-    def ngAfterContentChecked(): Unit
-  }
 }
 
 /**
  * Lifecycle hook that is called after a component's view has been fully initialized.
  */
+@createJS
 trait AfterViewInit {
   def ngAfterViewInit(): Unit
-}
-object AfterViewInit {
-  @ScalaJSDefined
-  trait JS extends js.Object {
-    def ngAfterViewInit(): Unit
-  }
 }
 
 /**
  * Lifecycle hook that is called after every check of a component's view.
  */
+@createJS
 trait AfterViewChecked {
   def ngAfterViewChecked(): Unit
 }
-object AfterViewChecked {
-  @ScalaJSDefined
-  trait JS extends js.Object {
-    def ngAfterViewChecked(): Unit
-  }
-}
+

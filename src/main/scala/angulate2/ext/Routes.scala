@@ -6,14 +6,16 @@
 package angulate2.ext
 
 import angulate2.internal.ClassDecorator
-import angulate2.router.{Route, RouterModule}
+import angulate2.router.Route
 
 import scala.annotation.{StaticAnnotation, compileTimeOnly}
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
+import scala.scalajs.js
 
 @compileTimeOnly("enable macro paradise to expand macro annotations")
 class Routes(root: Boolean, routes: Route*) extends StaticAnnotation {
+  def this(providers: js.Array[js.Any])(root: Boolean, routes: Route*) = this(root,routes:_*)
   def macroTransform(annottees: Any*): Any = macro Routes.Macro.impl
 }
 
@@ -26,6 +28,10 @@ object Routes {
       "routes*"
     )
 
+    override val firstArglistParamNames = Seq(
+      "providers"
+    )
+
     override val annotationName: String = "Routes"
 
     override def mainAnnotationObject = q"angulate2.core.NgModuleFacade"
@@ -36,11 +42,13 @@ object Routes {
       case (cls: ClassParts, data) =>
         val cdd = ClassDecoratorData(data)
         val routes = q"scalajs.js.Array(..${cdd.annotParams("routes")})"
+        val remainingParams = cdd.annotParams - "root" - "routes"
+
         val imports = cdd.annotParams("root") match {
           case Literal(Constant(true)) => q"scalajs.js.Array(angulate2.router.RouterModule.forRoot($routes))"
           case Literal(Constant(false)) => q"scalajs.js.Array(angulate2.router.RouterModule.forChild($routes))"
         }
-        (cls, ClassDecoratorData.update(data,cdd.copy(annotParams = Map("imports" -> imports, "exports" -> routerModule))))
+        (cls, ClassDecoratorData.update(data,cdd.copy(annotParams = remainingParams ++ Map("imports" -> imports, "exports" -> routerModule))))
       case default => default
     }
 
