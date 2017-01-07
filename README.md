@@ -7,17 +7,14 @@ angulate2
 [Scala.js](http://www.scala-js.org/) bindings for [Angular 2](http://www.angular.io). The goal is to provide an API/ experience very similar to the [TypeScript API](https://angular.io/docs/ts/latest/guide/cheatsheet.html) of Angular 2.
 
 **WARNING: This is work in progress!**  
-Many of the features of Angular2 are still missing and the angulate2 API may still change significantly.
+Many of the features of Angular 2 are still missing and the angulate API may still change significantly.
 
 **IMPORTANT: angulate2 now uses the CommonJS module format introduced with Scala.js 0.6.13 instead of global scope.
   The entire code basis is currently being refactored to facilitate this.**
 
-The old version with global scope is available [here](https://github.com/jokade/angulate2/tree/v0.1-global).
-
-For Scala.js bindings to [Angular 1.x](https://angularjs.org) see [scalajs-angulate](https://github.com/jokade/scalajs-angulate).
-
 A basic [Quickstart Example](https://github.com/jokade/angulate2-quickstart) that may serve as template is available, as well as set of **[extended examples](https://github.com/jokade/angulate2-examples)**.
 
+**[Release Notes](https://github.com/jokade/angulate2/wiki/Release-Notes)**
 
 Getting Started
 ---------------
@@ -26,7 +23,7 @@ Add the following lines to your `project/plugins.sbt`:
 ```scala
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.13")
 
-addSbtPlugin("de.surfice" % "sbt-angulate2" % "0.0.4")
+addSbtPlugin("de.surfice" % "sbt-angulate2" % "0.0.5")
 ```
 and this to your `build.sbt`:
 ```scala
@@ -35,7 +32,7 @@ enablePlugins(Angulate2Plugin)
 
 ngBootstrap := Some("AppModule") //qualified name (including packages) of Scala class called NAME_OF_THE_MODULE_TO_BOOTSTRAP
 ```
-The current version of angulate2 is built for Angular-2.2.0 and Scala.js 0.6.13+.
+The current version of angulate2 is built for Angular-2.4+ and Scala.js 0.6.13+.
 
 ### Build and run with System.js
 With the above configuration, a separate JS file `PROJECT-sjsx.js` is written to `target/scala-2.11/` every time you run `fastOptJS` or `fullOptJS`. This file contains the class decorators generated from Angular2 annotations (@Component, ...) and represents the entry module of your Angular2 application.
@@ -98,21 +95,21 @@ This configuration assumes that the Angular dependecies have been installed with
     "start": "lite-server"
   },
   "dependencies": {
-    "@angular/common": "~2.2.0",
-    "@angular/compiler": "~2.2.0",
-    "@angular/core": "~2.2.0",
-    "@angular/forms": "~2.2.0",
-    "@angular/http": "~2.2.0",
-    "@angular/platform-browser": "~2.2.0",
-    "@angular/platform-browser-dynamic": "~2.2.0",
-    "@angular/router": "~3.2.0",
-    "@angular/upgrade": "~2.2.0",
-    "angular-in-memory-web-api": "~0.1.15",
+    "@angular/common": "~2.4.0",
+    "@angular/compiler": "~2.4.0",
+    "@angular/core": "~2.4.0",
+    "@angular/forms": "~2.4.0",
+    "@angular/http": "~2.4.0",
+    "@angular/platform-browser": "~2.4.0",
+    "@angular/platform-browser-dynamic": "~2.4.0",
+    "@angular/router": "~3.4.0",
+    "@angular/upgrade": "~2.4.0",
+    "angular-in-memory-web-api": "~0.2.2",
     "core-js": "^2.4.1",
     "reflect-metadata": "^0.1.8",
-    "rxjs": "5.0.0-beta.12",
-    "systemjs": "0.19.39",
-    "zone.js": "^0.6.25"
+    "rxjs": "5.0.1",
+    "systemjs": "0.19.40",
+    "zone.js": "^0.7.4"
   },
   "devDependencies": {
     "lite-server": "^2.2.2"
