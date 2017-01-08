@@ -103,13 +103,33 @@ object std extends OpsTrait {
   }
 
   type Route = router.Route
-  val Route = router.Route
+  lazy val Route = router.Route
 //  type Router = router.Router
 //  type Location = common.Location
 
   type debug = de.surfice.smacrotools.debug
 
   @inline
-  def undef[T]: js.UndefOr[T] = js.undefined.asInstanceOf[js.UndefOr[T]]
+  final def undef[T]: js.UndefOr[T] = js.undefined.asInstanceOf[js.UndefOr[T]]
+
+  /**
+   * Takes the relative path of a HTML template to be loaded and returns the absolute path to the template.
+   *
+   * @param relPath relative path of the HTML template
+   */
+  @inline
+  final def $html(relPath: String): String = ext.runtime.$html(relPath)
+//  @inline
+//  final def $css(relPath: String): String = ext.runtime.$css(relPath)
+
+  /**
+   * Takes the relative path of a CSS file to be loaded and returns the absolute path to the style file.
+   *
+   * @param relPath relative path to the CSS file
+   */
+  @inline
+  final def $css(relPath: String): String = ext.runtime.$css(relPath)
+
+
 }
 

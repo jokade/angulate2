@@ -15,7 +15,7 @@ private[angulate2] trait NgSimpleScalatags {
 
   def tpl(tags: TypedTag[_]*): String = tags map (_.toString) mkString "\n"
 
-  val ngIf = attr("*ngIf", raw = true)
+  lazy val ngIf = attr("*ngIf", raw = true)
   val ngFor = attr("*ngFor", raw = true)
 
   /** One-way binding from data source to view target.
@@ -50,15 +50,15 @@ private[angulate2] trait NgSimpleScalatags {
 
   /** Shortcut for `ngOn("click")`
    */
-  val ngClick = attr("on-click")
+  lazy val ngClick = attr("on-click")
 
   /** Shortcut for `ngBind("disabled")`
    */
-  val ngDisabled = attr("bind-disabled")
+  lazy val ngDisabled = attr("bind-disabled")
 
   /** Shortcut for `ngBindOn("ngModel")`
    */
-  val ngModel = attr("[(ngModel)]", raw = true)
+  lazy val ngModel = attr("[(ngModel)]", raw = true)
 
   /** Class binding.
    *
@@ -80,9 +80,12 @@ private[angulate2] trait NgSimpleScalatags {
   @inline
   def ngBindStyle(prop: String) = attr(s"[style.$prop]", raw = true)
 
-  val ngSwitch = ngBind("ngSwitch")
-  val ngSwitchCase = attr("*ngSwitchCase", raw = true)
-  val ngSwitchDefault = attr("*ngSwitchDefault", raw = true)
+  @inline
+  def ngLocalVar(name: String) = attr(s"var-$name").empty
+
+  lazy val ngSwitch = ngBind("ngSwitch")
+  lazy val ngSwitchCase = attr("*ngSwitchCase", raw = true)
+  lazy val ngSwitchDefault = attr("*ngSwitchDefault", raw = true)
 
   @inline
   def routerLink(url: String, active: String = "", activeOptions: String = "", queryParams: String = "")(xs: Modifier*) =
@@ -97,9 +100,9 @@ private[angulate2] trait NgSimpleScalatags {
     tag("a")(attr("bind-routerLink"):=expr, attr("routerLinkActive"):=active, attr("queryParams") := queryParams)(xs)
 
 
-  val routerLink = attr("routerLink")
+  lazy val routerLink = attr("routerLink")
 
-  val routerOutlet = tag("router-outlet")
+  lazy val routerOutlet = tag("router-outlet")
   @inline
   def routerOutlet(name: String) = tag("router-outlet")(attr("name"):=name)
 }

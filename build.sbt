@@ -1,6 +1,6 @@
 version in ThisBuild := "0.0.6-SNAPSHOT"
 
-scalaVersion in ThisBuild := "2.12.1"
+scalaVersion in ThisBuild := "2.11.8"
 
 crossScalaVersions in ThisBuild := Seq("2.11.8","2.12.1")
 
@@ -92,18 +92,6 @@ lazy val stubs = project
 lazy val libs = project.in(file("target/libsProject"))
   .settings(dontPublish:_*)
   .aggregate(bindings,stubs)
-
-
-lazy val readme = scalatex.ScalatexReadme(
-  projectId = "readme",
-  wd = file(""),
-  url = "https://github.com/jokade/angulate2/tree/master",
-  source = "Readme"
-    )
-  .settings(dontPublish)
-  .settings(
-    (unmanagedSources in Compile) += baseDirectory.value / ".." / "project" / "Constants.scala"
-    )
 
 //lazy val tests = project.
 //  dependsOn(angulate2).

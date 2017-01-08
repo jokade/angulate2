@@ -47,6 +47,9 @@ private[angulate2] trait OpsTrait {
 
   val %%% = js.Dynamic.literal
 
+  def $compPath: String = macro OpsMacros.compPath
+
+
 }
 
 private[angulate2] class OpsMacros(val c: blackbox.Context) extends AngulateBlackboxMacroTools {
@@ -109,5 +112,8 @@ private[angulate2] class OpsMacros(val c: blackbox.Context) extends AngulateBlac
   T6: c.WeakTypeTag, T7: c.WeakTypeTag, T8: c.WeakTypeTag, T9: c.WeakTypeTag, T10: c.WeakTypeTag, T11: c.WeakTypeTag,
   T12: c.WeakTypeTag] =
     q"scalajs.js.Array(${jsRef[T1]},${jsRef[T2]},${jsRef[T3]},${jsRef[T4]},${jsRef[T5]},${jsRef[T6]},${jsRef[T7]},${jsRef[T8]},${jsRef[T9]},${jsRef[T10]},${jsRef[T11]},${jsRef[T12]})"
+
+  def compPath = Literal(Constant(
+    getEnclosingNamespace().getOrElse("").stripSuffix("._decorators").replaceAll("\\.","/") ))
 }
 
