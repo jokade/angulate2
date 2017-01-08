@@ -1,50 +1,55 @@
-version in ThisBuild := "0.0.5"
+version in ThisBuild := "0.0.6-SNAPSHOT"
 
-val smacrotoolsVersion = "0.0.5"
-val sjsxVersion = "0.3.0"
-val rxjsVersion = "0.0.2"
-val scalajsdomVersion = "0.9.1"
-val scalatagsVersion = "0.6.2"
+scalaVersion in ThisBuild := "2.12.1"
+
+crossScalaVersions in ThisBuild := Seq("2.11.8","2.12.1")
+
+organization in ThisBuild := "de.surfice"
+
+lazy val Version = new {
+  def smacrotools = "0.0.5"
+  def sjsx = "0.3.0"
+  def rxjs = "0.0.2"
+  def scalajsdom = "0.9.1"
+  def scalatags = "0.6.2"
+}
 
 lazy val commonSettings = Seq(
-  organization := "de.surfice",
-  scalaVersion := "2.11.8",
   scalacOptions ++= Seq("-deprecation","-unchecked","-feature","-language:implicitConversions","-Xlint"),
   autoCompilerPlugins := true,
   //addCompilerPlugin("com.lihaoyi" %% "acyclic" % "0.1.2"),
-  resolvers += Resolver.sonatypeRepo("releases"),
   resolvers += Resolver.sonatypeRepo("snapshots")
 )
 
-lazy val crossSettings = Seq(
-  crossScalaVersions := Seq("2.11.8","2.12.1")
-)
+lazy val dontPublish = Seq(
+    publish := {},
+    publishLocal := {},
+    com.typesafe.sbt.pgp.PgpKeys.publishSigned := {},
+    com.typesafe.sbt.pgp.PgpKeys.publishLocalSigned := {},
+    publishArtifact := false,
+    publishTo := Some(Resolver.file("Unused transient repository",file("target/unusedrepo")))
+  )
 
 
 lazy val angulate2 = project.in(file("."))
   .aggregate(bindings,plugin,stubs)
   .settings(commonSettings:_*)
-  .settings(crossSettings:_*)
-  .settings(
-    publish := {},
-    publishLocal := {}
-  )
+  .settings(dontPublish:_*)
 
 lazy val bindings = project
   .enablePlugins(ScalaJSPlugin)
   .settings(commonSettings: _*)
   .settings(publishingSettings: _*)
-  .settings(crossSettings: _*)
   .settings( 
     name := "angulate2",
     addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "org.scala-js"   %%% "scalajs-dom" % scalajsdomVersion,
-      "de.surfice" %%% "smacrotools-sjs" % smacrotoolsVersion,
-      "de.surfice" %%% "sjsx" % sjsxVersion,
-      "de.surfice" %%% "scalajs-rxjs_cjsm" % rxjsVersion,
-      "com.lihaoyi" %%% "scalatags" % scalatagsVersion
+      "org.scala-js"   %%% "scalajs-dom" % Version.scalajsdom,
+      "de.surfice" %%% "smacrotools-sjs" % Version.smacrotools,
+      "de.surfice" %%% "sjsx" % Version.sjsx,
+      "de.surfice" %%% "scalajs-rxjs_cjsm" % Version.rxjs,
+      "com.lihaoyi" %%% "scalatags" % Version.scalatags
       //"be.doeraene" %%% "scalajs-jquery" % "0.8.0" % "provided",
     ),
     scalacOptions ++= (if (isSnapshot.value) Seq.empty else Seq({
@@ -63,7 +68,8 @@ lazy val plugin = project
     description := "sbt plugin for angulate2 (Angular2 bindings for Scala.js)",
     sbtPlugin := true,
     scalaVersion := "2.10.6",
-    addSbtPlugin("de.surfice" % "sbt-sjsx" % sjsxVersion),
+    crossScalaVersions := Seq("2.10.6"),
+    addSbtPlugin("de.surfice" % "sbt-sjsx" % Version.sjsx),
     sourceGenerators in Compile += Def.task {
       val file = (sourceManaged in Compile).value / "Version.scala"
       IO.write(file,
@@ -77,10 +83,27 @@ lazy val plugin = project
 lazy val stubs = project
   .settings(commonSettings:_*)
   .settings(publishingSettings:_*)
-  .settings(crossSettings: _*)
   .settings(
     name := "angulate2-stubs"
   )
+
+
+// dummy project for aggregation of sub-projects supporting cross-publishing
+lazy val libs = project.in(file("target/libsProject"))
+  .settings(dontPublish:_*)
+  .aggregate(bindings,stubs)
+
+
+lazy val readme = scalatex.ScalatexReadme(
+  projectId = "readme",
+  wd = file(""),
+  url = "https://github.com/jokade/angulate2/tree/master",
+  source = "Readme"
+    )
+  .settings(dontPublish)
+  .settings(
+    (unmanagedSources in Compile) += baseDirectory.value / ".." / "project" / "Constants.scala"
+    )
 
 //lazy val tests = project.
 //  dependsOn(angulate2).
