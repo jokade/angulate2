@@ -24,6 +24,7 @@ object Angulate2Plugin extends sbt.AutoPlugin {
     val ngPlattform = settingKey[String]("Javascript for accessing the angular plattform object")
     val ngPreamble = settingKey[String]("ng2-specific preamble for the sjsx file")
     val ngScalaModule = settingKey[String]("Name of the Scala.js module to be loaded from the sjsx file")
+    val ngEnableProdMode = settingKey[Boolean]("Set to true to enable Angular's production mode at runtime")
   }
   import autoImport._
 
@@ -43,16 +44,19 @@ object Angulate2Plugin extends sbt.AutoPlugin {
         |var core = require('@angular/core');
       """.stripMargin,
     ngScalaModule := "scalaModule",
+    ngEnableProdMode := false,
+
     addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
     libraryDependencies += DepBuilder.toScalaJSGroupID("de.surfice") %%% "angulate2" % Version.angulateVersion,
     sjsxSnippets += SJSXSnippet(0,ngPreamble.value),
     sjsxSnippets += SJSXSnippet(0,"var s = require('"+ngScalaModule.value+"');"),
-    sjsxSnippets <++= ((ngPlattform,ngBootstrap) map boostrap)
-//    sjsxDeps <++= ngBootstrap map ( d => if(d.isDefined) Seq(SJSXDependency("ng.platform.browser","angular2/platform/browser")) else Nil )
+    sjsxSnippets <++= ((ngPlattform,ngBootstrap,ngEnableProdMode) map boostrap)
   )
 
-  private def boostrap(plattform: String, comp: Option[String]): Seq[SJSXSnippet] = comp map {comp =>
-    val script = s"""$plattform.bootstrapModule(s.$comp);"""
+  private def boostrap(plattform: String, comp: Option[String], enableProdMode: Boolean): Seq[SJSXSnippet] = comp map {comp =>
+    val script =
+      s"""${if(enableProdMode) "core.enableProdMode();" else ""}
+         |$plattform.bootstrapModule(s.$comp);""".stripMargin
     Seq(SJSXSnippet(2000,script))
   } getOrElse Nil
 
