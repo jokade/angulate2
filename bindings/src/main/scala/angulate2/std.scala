@@ -82,6 +82,7 @@ object std extends OpsTrait {
   type HostBinding = core.HostBinding
   type Input = core.Input
   type Output = core.Output
+  type ViewChild = core.ViewChild
   type OnInit = core.OnInit
   type OnDestroy = core.OnDestroy
   type OnChanges = core.OnChanges

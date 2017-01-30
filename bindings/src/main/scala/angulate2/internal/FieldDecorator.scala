@@ -39,6 +39,10 @@ protected[angulate2] trait FieldDecorator extends ClassDecorator {
           hostBindingMetadata(cls.fullName, name.toString, hostPropertyName, t)
         case t @ DefDef(HostBindingAnnot(hostPropertyName), name, _, _, _, _) =>
           hostBindingMetadata(cls.fullName, name.toString, hostPropertyName, t)
+        case t @ ValDef(ViewChildAnnot(annot), name, _, _) =>
+          viewChildMetadata(cls.fullName, name.toString, annot, t)
+        case t @ DefDef(ViewChildAnnot(annot), name, _, _, _, _) =>
+          viewChildMetadata(cls.fullName, name.toString, annot, t)
       }
       (cls, ClassDecoratorData.addSjsxStatic(data, metadata))
     case default => default
@@ -64,6 +68,10 @@ protected[angulate2] trait FieldDecorator extends ClassDecorator {
     val decorator = if(property.isDefined) s"core.Input('${property.get}')" else "core.Input()"
     s"__decorate([$decorator,"+ genMetadataString(tree)+
       s"],$exports.$target.prototype,'$method',null);"
+  }
+
+  private def viewChildMetadata(target: String, method: String, annot: ViewChildAnnot.Data, tree: Tree): String = {
+    s"__decorate([$annot, ${genMetadataString(tree)}],$exports.$target.prototype,'$method',null);"
   }
 
   private def genMetadataString(tree: Tree): String = genMetadata(tree) map {
@@ -105,10 +113,36 @@ protected[angulate2] trait FieldDecorator extends ClassDecorator {
       findAnnotation(annotations,"HostBinding")
         .map { t =>
           val args = extractAnnotationParameters(t, Seq("hostPropertyName"))
-          (extractStringConstant(args("hostPropertyName").get).get)
+          extractStringConstant(args("hostPropertyName").get).get
         }
     def unapply(modifiers: Modifiers): Option[String]  = unapply(modifiers.annotations)
   }
+
+   object ViewChildAnnot {
+     case class Data(selector: String, read: Option[String]) {
+       override def toString =
+         s"core.ViewChild('$selector'" +
+           (if(read.isDefined) s",{read: ${read.get}}" else "") +
+           ")"
+     }
+    // TODO: simplify
+    def unapply(annotations: Seq[Tree]): Option[Data] =
+      findAnnotation(annotations,"ViewChild")
+        .map { t =>
+          val args = extractAnnotationParameters(t, Seq("selector","read"))
+          Data(
+            extractStringConstant(args("selector").get).get,
+            args.get("read") map {
+              // TODO: handle all types (currently we simply prefix the type with 'core', which only works for token types in package core :)
+              case Some(TypeApply((f,List(tpe)))) if f.toString == "$percent$percent"  => s"core.$tpe"
+              case Some(x) => error(s"invalid argument for 'read': $x"); ""
+              case None => ???
+            })
+        }
+    def unapply(modifiers: Modifiers): Option[Data]  = unapply(modifiers.annotations)
+
+  }
+
 
   object OutputAnnot {
     def unapply(annotations: Seq[Tree]): Option[Option[String]] = findAnnotation(annotations,"Output")
