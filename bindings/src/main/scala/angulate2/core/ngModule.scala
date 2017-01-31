@@ -19,5 +19,24 @@ trait ModuleWithProviders extends js.Object {
   def providers: js.UndefOr[js.Array[Provider]] = js.native
 }
 
+@js.native
+trait ModuleWithComponentFactories[T] extends js.Object {
+  def ngModuleFactory: NgModuleFactory[T] = js.native
+  def componentFactories: js.Array[ComponentFactory[js.Dynamic]] = js.native
+}
+
+@js.native
+trait NgModuleFactory[T] extends js.Object {
+  def moduleType: Type[T] = js.native
+  def create(parentInjector: Injector): NgModuleRef[T] = js.native
+}
+
+@js.native
+trait NgModuleRef[T] extends js.Object {
+  def injector: Injector = js.native
+  def componentFactoryResolver: js.Dynamic = js.native
+  def instance: T = js.native
+}
+
 
 

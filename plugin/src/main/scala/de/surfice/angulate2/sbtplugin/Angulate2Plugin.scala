@@ -47,9 +47,16 @@ object Angulate2Plugin extends sbt.AutoPlugin {
     ngEnableProdMode := false,
 
     addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
-    libraryDependencies += DepBuilder.toScalaJSGroupID("de.surfice") %%% "angulate2" % Version.angulateVersion,
+    libraryDependencies ++= Seq("angulate2","angulate2-extensions") map { dep =>
+      DepBuilder.toScalaJSGroupID("de.surfice") %%% dep % Version.angulateVersion
+    },
     sjsxSnippets += SJSXSnippet(0,ngPreamble.value),
-    sjsxSnippets += SJSXSnippet(0,"var s = require('"+ngScalaModule.value+"');"),
+    sjsxSnippets += SJSXSnippet(0,
+      s"""var s = require('${ngScalaModule.value}');
+        |
+        |var config = s.angulate2.ext.rt.AngulateRuntimeSJSXConfig();
+        |config.decorate = __decorate;
+      """.stripMargin),
     sjsxSnippets <++= ((ngPlattform,ngBootstrap,ngEnableProdMode) map boostrap)
   )
 

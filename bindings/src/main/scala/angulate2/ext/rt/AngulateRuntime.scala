@@ -3,10 +3,10 @@
 
 // Copyright (c) 2017 Johannes.Kastner <jokade@karchedon.de>
 //               Distributed under the MIT License (see included LICENSE file)
-package angulate2.ext
+package angulate2.ext.rt
 
 import scala.scalajs.js
-import scala.scalajs.js.annotation.ScalaJSDefined
+import scala.scalajs.js.annotation.{JSExport, ScalaJSDefined}
 
 @ScalaJSDefined
 trait AngulateRuntime extends js.Object {
@@ -30,10 +30,11 @@ trait AngulateRuntime extends js.Object {
    * @param arg1
    */
   def $css: js.Function1[String,String]
+
+  def decorate: js.Function2[js.Array[js.Any],js.Any,js.Any]
 }
 
 object AngulateRuntime {
-  import scalajs.js.JSConverters._
 
   var defaultConfig: AngulateConfig = js.Dynamic.literal(
     resourcePrefix = ""
@@ -67,6 +68,17 @@ object AngulateRuntime {
       val p = prefix + "css"
       ((relPath: String) => ensureSuffix(p + "/" +relPath, ".css")):js.Function1[String,String]
     }
+
+    override val decorate = AngulateRuntimeSJSXConfig.decorate.getOrElse(???)
   }
 
+}
+
+/**
+ * This object contains default values defined in the project's SJSX file.
+ */
+@JSExport
+object AngulateRuntimeSJSXConfig {
+  @JSExport
+  var decorate: js.UndefOr[js.Function2[js.Array[js.Any],js.Any,js.Any]] = js.undefined
 }

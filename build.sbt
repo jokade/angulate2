@@ -9,9 +9,10 @@ organization in ThisBuild := "de.surfice"
 lazy val Version = new {
   def smacrotools = "0.0.5"
   def sjsx = "0.3.0"
-  def rxjs = "0.0.2"
+  def rxjs = "0.0.3-SNAPSHOT"
   def scalajsdom = "0.9.1"
   def scalatags = "0.6.2"
+  def slogging = "0.5.2"
 }
 
 lazy val commonSettings = Seq(
@@ -32,7 +33,7 @@ lazy val dontPublish = Seq(
 
 
 lazy val angulate2 = project.in(file("."))
-  .aggregate(bindings,plugin,stubs)
+  .aggregate(bindings,extensions,plugin,stubs)
   .settings(commonSettings:_*)
   .settings(dontPublish:_*)
 
@@ -59,6 +60,18 @@ lazy val bindings = project
       }))
   )
 
+lazy val extensions = project
+  .dependsOn(bindings)
+  .enablePlugins(ScalaJSPlugin)
+  .settings(commonSettings: _*)
+  .settings(publishingSettings: _*)
+  .settings( 
+    name := "angulate2-extensions",
+    addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
+    libraryDependencies ++= Seq(
+      "biz.enef" %%% "slogging" % Version.slogging
+      )
+  )
 
 lazy val plugin = project
   .settings(commonSettings:_*)

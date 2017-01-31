@@ -5,8 +5,8 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2.ext.tags
 
-import scalatags.Text.all._
 import scalatags.Text.TypedTag
+import scalatags.Text.all._
 
 object simple extends NgSimpleScalatags
 

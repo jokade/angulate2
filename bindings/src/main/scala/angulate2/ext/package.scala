@@ -5,13 +5,16 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2
 
+
+import angulate2.ext.rt.AngulateRuntime
+
 import scala.scalajs.js
 
 package object ext {
 
-  lazy val runtime: ext.AngulateRuntime = {
-    val config = js.Dynamic.global.angulateConfig.asInstanceOf[js.UndefOr[ext.AngulateRuntime.AngulateConfig]]
-      .getOrElse(ext.AngulateRuntime.defaultConfig)
-    new ext.AngulateRuntime.Default(config)
+  lazy val runtime: AngulateRuntime = {
+    val config = js.Dynamic.global.angulateConfig.asInstanceOf[js.UndefOr[AngulateRuntime.AngulateConfig]]
+      .getOrElse(AngulateRuntime.defaultConfig)
+    new AngulateRuntime.Default(config)
   }
 }

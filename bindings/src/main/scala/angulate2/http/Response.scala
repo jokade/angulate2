@@ -8,8 +8,19 @@ package angulate2.http
 import scala.scalajs.js
 
 @js.native
-trait Response extends js.Object {
+trait Body extends js.Object {
   def json(): js.Dynamic = js.native
+  def text(): String = js.native
+}
+
+@js.native
+trait Response extends Body {
+  def ok: Boolean = js.native
+  def url: String = js.native
+  def status: Int = js.native
+  def statusText: String = js.native
+  def bytesLoaded: Int = js.native
+  def totalBytes: Int = js.native
 }
 
 object Response {

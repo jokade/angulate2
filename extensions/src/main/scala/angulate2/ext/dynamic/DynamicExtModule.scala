@@ -5,9 +5,14 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2.ext.dynamic
 
+import angulate2.compiler.COMPILER_PROVIDERS
+import angulate2.http.HttpModule
 import angulate2.std._
 
 @NgModule(
-  declarations = @@[DynamicComponentBuilder]
+  imports = @@[HttpModule],
+  declarations = @@[XNgIncludeDirective],
+  exports = @@[XNgIncludeDirective],
+  providers = @@@( @@[DynamicComponentBuilder,TemplateLoader], COMPILER_PROVIDERS )
 )
 class DynamicExtModule

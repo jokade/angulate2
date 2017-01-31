@@ -16,6 +16,7 @@ import scala.scalajs.js.annotation.JSImport
 @js.native
 @JSImport("@angular/core","NgModule")
 object NgModuleFacade extends js.Object {
+  def apply() : js.Object = js.native
   def apply(options: js.Object) : js.Object = js.native
 }
 
