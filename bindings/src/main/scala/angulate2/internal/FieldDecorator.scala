@@ -132,11 +132,11 @@ protected[angulate2] trait FieldDecorator extends ClassDecorator {
           val args = extractAnnotationParameters(t, Seq("selector","read"))
           Data(
             extractStringConstant(args("selector").get).get,
-            args.get("read") map {
+            args.get("read") flatMap {
               // TODO: handle all types (currently we simply prefix the type with 'core', which only works for token types in package core :)
-              case Some(TypeApply((f,List(tpe)))) if f.toString == "$percent$percent"  => s"core.$tpe"
-              case Some(x) => error(s"invalid argument for 'read': $x"); ""
-              case None => ???
+              case Some(TypeApply((f,List(tpe)))) if f.toString == "$percent$percent"  => Some(s"core.$tpe")
+              case Some(x) => error(s"invalid argument for 'read': $x"); None
+              case None => None
             })
         }
     def unapply(modifiers: Modifiers): Option[Data]  = unapply(modifiers.annotations)
