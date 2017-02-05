@@ -115,5 +115,15 @@ private[angulate2] class OpsMacros(val c: blackbox.Context) extends AngulateBlac
 
   def compPath = Literal(Constant(
     getEnclosingNamespace().getOrElse("").stripSuffix("._decorators").replaceAll("\\.","/") ))
+
+  def assignDynamic(d: c.Expr[Any]) = c.prefix match {
+    case Expr(Apply(_,List(target))) =>
+      val (base,name) = {
+        val res = target.toString.split('.')
+        (TermName(res.init.mkString(".")),TermName(res.last))
+      }
+      val tree = q"{val dyn = $base.asInstanceOf[scalajs.js.Dynamic]; dyn.$name = $d}"
+      c.Expr[Unit](tree)
+  }
 }
 

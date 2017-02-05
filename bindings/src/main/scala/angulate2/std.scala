@@ -131,6 +131,10 @@ object std extends OpsTrait {
   @inline
   final def $css(relPath: String): String = ext.runtime.$css(relPath)
 
+  implicit final class ToDynamic(val o: Any) extends AnyVal {
+    def dynamic: js.Dynamic = o.asInstanceOf[js.Dynamic]
+    def dynamic_=(d: Any): Unit = macro OpsMacros.assignDynamic
+  }
 
 }
 
