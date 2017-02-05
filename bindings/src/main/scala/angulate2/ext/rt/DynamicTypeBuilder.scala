@@ -12,12 +12,16 @@ import scala.scalajs.js
 object DynamicTypeBuilder {
   import angulate2.ext.runtime.decorate
 
-  def createModule(declarations: js.Array[js.Any] = js.Array()): Type[js.Dynamic] = {
+  def createModule(declarations: js.Array[js.Any] = js.Array(),
+                   imports: js.Array[js.Any] = js.Array()): Type[js.Dynamic] = {
     val t = createConstructor()
 
     val opts = js.Dynamic.literal()
     if(declarations.nonEmpty)
       opts.declarations = declarations
+    if(imports.nonEmpty)
+      opts.imports = imports
+
     decorate(js.Array(NgModuleFacade(opts)),t).asInstanceOf[Type[js.Dynamic]]
   }
 

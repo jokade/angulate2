@@ -11,6 +11,8 @@ import angulate2.std._
 import rxjs.Observable
 import slogging.LazyLogging
 
+import scala.scalajs.js
+
 @Injectable
 @classModeScala
 class TemplateLoader(http: Http) extends LazyLogging {
@@ -28,5 +30,8 @@ class TemplateLoader(http: Http) extends LazyLogging {
 }
 
 
-case class Template(id: String, template: String, cache: Boolean = true)
+case class Template(id: String,
+                    template: String,
+                    cache: Boolean = true,
+                    requiredModules: js.Array[js.Any] = js.Array())
 

@@ -22,15 +22,15 @@ class DynamicComponentBuilder(val compiler: JitCompiler) extends LazyLogging {
   private val _cache = js.Dictionary.empty[RxPromise[ComponentFactory[js.Dynamic]]]
 
   def createComponentFactory(template: Template): RxPromise[ComponentFactory[js.Dynamic]] =
-    createComponentFactory(template.id,template.template,template.cache)
+    createComponentFactory(template.id,template.template,template.cache,template.requiredModules)
 
-  def createComponentFactory(id: String, template: String, cache: Boolean) : RxPromise[ComponentFactory[js.Dynamic]] = {
+  def createComponentFactory(id: String, template: String, cache: Boolean, requiredModules: js.Array[js.Any]) : RxPromise[ComponentFactory[js.Dynamic]] = {
     def create() = {
       logger.debug("creating ComponentFactory for template id '{}' (cache={})",id,cache)
       val comp = DynamicTypeBuilder.createComponent(template)
-      val module = DynamicTypeBuilder.createModule(declarations = @@@(comp))
+      val module = DynamicTypeBuilder.createModule(declarations = @@@(comp), imports = requiredModules)
       compiler
-          .compileModuleAndAllComponentsAsync(module)
+        .compileModuleAndAllComponentsAsync(module)
         .map( _.componentFactories.find(_.selector == "ng-component").get )
     }
     if(cache) _cache.getOrElseUpdate(id,create())
