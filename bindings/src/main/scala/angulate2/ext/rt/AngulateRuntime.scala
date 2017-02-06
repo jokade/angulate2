@@ -44,6 +44,7 @@ object AngulateRuntime {
   trait AngulateConfig extends js.Object {
     def resourcePrefix: js.UndefOr[String] = js.native
     val resource: js.UndefOr[js.Function1[String,String]] = js.native
+    val htmlPrefix: js.UndefOr[String] = js.native
     val html: js.UndefOr[js.Function1[String,String]] = js.native
     val css: js.UndefOr[js.Function1[String,String]] = js.native
   }
@@ -60,7 +61,7 @@ object AngulateRuntime {
     override val $resource = config.resource.getOrElse( ((relPath: String) => prefix + "/" + relPath):js.Function1[String,String] )
 
     override val $html = config.html.getOrElse {
-      val p = prefix + "html"
+      val p = config.htmlPrefix.getOrElse(prefix + "html")
       ((relPath: String) => ensureSuffix(p + "/" + relPath, ".html")): js.Function1[String, String]
     }
 

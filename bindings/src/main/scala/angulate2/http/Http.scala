@@ -5,7 +5,7 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2.http
 
-import angulate2.http.Http.RequestOptionsArgs
+import de.surfice.smacrotools.JSOptionsObject
 import rxjs.Observable
 
 import scala.scalajs.js
@@ -22,7 +22,7 @@ class Http extends js.Object {
 }
 
 object Http {
-  type RequestOptionsArgs = js.Dynamic
+//  type RequestOptionsArgs = js.Dynamic
 
   implicit final class RichHttp(val http: Http) extends AnyVal {
     @inline
@@ -34,3 +34,26 @@ object Http {
       http.post(url,JSON.stringify(data),options)
   }
 }
+
+@JSOptionsObject
+case class RequestOptionsArgs(url: js.UndefOr[String] = js.undefined,
+                              method: js.UndefOr[String] = js.undefined,
+                              search: js.UndefOr[String] = js.undefined,
+                              headers: js.UndefOr[Headers] = js.undefined,
+                              body: js.UndefOr[js.Any] = js.undefined,
+                              withCredentials: js.UndefOr[Boolean] = js.undefined,
+                              responseType: js.UndefOr[js.Dynamic] = js.undefined
+                              )
+
+@JSImport("@angular/http","Headers")
+@js.native
+class Headers(headers: js.UndefOr[js.Dynamic] = js.undefined) extends js.Object {
+  def append(name: String, value: String): Unit = js.native
+  def delete(name: String): Unit = js.native
+  def forEach(fn: js.Function): Unit = js.native
+  def get(name: String): String = js.native
+  def has(name: String): Boolean = js.native
+  def keys(): js.Array[String] = js.native
+  def set(name: String, value: String): Unit = js.native
+}
+
