@@ -9,6 +9,7 @@ import de.surfice.smacrotools.MacroAnnotationHandler
 
 import scala.annotation.{StaticAnnotation, compileTimeOnly}
 import scala.language.experimental.macros
+import scala.reflect.api.Types
 import scala.reflect.macros.whitebox
 import scala.scalajs.js
 
@@ -41,6 +42,19 @@ class Data extends StaticAnnotation {
 
 
 object Data {
+  import scala.scalajs.js.JSConverters._
+
+  implicit def optionToUndef[T](o: Option[T]): js.UndefOr[T] = o match {
+    case Some(x) => x
+    case None => js.undefined
+  }
+
+  @inline
+  implicit def iterableToArray[T](it: Iterable[T]): js.Array[T] = it.toJSArray
+
+  @inline
+  implicit def mapToDictionary[K,V](map: Map[K,V]): js.Dictionary[V] = map.map(p => (p._1.toString,p._2)).toJSDictionary
+
   private[angulate2] class Macro(val c: whitebox.Context) extends MacroAnnotationHandler {
     import c.universe._
 
@@ -57,30 +71,23 @@ object Data {
     private val jsObjectType = tq"${c.weakTypeOf[js.Object]}"
     private val jsNativeAnnot = q"new scalajs.js.native()"
 
-//    override def analyze: Analysis = super.analyze andThen {
-//      case d @ (parts,_) =>
-//        if(!parts.isCase)
-//          error("@Data annotation is only supported on case classes")
-//        d
-//    }
-
     override def transform: Transformation = super.transform andThen {
       case cls: ClassTransformData =>
         import cls.modParts._
         val members = params map {
-          case q"$mods val $name: $tpe = $rhs" => ("val",name,tpe)
-          case q"$_ var $name: $tpe = $_" => ("var",name,tpe)
+          case q"$mods val $name: $tpe = $rhs" => Assign("val",name,mapType(tpe),rhs)
+          case q"$_ var $name: $tpe = $rhs" => Assign("var",name,mapType(tpe),rhs)
         }
         val bodyMembers = members map {
-          case ("val",name,tpe) => q"val $name: $tpe = scalajs.js.native"
-          case ("var",name,tpe) => q"var $name: $tpe = scalajs.js.native"
+          case Assign("val",name,tpe,_) => q"val $name: $tpe = scalajs.js.native"
+          case Assign("var",name,tpe,_) => q"var $name: $tpe = scalajs.js.native"
         }
 
-        val args = members map ( p => q"${p._2}: ${p._3}" )
-        val literalArgs = members map ( p => q"${p._2} = ${p._2}" )
+        val args = members map ( p => if(p.rhs.isEmpty) q"${p.name}: ${p.tpe}" else q"val ${p.name}: ${p.tpe} = ${p.rhs.get}")
+        val literalArgs = members map ( p => q"${p.name} = ${p.name}" )
         val updCompanion = companion.map{ obj =>
           val apply = q"""def apply(..$args) = scalajs.js.Dynamic.literal(..$literalArgs).asInstanceOf[${cls.modParts.name}]"""
-          TransformData(obj).updBody(Seq(apply)).modParts
+          TransformData(obj).addStatements(apply).modParts
         }
 
         val traitParts = TraitParts(
@@ -95,6 +102,32 @@ object Data {
           updCompanion)
         TraitTransformData(null,traitParts,cls.data)
       case x => x
+    }
+
+    private val optionType = weakTypeOf[Option[_]]
+    private val iterableType = weakTypeOf[Iterable[_]]
+    private val mapType = weakTypeOf[Map[_,_]]
+
+    private def mapType(tpe: Tree): Tree = {
+      val t = c.typecheck(tpe,c.TYPEmode,withMacrosDisabled = true).tpe
+      if(t <:< optionType)
+        tq"scalajs.js.UndefOr[${t.typeArgs.head}]"
+      else if(t <:< mapType)
+        tq"scalajs.js.Dictionary[${t.typeArgs.last}]"
+      else if(t <:< iterableType)
+        tq"scalajs.js.Array[${t.typeArgs.head}]"
+      else
+        tpe
+    }
+
+//      c.typecheck(tpe,c.TYPEmode) match {
+//        case q"Option[$T]" => tq"scalajs.js.UndefOr[$T]"
+//        case x => x
+//      }
+    case class Assign(stype: String, name: TermName, tpe: Tree, rhs: Option[Tree])
+    object Assign {
+      def apply(stype: String, name: TermName, tpe: Tree, rhs: Tree): Assign =
+        apply(stype,name,tpe,if(rhs.isEmpty) None else Some(rhs))
     }
   }
 }
