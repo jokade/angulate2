@@ -1,15 +1,14 @@
 //     Project: angulate2 (https://github.com/jokade/angulate2)
 // Description: Angulate2 extension for definition of data objects/classes via an @Data annotation
 
-// Copyright (c) 2016 Johannes.Kastner <jokade@karchedon.de>
+// Copyright (c) 2017 Johannes.Kastner <jokade@karchedon.de>
 //               Distributed under the MIT License (see included LICENSE file)
-package angulate2.ext
+package angulate2.ext.data
 
 import de.surfice.smacrotools.MacroAnnotationHandler
 
 import scala.annotation.{StaticAnnotation, compileTimeOnly}
 import scala.language.experimental.macros
-import scala.reflect.api.Types
 import scala.reflect.macros.whitebox
 import scala.scalajs.js
 
@@ -42,18 +41,6 @@ class Data extends StaticAnnotation {
 
 
 object Data {
-  import scala.scalajs.js.JSConverters._
-
-  implicit def optionToUndef[T](o: Option[T]): js.UndefOr[T] = o match {
-    case Some(x) => x
-    case None => js.undefined
-  }
-
-  @inline
-  implicit def iterableToArray[T](it: Iterable[T]): js.Array[T] = it.toJSArray
-
-  @inline
-  implicit def mapToDictionary[K,V](map: Map[K,V]): js.Dictionary[V] = map.map(p => (p._1.toString,p._2)).toJSDictionary
 
   private[angulate2] class Macro(val c: whitebox.Context) extends MacroAnnotationHandler {
     import c.universe._

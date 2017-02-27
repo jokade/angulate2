@@ -90,10 +90,10 @@ object std extends OpsTrait {
 
   // duplicate definition of ext.Data since `type Data = ext.Data` won't compile
   // NOTE: keep in sync with ext.Data()!!
-  @compileTimeOnly("enable macro paradise to expand macro annotations")
-  class Data extends StaticAnnotation {
-    def macroTransform(annottees: Any*): Any = macro ext.Data.Macro.impl
-  }
+//  @compileTimeOnly("enable macro paradise to expand macro annotations")
+//  class Data extends StaticAnnotation {
+//    def macroTransform(annottees: Any*): Any = macro Data.Macro.impl
+//  }
 
   // duplicate definition of ext.Routes since `type Routes = ext.Routes` won't compile
   // NOTE: keep in sync with ext.Routes()!!
