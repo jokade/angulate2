@@ -34,6 +34,8 @@ class ActivatedRoute(val url: Observable[js.Array[UrlSegment]],
 object ActivatedRoute {
   implicit final class RichActivatedRoute(val r: ActivatedRoute) extends AnyVal {
     @inline
+    def paramsAs[T]: Observable[T] = r.params.asInstanceOf[Observable[T]]
+    @inline
     def dataAs[T]: Observable[T] = r.data.asInstanceOf[Observable[T]]
     @inline
     def subscribeData[T](key: String)(f: T=>_): Subscription = r.data.subscribe((d:Data) => f(d(key).asInstanceOf[T]) )

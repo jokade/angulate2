@@ -7,7 +7,7 @@ crossScalaVersions in ThisBuild := Seq("2.11.8","2.12.1")
 organization in ThisBuild := "de.surfice"
 
 lazy val Version = new {
-  def smacrotools = "0.0.5"
+  def smacrotools = "0.0.6-SNAPSHOT"
   def sjsx = "0.3.0"
   def rxjs = "0.0.3-SNAPSHOT"
   def scalajsdom = "0.9.1"

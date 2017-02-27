@@ -5,11 +5,12 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2.ext
 
-import angulate2.internal.AngulateWhiteboxMacroTools
+import de.surfice.smacrotools.MacroAnnotationHandler
 
 import scala.annotation.{StaticAnnotation, compileTimeOnly}
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
+import scala.scalajs.js
 
 /**
  * Annotation for case classes to mark them as a pure JavaScript data object.
@@ -38,58 +39,62 @@ class Data extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro Data.Macro.impl
 }
 
+
 object Data {
-
-  private[angulate2] class Macro(val c: whitebox.Context) extends AngulateWhiteboxMacroTools {
-
+  private[angulate2] class Macro(val c: whitebox.Context) extends MacroAnnotationHandler {
     import c.universe._
 
-    def impl(annottees: c.Expr[Any]*): c.Expr[Any] = annottees.map(_.tree).toList match {
-      case (classDecl: ClassDef) :: Nil => modifiedDeclaration(classDecl)
-      case _ => c.abort(c.enclosingPosition, "Invalid annottee for @Data")
-    }
+    override val annotationName: String = "Data"
 
-    def modifiedDeclaration(classDecl: ClassDef) = {
-      val parts = extractTypeParts(classDecl).asInstanceOf[ClassParts]
-      import parts._
+    override val supportsClasses: Boolean = true
 
-      val debug = getDebugConfig(modifiers)
+    override val supportsTraits: Boolean = false
 
-      val members = params map {
-        case q"$mods val $name: $tpe = $rhs" => ("val",name,tpe)
-        case q"$_ var $name: $tpe = $_" => ("var",name,tpe)
-      }
-      val bodyMembers = members map {
-        case ("val",name,tpe) => q"val $name: $tpe = scalajs.js.native"
-        case ("var",name,tpe) => q"var $name: $tpe = scalajs.js.native"
-      }
-      val args = members map ( p => q"${p._2}: ${p._3}" )
-      val literalArgs = members map ( p => q"${p._2} = ${p._2}" )
+    override val supportsObjects: Boolean = false
 
-      val log =
-        if(debug.logInstances) {
-          val msg = s"created Data object $fullName:"
-          q"""scalajs.js.Dynamic.global.console.debug($msg,this)"""
+    override val createCompanion: Boolean = true
+
+    private val jsObjectType = tq"${c.weakTypeOf[js.Object]}"
+    private val jsNativeAnnot = q"new scalajs.js.native()"
+
+//    override def analyze: Analysis = super.analyze andThen {
+//      case d @ (parts,_) =>
+//        if(!parts.isCase)
+//          error("@Data annotation is only supported on case classes")
+//        d
+//    }
+
+    override def transform: Transformation = super.transform andThen {
+      case cls: ClassTransformData =>
+        import cls.modParts._
+        val members = params map {
+          case q"$mods val $name: $tpe = $rhs" => ("val",name,tpe)
+          case q"$_ var $name: $tpe = $_" => ("var",name,tpe)
         }
-        else q""
+        val bodyMembers = members map {
+          case ("val",name,tpe) => q"val $name: $tpe = scalajs.js.native"
+          case ("var",name,tpe) => q"var $name: $tpe = scalajs.js.native"
+        }
 
-      val tree =
-        if(isCase) {
-          q"""{@scalajs.js.native
-              trait $name extends scalajs.js.Object {
-              ..$bodyMembers
-              }
-              object ${name.toTermName} {
-                def apply(..$args) = {$log;scalajs.js.Dynamic.literal(..$literalArgs).asInstanceOf[$name]}
-              }
-              }"""
-        } else c.abort(c.enclosingPosition,"@Data may only be used on case classes")
+        val args = members map ( p => q"${p._2}: ${p._3}" )
+        val literalArgs = members map ( p => q"${p._2} = ${p._2}" )
+        val updCompanion = companion.map{ obj =>
+          val apply = q"""def apply(..$args) = scalajs.js.Dynamic.literal(..$literalArgs).asInstanceOf[${cls.modParts.name}]"""
+          TransformData(obj).updBody(Seq(apply)).modParts
+        }
 
-      if(debug.showExpansion) printTree(tree)
-
-      c.Expr[Any](tree)
+        val traitParts = TraitParts(
+          name,
+          tparams,
+          Nil,
+          Seq(jsObjectType),
+          self,
+          bodyMembers,
+          fullName,
+          Modifiers(NoFlags,modifiers.privateWithin,modifiers.annotations:+jsNativeAnnot),
+          updCompanion)
+        TraitTransformData(null,traitParts,cls.data)
+      case x => x
     }
   }
-
 }
-

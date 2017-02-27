@@ -6,11 +6,11 @@
 package angulate2.internal
 
 import angulate2.ext.ClassMode
-import de.surfice.smacrotools.MacroAnnotationHandlerNew
+import de.surfice.smacrotools.{MacroAnnotationHandler}
 
 import scala.language.reflectiveCalls
 
-abstract class ClassDecorator extends MacroAnnotationHandlerNew
+abstract class ClassDecorator extends MacroAnnotationHandler
   with AngulateWhiteboxMacroTools {
 
   import c.universe._
