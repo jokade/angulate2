@@ -42,7 +42,7 @@ case class RequestOptionsArgs(url: js.UndefOr[String] = js.undefined,
                               headers: js.UndefOr[Headers] = js.undefined,
                               body: js.UndefOr[js.Any] = js.undefined,
                               withCredentials: js.UndefOr[Boolean] = js.undefined,
-                              responseType: js.UndefOr[js.Dynamic] = js.undefined
+                              responseType: js.UndefOr[ResponseContentType] = js.undefined
                               )
 
 @JSImport("@angular/http","Headers")
@@ -57,3 +57,24 @@ class Headers(headers: js.UndefOr[js.Dynamic] = js.undefined) extends js.Object 
   def set(name: String, value: String): Unit = js.native
 }
 
+object Headers {
+  def apply(): Headers = new Headers()
+  implicit final class RichHeaders(val h: Headers) extends AnyVal {
+    def contentType(ctype: String): Headers = {
+      h.set("Content-Type",ctype)
+      h
+    }
+  }
+}
+
+@js.native
+trait ResponseContentType extends js.Object
+
+@js.native
+@JSImport("@angular/http","ResponseContentType")
+object ResponseContentType extends js.Object {
+  val Text: ResponseContentType = js.native
+  val Json: ResponseContentType = js.native
+  val ArrayBuffer: ResponseContentType = js.native
+  val Blob: ResponseContentType = js.native
+}

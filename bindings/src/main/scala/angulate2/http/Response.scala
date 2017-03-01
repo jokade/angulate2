@@ -5,12 +5,17 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2.http
 
+import org.scalajs.dom.Blob
+
 import scala.scalajs.js
+import scala.scalajs.js.typedarray.ArrayBuffer
 
 @js.native
 trait Body extends js.Object {
   def json(): js.Dynamic = js.native
   def text(): String = js.native
+  def arrayBuffer(): ArrayBuffer = js.native
+  def blob(): Blob = js.native
 }
 
 @js.native
