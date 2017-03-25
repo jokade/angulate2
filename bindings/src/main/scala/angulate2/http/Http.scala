@@ -60,8 +60,12 @@ class Headers(headers: js.UndefOr[js.Dynamic] = js.undefined) extends js.Object 
 object Headers {
   def apply(): Headers = new Headers()
   implicit final class RichHeaders(val h: Headers) extends AnyVal {
-    def contentType(ctype: String): Headers = {
-      h.set("Content-Type",ctype)
+    def accept(mimeTypes: String): Headers = {
+      h.set("Accept",mimeTypes)
+      h
+    }
+    def contentType(mimeType: String): Headers = {
+      h.set("Content-Type",mimeType)
       h
     }
   }
