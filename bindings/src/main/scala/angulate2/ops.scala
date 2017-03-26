@@ -57,8 +57,9 @@ private[angulate2] class OpsMacros(val c: blackbox.Context) extends AngulateBlac
 
 
   private def findJSRef(symbol: Symbol) = findAnnotations(symbol).collectFirst{
-    case ("scala.scalajs.js.annotation.JSExport",_) => selectExported(symbol.fullName)
+    case ("scala.scalajs.js.annotation.JSExportTopLevel",_) => selectExported(symbol.fullName)
     case ("scala.scalajs.js.annotation.JSImport",a) => q"scalajs.runtime.constructorOf(classOf[$symbol])"
+    case ("scala.scalajs.js.annotation.JSExport",_) => selectExported(symbol.fullName)
   }
 
   def jsType[T: c.WeakTypeTag]: Tree = findJSRef(weakTypeOf[T].typeSymbol) match {

@@ -6,7 +6,7 @@
 package angulate2.ext.rt
 
 import scala.scalajs.js
-import scala.scalajs.js.annotation.{JSExport, ScalaJSDefined}
+import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel, ScalaJSDefined}
 
 @ScalaJSDefined
 trait AngulateRuntime extends js.Object {
