@@ -6,13 +6,45 @@ crossScalaVersions in ThisBuild := Seq("2.11.11","2.12.2")
 
 organization in ThisBuild := "de.surfice"
 
-lazy val Version = new {
-  def smacrotools = "0.0.6"
-  def sjsx = "0.3.1"
-  def rxjs = "0.0.3"
-  def scalajsdom = "0.9.1"
-  def scalatags = "0.6.2"
-  def slogging = "0.5.3"
+// versions of libraries used by angulate during build
+val Version = new {
+  val sbt_node = "0.0.2-SNAPSHOT"
+  val smacrotools = "0.0.6"
+  val sjsx = "0.3.1"
+  val rxjs = "0.0.3"
+  val scalajsdom = "0.9.1"
+  val scalatags = "0.6.2"
+  val slogging = "0.5.3"
+}
+
+// NPM packages and versions required during build or runtime
+val NPM = new {
+  // version of angular NPM packages to be used
+  val angularVersion = "^4.0.0"
+  val angularPackages = Seq(
+      "@angular/animations",
+      "@angular/common",
+      "@angular/compiler",
+      "@angular/compiler-cli",
+      "@angular/core",
+      "@angular/forms",
+      "@angular/http",
+      "@angular/platform-browser",
+      "@angular/platform-browser-dynamic",
+      "@angular/platform-server",
+      "@angular/router"
+    )
+  val npmDependencies = Seq(
+      "core-js" ->  "^2.4.1",
+      "reflect-metadata" ->  "^0.1.8",
+      "rxjs" ->  "5.0.1",
+      "systemjs" ->  "0.19.40",
+      "typescript" ->  "^2.2.1",
+      "zone.js" ->  "^0.7.4"
+    )
+  val npmDevDependencies: Seq[(String,String)] = Seq(
+    )
+  
 }
 
 lazy val commonSettings = Seq(
@@ -83,11 +115,18 @@ lazy val plugin = project
     scalaVersion := "2.10.6",
     crossScalaVersions := Seq("2.10.6"),
     addSbtPlugin("de.surfice" % "sbt-sjsx" % Version.sjsx),
+    addSbtPlugin("de.surfice" % "sbt-node" % Version.sbt_node),
     sourceGenerators in Compile += Def.task {
       val file = (sourceManaged in Compile).value / "Version.scala"
       IO.write(file,
         s"""package de.surfice.angulate2.sbtplugin
           |object Version { val angulateVersion = "${version.value}" }
+          |object NPM {
+          |  val angularVersion = "${NPM.angularVersion}"
+          |  val angularPackages = Seq(${NPM.angularPackages.mkString("\"","\",\"","\"")})
+          |  val npmDependencies = ${NPM.npmDependencies.map(p => s""""${p._1}" -> "${p._2}"""").mkString("Seq(",",",")")}
+          |  val npmDevDependencies = ${NPM.npmDevDependencies.map(p => s""""${p._1}" -> "${p._2}"""").mkString("Seq(",",",")")}
+          |}
         """.stripMargin)
       Seq(file)
     }.taskValue

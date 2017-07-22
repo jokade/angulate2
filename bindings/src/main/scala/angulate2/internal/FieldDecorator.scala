@@ -44,7 +44,7 @@ protected[angulate2] trait FieldDecorator extends ClassDecorator {
         case t @ DefDef(ViewChildAnnot(annot), name, _, _, _, _) =>
           viewChildMetadata(cls.fullName, name.toString, annot, t)
       }
-      (cls, ClassDecoratorData.addSjsxStatic(data, metadata))
+      (cls, ClassDecoratorData.addSjsxStatic(data, metadata.map((1000,_))))
     case default => default
   }
 

@@ -6,11 +6,11 @@
 package angulate2
 
 import angulate2.animations.AnimationEntryMetadata
-import angulate2.router.Route
 
 import scala.annotation.{StaticAnnotation, compileTimeOnly}
 import scala.language.experimental.macros
 import scala.scalajs.js
+import scala.scalajs.js.annotation.JSGlobal
 
 /**
  * Import this object to get the most commonly used angulate2 annotations and operators.
@@ -39,7 +39,9 @@ object std extends OpsTrait {
                   animations: js.Array[AnimationEntryMetadata] = null,
                   encapsulation: js.Any = null,
                   interpolation: js.Any = null,
-                  entryComponents: js.Array[js.Any] = null) extends StaticAnnotation {
+                  entryComponents: js.Array[js.Any] = null,
+                  requireStyles: String = null
+                 ) extends StaticAnnotation {
     def macroTransform(annottees: Any*): Any = macro core.Component.Macro.impl
   }
 
@@ -134,6 +136,21 @@ object std extends OpsTrait {
   implicit final class ToDynamic(val o: Any) extends AnyVal {
     def dynamic: js.Dynamic = o.asInstanceOf[js.Dynamic]
     def dynamic_=(d: Any): Unit = macro OpsMacros.assignDynamic
+  }
+
+  class LoadTemplate(url: String = null) extends StaticAnnotation
+
+  /**
+   * Add this annotation to a component in order to load the specified styles with `require`.
+   *
+   * @param styleUrls
+   */
+  class LoadStyles(styleUrls: String*) extends StaticAnnotation
+
+  @JSGlobal("require")
+  @js.native
+  object $require extends js.Object {
+    def apply(module: String): String = js.native
   }
 
 }

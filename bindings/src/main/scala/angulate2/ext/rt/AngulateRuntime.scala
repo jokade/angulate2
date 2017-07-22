@@ -32,6 +32,8 @@ trait AngulateRuntime extends js.Object {
   def $css: js.Function1[String,String]
 
   def decorate: js.Function2[js.Array[js.Any],js.Any,js.Any]
+
+//  def require: js.Function1[String,js.Any]
 }
 
 object AngulateRuntime {
@@ -71,6 +73,7 @@ object AngulateRuntime {
     }
 
     override val decorate = AngulateRuntimeSJSXConfig.decorate.getOrElse(???)
+//    override val require = AngulateRuntimeSJSXConfig.require.getOrElse(???)
   }
 
 }
@@ -83,4 +86,7 @@ object AngulateRuntime {
 object AngulateRuntimeSJSXConfig {
   @JSExport
   var decorate: js.UndefOr[js.Function2[js.Array[js.Any],js.Any,js.Any]] = js.undefined
+
+//  @JSExport
+//  var require: js.UndefOr[js.Function1[String,js.Any]] = js.undefined
 }

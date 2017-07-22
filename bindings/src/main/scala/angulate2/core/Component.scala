@@ -7,9 +7,11 @@ package angulate2.core
 
 
 import angulate2.animations.AnimationEntryMetadata
+import sourcecode.FullName
 
 import scala.annotation.{StaticAnnotation, compileTimeOnly}
 import scala.language.experimental.macros
+import scala.reflect.api.Trees
 import scala.reflect.macros.whitebox
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
@@ -39,7 +41,8 @@ class Component(selector: String = null,
                 animations: js.Array[AnimationEntryMetadata] = null,
                 encapsulation: js.Any = null,
                 interpolation: js.Any = null,
-                entryComponents: js.Array[js.Any] = null) extends StaticAnnotation {
+                entryComponents: js.Array[js.Any] = null
+               ) extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro Component.Macro.impl
 }
 
@@ -74,6 +77,49 @@ object Component {
 
     override def mainAnnotationObject: c.universe.Tree = q"angulate2.core.ComponentFacade"
 
+    override def analyze: Analysis = super.analyze andThen {
+      case (cls: ClassParts, data) =>
+        var decor = ClassDecoratorData(data)
+        // handle @LoadTemplate
+        decor = findAnnotation(cls.modifiers.annotations,"LoadTemplate") map {
+          case q"new LoadTemplate($arg)" => handleLoadTemplateAnnotation(decor,Some(arg),cls.fullName)
+          case q"new LoadTemplate()" => handleLoadTemplateAnnotation(decor,None,cls.fullName)
+        } getOrElse decor
+        // handle @LoadStyles
+        decor = findAnnotation(cls.modifiers.annotations,"LoadStyles") map {
+          case q"new LoadStyles(..$params)" => handleLoadStylesAnnotation(decor,params,cls.fullName)
+          case q"new LoadStyles()" => handleLoadStylesAnnotation(decor,Nil,cls.fullName)
+        } getOrElse decor
+        (cls, ClassDecoratorData.update(data,decor))
+      case default => default
+    }
+
+    private def handleLoadTemplateAnnotation(decor: ClassDecoratorData, arg: Option[Trees#Tree], fullName: String): ClassDecoratorData = {
+      val target = decor.jsAccessor
+
+      val template = arg map {
+        case Literal(Constant(x)) => x.toString
+        case x => c.error(c.enclosingPosition, "Only literal constants allowed as arguments to @LoadTemplate()")
+      } getOrElse( "html/" + fullName.replaceAll("\\.","/") + ".html" )
+
+      decor.addSjsxStatic(500 -> s"__loadTemplate($target, require('$template').toString());")
+    }
+
+    private def handleLoadStylesAnnotation(decor: ClassDecoratorData, args: Seq[Trees#Tree], fullName: String): ClassDecoratorData = {
+      val target = decor.jsAccessor
+
+      val styles = args map {
+        case Literal(Constant(x)) => x.toString
+        case x => c.error(c.enclosingPosition, "Only literal constants allowed as arguments to @LoadStyles()")
+      }
+
+      val requires = (if(styles.isEmpty) Seq( "css/" + fullName.replaceAll("\\.","/") + ".css" ) else styles)
+        .map {
+          style => s"require('$style').toString()"
+        } mkString("__loadStyles("+target+", [",", ","]);")
+
+      decor.addSjsxStatic(500 -> requires)
+    }
   }
 
 }

@@ -29,12 +29,16 @@ abstract class ClassDecorator extends MacroAnnotationHandler
                                 userDefinedCompanion: Boolean,
                                 classMode: ClassMode.Value,
                                 annotParams: MainAnnotationParams,
-                                sjsxStatic: Seq[String] = Nil
-                               )
+                                sjsxStatic: Seq[(Int,String)] = Nil
+                               ) {
+    def addSjsxStatic(js: (Int,String)*): ClassDecoratorData =
+      copy(sjsxStatic = sjsxStatic ++ js)
+    def jsAccessor: String = s"$exports.$objName"
+  }
   object ClassDecoratorData {
     def apply(data: Data): ClassDecoratorData = data("decoratorData").asInstanceOf[ClassDecoratorData]
     def update(data: Data, cdd: ClassDecoratorData): Data = data + ("decoratorData" -> cdd)
-    def addSjsxStatic(data: Data, js: Seq[String]): Data = {
+    def addSjsxStatic(data: Data, js: Seq[(Int,String)]): Data = {
       val cdd = ClassDecoratorData(data)
       update(data,cdd.copy(sjsxStatic = cdd.sjsxStatic++js))
     }
@@ -74,7 +78,10 @@ abstract class ClassDecorator extends MacroAnnotationHandler
     case cls: ClassTransformData =>
       val classDecoratorData = ClassDecoratorData(cls.data)
       // assemble JS for class decoration
-      val js = classDecoratorData.sjsxStatic.mkString("","\n","\n") + genClassDecoration(cls.modParts,classDecoratorData)
+      val js = (classDecoratorData.sjsxStatic :+ genClassDecoration(cls.modParts,classDecoratorData))
+        .sortBy(_._1)
+        .map(_._2)
+        .mkString("","\n","\n")
       cls.addAnnotations(
         q"new scalajs.js.annotation.JSExportTopLevel(${cls.modParts.fullName})",
         q"new sjsx.SJSXStatic(1000,$js)"
@@ -91,11 +98,19 @@ abstract class ClassDecorator extends MacroAnnotationHandler
         if(mainAnnotationParams.isEmpty)
           q"$mainAnnotationObject()"
         else
-          q"$mainAnnotationObject( scalajs.js.Dynamic.literal(..$mainAnnotationParams) )"
+          q"$mainAnnotationObject( _annotation )"
 
       obj
         .addAnnotations( q"new scalajs.js.annotation.JSExportTopLevel($objName)" )
-        .addStatements( q"""def _decorators = scalajs.js.Array( $mainAnnotation, ..$decorators )""" )
+        .addStatements(
+          q"""private var _annotationData: scalajs.js.Object = null""",
+          q"""def _annotation = {
+                if(_annotationData == null)
+                  _annotationData = scalajs.js.Dynamic.literal(..$mainAnnotationParams)
+                _annotationData
+              }
+            """,
+          q"""def _decorators = scalajs.js.Array( $mainAnnotation, ..$decorators )""" )
     case default => default
   }
 
@@ -172,14 +187,14 @@ abstract class ClassDecorator extends MacroAnnotationHandler
    * @param data
    * @return
    */
-  private def genClassDecoration(parts: ClassParts, data: ClassDecoratorData): String = {
+  private def genClassDecoration(parts: ClassParts, data: ClassDecoratorData): (Int,String) = {
     import data._
     import parts._
 
     val decoration =
       if(metadata.isEmpty) s"$exports.$objName._decorators"
       else s"$exports.$objName._decorators.concat(" + metadata.map(p => s"__metadata('${p._1}',${p._2})").mkString("[",",","]") + ")"
-    s"$exports.$fullName = __decorate($decoration,$exports.$fullName);"
+    (1000,s"$exports.$fullName = __decorate($decoration,$exports.$fullName);")
   }
 
   case class DecorationMetadata(key: String, value: String)
