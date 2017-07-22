@@ -78,6 +78,7 @@ object AngulateRuntime {
 /**
  * This object contains default values defined in the project's SJSX file.
  */
+//@JSExportTopLevel("AngulateRuntimeSJSXConfig")
 @JSExport
 object AngulateRuntimeSJSXConfig {
   @JSExport

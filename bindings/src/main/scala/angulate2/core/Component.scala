@@ -6,6 +6,8 @@
 package angulate2.core
 
 
+import angulate2.animations.AnimationEntryMetadata
+
 import scala.annotation.{StaticAnnotation, compileTimeOnly}
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox

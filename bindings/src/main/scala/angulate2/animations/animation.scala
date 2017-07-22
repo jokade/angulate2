@@ -3,7 +3,7 @@
 
 // Copyright (c) 2017 Johannes.Kastner <jokade@karchedon.de>
 //               Distributed under the MIT License (see included LICENSE file)
-package angulate2.core
+package angulate2.animations
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
@@ -110,23 +110,4 @@ object sequence extends js.Object {
 @JSImport("@angular/core","keyframes")
 object keyframes extends js.Object {
   def apply(steps: js.Array[AnimationStyleMetadata]): AnimationKeyframesSequenceMetadata = js.native
-}
-
-object animations {
-  @inline
-  val animate = angulate2.core.animate
-  @inline
-  val group = angulate2.core.group
-  @inline
-  val sequence = angulate2.core.sequence
-  @inline
-  val style = angulate2.core.style
-  @inline
-  val state = angulate2.core.state
-  @inline
-  val keyframes = angulate2.core.keyframes
-  @inline
-  val transition = angulate2.core.transition
-  @inline
-  val trigger = angulate2.core.trigger
 }

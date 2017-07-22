@@ -5,7 +5,7 @@
 //               Distributed under the MIT License (see included LICENSE file)
 package angulate2
 
-import angulate2.core.AnimationEntryMetadata
+import angulate2.animations.AnimationEntryMetadata
 import angulate2.router.Route
 
 import scala.annotation.{StaticAnnotation, compileTimeOnly}

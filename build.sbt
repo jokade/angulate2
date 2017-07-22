@@ -1,18 +1,18 @@
-version in ThisBuild := "0.1.0-SNAPSHOT"
+version in ThisBuild := "0.1.0-1-SNAPSHOT"
 
-scalaVersion in ThisBuild := "2.11.8"
+scalaVersion in ThisBuild := "2.11.11"
 
-crossScalaVersions in ThisBuild := Seq("2.11.8","2.12.1")
+crossScalaVersions in ThisBuild := Seq("2.11.11","2.12.2")
 
 organization in ThisBuild := "de.surfice"
 
 lazy val Version = new {
-  def smacrotools = "0.0.6-SNAPSHOT"
-  def sjsx = "0.3.0"
-  def rxjs = "0.0.3-SNAPSHOT"
+  def smacrotools = "0.0.6"
+  def sjsx = "0.3.1"
+  def rxjs = "0.0.3"
   def scalajsdom = "0.9.1"
   def scalatags = "0.6.2"
-  def slogging = "0.5.2"
+  def slogging = "0.5.3"
 }
 
 lazy val commonSettings = Seq(
@@ -49,7 +49,7 @@ lazy val bindings = project
       "org.scala-js"   %%% "scalajs-dom" % Version.scalajsdom,
       "de.surfice" %%% "smacrotools-sjs" % Version.smacrotools,
       "de.surfice" %%% "sjsx" % Version.sjsx,
-      "de.surfice" %%% "scalajs-rxjs_cjsm" % Version.rxjs,
+      "de.surfice" %%% "scalajs-rxjs" % Version.rxjs,
       "com.lihaoyi" %%% "scalatags" % Version.scalatags
       //"be.doeraene" %%% "scalajs-jquery" % "0.8.0" % "provided",
     ),
