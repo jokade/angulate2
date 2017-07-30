@@ -105,7 +105,7 @@ object Angulate2BundlingPlugin extends AutoPlugin {
       val sjsx = (sjsxConfig in scoped).value
       (systemJSConfig in scoped).value
         .withPackages(Seq(
-          "app" -> SystemJSPackage(
+          "$app$" -> SystemJSPackage(
             main = Some("./" + sjsx.file.getName),
             format = Some("cjs"),
             defaultExtension = Some("js")

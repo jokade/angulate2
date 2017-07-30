@@ -94,13 +94,16 @@ object Component {
       case default => default
     }
 
+    private lazy val _stylePrefix = setting("angulate2.stylePrefix","")
+    private lazy val _templatePrefix = setting("angulate2.templatePrefix","")
+
     private def handleLoadTemplateAnnotation(decor: ClassDecoratorData, arg: Option[Trees#Tree], fullName: String): ClassDecoratorData = {
       val target = decor.jsAccessor
 
       val template = arg map {
         case Literal(Constant(x)) => x.toString
         case x => c.error(c.enclosingPosition, "Only literal constants allowed as arguments to @LoadTemplate()")
-      } getOrElse( "html/" + fullName.replaceAll("\\.","/") + ".html" )
+      } getOrElse( _templatePrefix + fullName.replaceAll("\\.","/") + ".html" )
 
       decor.addSjsxStatic(500 -> s"__loadTemplate($target, require('$template').toString());")
     }
@@ -113,7 +116,7 @@ object Component {
         case x => c.error(c.enclosingPosition, "Only literal constants allowed as arguments to @LoadStyles()")
       }
 
-      val requires = (if(styles.isEmpty) Seq( "css/" + fullName.replaceAll("\\.","/") + ".css" ) else styles)
+      val requires = (if(styles.isEmpty) Seq( _stylePrefix + fullName.replaceAll("\\.","/") + ".css" ) else styles)
         .map {
           style => s"require('$style').toString()"
         } mkString("__loadStyles("+target+", [",", ","]);")
