@@ -49,6 +49,13 @@ private[angulate2] trait OpsTrait {
 
   def $compPath: String = macro OpsMacros.compPath
 
+  /**
+   * Creates a ClassProvider from the specified types.
+   *
+   * @tparam Provide Type to be provided.
+   * @tparam UseClass Class implementing the type.
+   */
+  def provideClass[Provide,UseClass]: js.Any = macro OpsMacros.provideClass[Provide,UseClass]
 
 }
 
@@ -126,5 +133,8 @@ private[angulate2] class OpsMacros(val c: blackbox.Context) extends AngulateBlac
       val tree = q"{val dyn = $base.asInstanceOf[scalajs.js.Dynamic]; dyn.$name = $d}"
       c.Expr[Unit](tree)
   }
+
+  def provideClass[Provide: c.WeakTypeTag, UseClass: c.WeakTypeTag] =
+    q"scalajs.js.Dynamic.literal(provide = ${jsRef[Provide]}, useClass = ${jsRef[UseClass]})"
 }
 

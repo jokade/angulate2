@@ -1,4 +1,4 @@
-version in ThisBuild := "0.1.0-1-SNAPSHOT"
+version in ThisBuild := "0.1.0-RC2-SNAPSHOT"
 
 scalaVersion in ThisBuild := "2.11.11"
 
@@ -8,13 +8,13 @@ organization in ThisBuild := "de.surfice"
 
 // versions of libraries used by angulate during build
 val Version = new {
-  val sbt_node = "0.0.2-SNAPSHOT"
+  val sbt_node    = "0.0.4-SNAPSHOT"
   val smacrotools = "0.0.6"
-  val sjsx = "0.3.1"
-  val rxjs = "0.0.3"
-  val scalajsdom = "0.9.1"
-  val scalatags = "0.6.2"
-  val slogging = "0.5.3"
+  val sjsx        = "0.3.3"
+  val rxjs        = "0.0.4"
+  val scalajsdom  = "0.9.1"
+  val scalatags   = "0.6.2"
+  val slogging    = "0.5.3"
 }
 
 // NPM packages and versions required during build or runtime
@@ -37,9 +37,6 @@ val NPM = new {
   val npmDependencies = Seq(
       "core-js" ->  "^2.4.1",
       "reflect-metadata" ->  "^0.1.8",
-      "rxjs" ->  "5.0.1",
-      "systemjs" ->  "0.19.40",
-      "typescript" ->  "^2.2.1",
       "zone.js" ->  "^0.7.4"
     )
   val npmDevDependencies: Seq[(String,String)] = Seq(

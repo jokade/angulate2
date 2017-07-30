@@ -138,20 +138,25 @@ object std extends OpsTrait {
     def dynamic_=(d: Any): Unit = macro OpsMacros.assignDynamic
   }
 
+  /**
+   * Add this annotation to a component in order to load the specified template with `require`.
+   *
+   * @param url URL of the template to be loaded. Leaf empty to load the template `html/PATH-TO-COMPONENT.html`
+   */
   class LoadTemplate(url: String = null) extends StaticAnnotation
 
   /**
    * Add this annotation to a component in order to load the specified styles with `require`.
    *
-   * @param styleUrls
+   * @param styleUrls URLs of the CSS style files to be loaded. Leaf empty to load `css/PATH-TO-COMPONENT.css`
    */
   class LoadStyles(styleUrls: String*) extends StaticAnnotation
 
-  @JSGlobal("require")
-  @js.native
-  object $require extends js.Object {
-    def apply(module: String): String = js.native
-  }
+//  @JSGlobal("require")
+//  @js.native
+//  object $require extends js.Object {
+//    def apply(module: String): String = js.native
+//  }
 
 }
 

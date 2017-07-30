@@ -9,66 +9,66 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
 
 @js.native
-@JSImport("@angular/core","AnimationEntryMetadata")
+@JSImport("@angular/animations","AnimationEntryMetadata")
 class AnimationEntryMetadata(val name: String, definitions: js.Array[AnimationStateMetadata]) extends js.Object
 
 @js.native
-@JSImport("@angular/core","AnimationMetadata")
+@JSImport("@angular/animations","AnimationMetadata")
 class AnimationMetadata extends js.Object
 
 @js.native
-@JSImport("@angular/core","AnimationKeyframesSequenceMetadata")
+@JSImport("@angular/animations","AnimationKeyframesSequenceMetadata")
 class AnimationKeyframesSequenceMetadata(val steps: js.Array[AnimationStyleMetadata]) extends AnimationMetadata
 
 @js.native
-@JSImport("@angular/core","AnimationStyleMetadata")
+@JSImport("@angular/animations","AnimationStyleMetadata")
 class AnimationStyleMetadata extends AnimationMetadata
 
 @js.native
-@JSImport("@angular/core","AnimationAnimateMetadata")
+@JSImport("@angular/animations","AnimationAnimateMetadata")
 class AnimationAnimateMetadata(val styles: js.Array[js.Any], val offset: js.Any = null) extends AnimationMetadata
 
 @js.native
-@JSImport("@angular/core","AnimationWithStepsMetadata")
+@JSImport("@angular/animations","AnimationWithStepsMetadata")
 abstract class AnimationWithStepsMetadata extends AnimationMetadata {
   def steps(): js.Array[AnimationMetadata] = js.native
 }
 
 @js.native
-@JSImport("@angular/core","AnimationSequenceMetadata")
+@JSImport("@angular/animations","AnimationSequenceMetadata")
 class AnimationSequenceMetadata(_steps: js.Array[AnimationMetadata]) extends AnimationWithStepsMetadata
 
 @js.native
-@JSImport("@angular/core","AnimationGroupMetadata")
+@JSImport("@angular/animations","AnimationGroupMetadata")
 class AnimationGroupMetadata(_steps: js.Array[AnimationMetadata]) extends AnimationWithStepsMetadata
 
 @js.native
-@JSImport("@angular/core","AnimationStateMetadata")
+@JSImport("@angular/animations","AnimationStateMetadata")
 class AnimationStateMetadata extends js.Object
 
 @js.native
-@JSImport("@angular/core","AnimationStateDeclarationMetadata")
+@JSImport("@angular/animations","AnimationStateDeclarationMetadata")
 class AnimationStateDeclarationMetadata(val stateNameExpr: String, styles: AnimationStyleMetadata) extends AnimationStateMetadata
 
 @js.native
-@JSImport("@angular/core","AnimationStateTransitionMetadata")
+@JSImport("@angular/animations","AnimationStateTransitionMetadata")
 class AnimationStateTransitionMetadata(val stateChangeExpr: String, steps: AnimationMetadata) extends AnimationStateMetadata
 
 
 @js.native
-@JSImport("@angular/core","trigger")
+@JSImport("@angular/animations","trigger")
 object trigger extends js.Object {
   def apply(name: String, animation: js.Array[AnimationStateMetadata]): AnimationEntryMetadata = js.native
 }
 
 @js.native
-@JSImport("@angular/core","state")
+@JSImport("@angular/animations","state")
 object state extends js.Object {
   def apply(stateNameExpr: String, styles: AnimationStyleMetadata): AnimationStateDeclarationMetadata = js.native
 }
 
 @js.native
-@JSImport("@angular/core","style")
+@JSImport("@angular/animations","style")
 object style extends js.Object {
   def apply(tokens: String): AnimationStyleMetadata = js.native
   def apply(tokens: js.Dictionary[String]): AnimationStyleMetadata = js.native
@@ -77,14 +77,14 @@ object style extends js.Object {
 }
 
 @js.native
-@JSImport("@angular/core","transition")
+@JSImport("@angular/animations","transition")
 object transition extends js.Object {
   def apply(stateChangeExpr: String, steps: AnimationMetadata): AnimationStateTransitionMetadata = js.native
   def apply[T<:AnimationMetadata](stateChangeExpr: String, steps: js.Array[T]): AnimationStateTransitionMetadata = js.native
 }
 
 @js.native
-@JSImport("@angular/core","animate")
+@JSImport("@angular/animations","animate")
 object animate extends js.Object {
   def apply(timing: Int): AnimationAnimateMetadata = js.native
   def apply(timing: Int, styles: AnimationStyleMetadata): AnimationAnimateMetadata = js.native
@@ -95,19 +95,19 @@ object animate extends js.Object {
 }
 
 @js.native
-@JSImport("@angular/core","group")
+@JSImport("@angular/animations","group")
 object group extends js.Object {
   def apply[T<:AnimationMetadata](steps: js.Array[T]): AnimationGroupMetadata = js.native
 }
 
 @js.native
-@JSImport("@angular/core","sequence")
+@JSImport("@angular/animations","sequence")
 object sequence extends js.Object {
   def apply[T<:AnimationMetadata](steps: js.Array[T]): AnimationSequenceMetadata = js.native
 }
 
 @js.native
-@JSImport("@angular/core","keyframes")
+@JSImport("@angular/animations","keyframes")
 object keyframes extends js.Object {
   def apply(steps: js.Array[AnimationStyleMetadata]): AnimationKeyframesSequenceMetadata = js.native
 }
