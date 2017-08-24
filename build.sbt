@@ -1,4 +1,4 @@
-version in ThisBuild := "0.1.0-RC2"
+version in ThisBuild := "0.1.0-RC3-SNAPSHOT"
 
 scalaVersion in ThisBuild := "2.11.11"
 
@@ -8,7 +8,7 @@ organization in ThisBuild := "de.surfice"
 
 // versions of libraries used by angulate during build
 val Version = new {
-  val sbt_node    = "0.0.4"
+  val sbt_node    = "0.0.5-SNAPSHOT"
   val smacrotools = "0.0.6"
   val sjsx        = "0.3.3"
   val rxjs        = "0.0.5"
@@ -62,7 +62,7 @@ lazy val dontPublish = Seq(
 
 
 lazy val angulate2 = project.in(file("."))
-  .aggregate(bindings,extensions,plugin,stubs)
+  .aggregate(bindings,extensions,plugin,bundling,stubs)
   .settings(commonSettings:_*)
   .settings(dontPublish:_*)
 
@@ -112,7 +112,6 @@ lazy val plugin = project
     scalaVersion := "2.10.6",
     crossScalaVersions := Seq("2.10.6"),
     addSbtPlugin("de.surfice" % "sbt-sjsx" % Version.sjsx),
-    addSbtPlugin("de.surfice" % "sbt-node" % Version.sbt_node),
     sourceGenerators in Compile += Def.task {
       val file = (sourceManaged in Compile).value / "Version.scala"
       IO.write(file,
@@ -128,6 +127,21 @@ lazy val plugin = project
       Seq(file)
     }.taskValue
   )
+
+lazy val bundling = project
+  .dependsOn(plugin)
+  .settings(commonSettings:_*)
+  .settings(publishingSettings:_*)
+  .settings(
+    name := "sbt-angulate2-bundling",
+    description := "sbt plugin for angulate2 with bundling support (Angular2 bindings for Scala.js)",
+    sbtPlugin := true,
+    scalaVersion := "2.10.6",
+    crossScalaVersions := Seq("2.10.6"),
+    addSbtPlugin("de.surfice" % "sbt-node" % Version.sbt_node)
+  )
+
+
 
 lazy val stubs = project
   .settings(commonSettings:_*)
