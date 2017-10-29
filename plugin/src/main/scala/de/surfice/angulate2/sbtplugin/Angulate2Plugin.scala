@@ -24,7 +24,8 @@ object Angulate2Plugin extends sbt.AutoPlugin {
     val ngPreamble = settingKey[String]("ng2-specific preamble for the sjsx file")
     val ngScalaModule = settingKey[String]("Name of the Scala.js module to be loaded from the sjsx file")
     val ngEnableProdMode = settingKey[Boolean]("Set to true to enable Angular's production mode at runtime")
-
+    val ngComponentTemplatePrefix = settingKey[String]("Prefix added to the component template path loaded by the @LoadTemplate() annotation")
+    val ngComponentStylesPrefix = settingKey[String]("Prefix added to component stylesheet path loaded by the @LoadStyles() annotation")
 
   }
 
@@ -55,6 +56,13 @@ object Angulate2Plugin extends sbt.AutoPlugin {
       """.stripMargin,
     ngScalaModule := "scalaModule",
     ngEnableProdMode := false,
+    ngComponentTemplatePrefix := "",
+    ngComponentStylesPrefix := "",
+
+    scalacOptions ++= Seq(
+      "-Xmacro-settings:angulate2.templatePrefix="+ngComponentTemplatePrefix.value,
+      "-Xmacro-settings:angulate2.stylePrefix="+ngComponentStylesPrefix.value
+    ),
 
     addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
     libraryDependencies ++= Seq("angulate2","angulate2-extensions") map { dep =>
