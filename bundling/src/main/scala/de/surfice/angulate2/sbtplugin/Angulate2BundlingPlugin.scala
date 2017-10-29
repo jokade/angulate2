@@ -104,13 +104,13 @@ object Angulate2BundlingPlugin extends AutoPlugin {
     systemJSConfig in scoped := {
       val sjsx = (sjsxConfig in scoped).value
       (systemJSConfig in scoped).value
-        .withPackages(Seq(
+        .addPackages(
           "$app$" -> SystemJSPackage(
             main = Some("./" + sjsx.file.getName),
             format = Some("cjs"),
             defaultExtension = Some("js")
           )
-        ))
+        )
         .addMappings(
           "scalaModule" -> ("./" + (artifactPath in (Compile,scoped)).value.getName)
         )
