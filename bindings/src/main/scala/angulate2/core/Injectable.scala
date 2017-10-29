@@ -17,6 +17,7 @@ import scala.scalajs.js.annotation.JSImport
 @JSImport("@angular/core","Injectable")
 object InjectableFacade extends js.Object {
   def apply() : js.Object = js.native
+  def apply(options: js.Object) : js.Object = js.native
 }
 
 // NOTE: keep the constructor parameter list and Injectable.Macro.annotationParamNames in sync!

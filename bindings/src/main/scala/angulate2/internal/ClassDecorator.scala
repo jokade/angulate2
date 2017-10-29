@@ -95,9 +95,9 @@ abstract class ClassDecorator extends MacroAnnotationHandler
         case (name,value) => q"${Ident(TermName(name))} = $value"
       }
       val mainAnnotation =
-        if(mainAnnotationParams.isEmpty)
-          q"$mainAnnotationObject()"
-        else
+//        if(mainAnnotationParams.isEmpty)
+//          q"$mainAnnotationObject()"
+//        else
           q"$mainAnnotationObject( _annotation )"
 
       obj
